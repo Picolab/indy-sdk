@@ -1,0 +1,26 @@
+{
+  "name": "indy-sdk",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "node-addon-api": "^0.3.5"
+  },
+  "devDependencies": {
+    "blocked": "^1.2.1",
+    "node-gyp": "^3.6.2"
+  },
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "test": "node --napi-modules test",
+    "start": "node --napi-modules index.js"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "author": "Ant Cosentino <ant@io.co.za>",
+  "license": "MIT",
+  "gypfile": true
+}
