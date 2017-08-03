@@ -7,3 +7,4 @@ Cargo.lock
 .cache
 .DS_Store
 Podfile.lock
+.vscode
