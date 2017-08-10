@@ -24,68 +24,8 @@ struct async_work_data {
 
 typedef struct async_work_data async_work_data;
 
-napi_value build_attrib_request(napi_env env, napi_callback_info info) {
-  printf("build_attrib_request\n");
-  return NULL;
-}
-
-napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
-  printf("build_claim_def_txn\n");
-  return NULL;
-}
-
-napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
-  printf("build_get_attrib_request\n");
-  return NULL;
-}
-
-napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
-  printf("build_get_claim_def_txn\n");
-  return NULL;
-}
-
-napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
-  printf("build_get_ddo_request\n");
-  return NULL;
-}
-
-napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
-  printf("build_get_nym_request\n");
-  return NULL;
-}
-
-napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
-  printf("build_get_schema_request\n");
-  return NULL;
-}
-
-napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
-  printf("build_get_txn_request\n");
-  return NULL;
-}
-
-napi_value build_node_request(napi_env env, napi_callback_info info) {
-  printf("build_node_request\n");
-  return NULL;
-}
-
-napi_value build_nym_request(napi_env env, napi_callback_info info) {
-  printf("build_nym_request\n");
-  return NULL;
-}
-
-napi_value build_schema_request(napi_env env, napi_callback_info info) {
-  printf("build_schema_request\n");
-  return NULL;
-}
-
 napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
   printf("close_pool_ledger\n");
-  return NULL;
-}
-
-napi_value close_wallet(napi_env env, napi_callback_info info) {
-  printf("close_wallet\n");
   return NULL;
 }
 
@@ -94,18 +34,8 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   return NULL;
 }
 
-napi_value create_wallet(napi_env env, napi_callback_info info) {
-  printf("create_wallet\n");
-  return NULL;
-}
-
 napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
   printf("delete_pool_ledger_config\n");
-  return NULL;
-}
-
-napi_value delete_wallet(napi_env env, napi_callback_info info) {
-  printf("delete_wallet\n");
   return NULL;
 }
 
@@ -114,28 +44,8 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   return NULL;
 }
 
-napi_value open_wallet(napi_env env, napi_callback_info info) {
-  printf("open_wallet\n");
-  return NULL;
-}
-
 napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
   printf("refresh_pool_ledger\n");
-  return NULL;
-}
-
-napi_value register_wallet_type(napi_env env, napi_callback_info info) {
-  printf("register_wallet_type\n");
-  return NULL;
-}
-
-napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
-  printf("sign_and_submit_request\n");
-  return NULL;
-}
-
-napi_value submit_request(napi_env env, napi_callback_info info) {
-  printf("submit_request\n");
   return NULL;
 }
 
