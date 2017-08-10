@@ -86,24 +86,52 @@ void agent_listen_on_message(
   // TODO napi_make_callback
 }
 
-void agent_add_identity_on_identity_added(indy_handle_t command_handle, indy_error_t error) {
+void agent_add_identity_on_identity_added(
+  indy_handle_t command_handle,
+  indy_error_t error
+) {
   printf("agent_add_identity_on_identity_added\n");
   printf("command handle %d, error %d\n", command_handle, error);
 
   // TODO napi_make_callback
 }
 
-void agent_remove_identity_on_identity_removed(indy_handle_t command_handle, indy_error_t error) {
+void agent_remove_identity_on_identity_removed(
+  indy_handle_t command_handle,
+  indy_error_t error
+) {
   printf("agent_remove_identity_on_identity_removed\n");
   printf("command handle %d, error %d\n", command_handle, error);
   
   // TODO napi_make_callback
 }
 
-void agent_send_on_message_sent(indy_handle_t command_handle, indy_error_t error) {
+void agent_send_on_message_sent(
+  indy_handle_t command_handle,
+  indy_error_t error
+) {
   printf("agent_send_on_message_sent\n");
   printf("command handle %d, error %d\n", command_handle, error);
 
+  // TODO napi_make_callback
+}
+
+void agent_close_connection_on_connection_closed(
+  indy_handle_t command_handle,
+  indy_error_t error
+) {
+  printf("agent_close_connection_on_connection_closed\n");
+  printf("command handle %d, error %d\n", command_handle, error);
+
+  // TODO napi_make_callback
+}
+
+void agent_close_listener_on_listener_closed(
+  indy_handle_t command_handle,
+  indy_error_t error
+) {
+  printf("agent_close_listener\n");
+  printf("command handle %d, error %d\n", command_handle, error);
   // TODO napi_make_callback
 }
 
@@ -148,12 +176,54 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
 
 napi_value agent_close_connection(napi_env env, napi_callback_info info) {
   printf("agent_close_connection\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle, connection_handle;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
+
+  double res = indy_agent_close_connection(
+    command_handle,
+    connection_handle,
+    agent_close_connection_on_connection_closed
+  );
+
+  napi_value result;
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+
+  return result;
 }
 
 napi_value agent_close_listener(napi_env env, napi_callback_info info) {
   printf("agent_close_listener\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle, listener_handle;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], listener_handle);
+
+  double res = indy_agent_close_listener(
+    command_handle,
+    listener_handle,
+    agent_close_listener_on_listener_closed
+  );
+
+  napi_value result;
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+
+  return result;
 }
 
 napi_value agent_connect(napi_env env, napi_callback_info info) {
@@ -191,11 +261,10 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
     agent_connect_on_connect,
     agent_connect_on_message
   );
+  
   napi_value result;
   NAPI_DOUBLE_TO_NUMBER(res, result);
-  // double to_convert = res;
-  // status = napi_create_number(env, to_convert, &result);
-  // NAPI_CHECK_STATUS("napi_create_number");
+  
   return result;
 }
 
@@ -269,24 +338,6 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
 
 napi_value agent_send(napi_env env, napi_callback_info info) {
   printf("agent_send\n");
-  /// Sends message to connected agent.
-  ///
-  /// Note that this call works for both incoming and outgoing connections.
-  /// Note that messages encryption/decryption will be performed automatically.
-  ///
-  /// #Params
-  /// command_handle: command handle to map callback to caller context.
-  /// connection_handle: Connection handle returned by indy_agent_connect or indy_agent_listen calls.
-  /// message: Message to send.
-  /// cb: Callback that will be called after message sent or on error. Will be called exactly once.
-  ///
-  /// #Returns
-  /// err: Error code
-  /// cb:
-  /// - xcommand_handle: Command handle to map callback to caller context.
-  /// - err: Error code
-  ///
-  /// #Errors
 
   NAPI_EXPECTING_ARGS(4);
 
