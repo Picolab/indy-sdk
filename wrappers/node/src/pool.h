@@ -75,7 +75,34 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   /// Common*
   /// Ledger*
   printf("create_pool_ledger_config\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* config_name = 0;
+  char* config = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], config_name);
+  NAPI_STRING_TO_UTF8(argv[2], config);
+
+  napi_value result;
+  double res = indy_create_pool_ledger_config(
+    command_handle,
+    config_name,
+    config,
+    create_pool_ledger_config_on_pool_ledger_config_created
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+
+  return result;
 }
 
 napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
@@ -104,7 +131,34 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   /// Common*
   /// Ledger*
   printf("open_pool_ledger\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* config_name = 0;
+  char* config = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], config_name);
+  NAPI_STRING_TO_UTF8(argv[2], config);
+
+  napi_value result;
+  double res = indy_open_pool_ledger(
+    command_handle,
+    config_name,
+    config,
+    open_pool_ledger_on_pool_ledger_opened
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+
+  return result;
 }
 
 napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
@@ -120,7 +174,29 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
   /// Common*
   /// Ledger*
   printf("refresh_pool_ledger\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle, pool_handle;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
+
+  napi_value result;
+  
+  double res = indy_refresh_pool_ledger(
+    command_handle,
+    pool_handle,
+    refresh_pool_ledger_on_pool_ledger_refreshed
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+
+  return result;
 }
 
 napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
@@ -136,7 +212,28 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
   /// Common*
   /// Ledger*
   printf("close_pool_ledger\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle, pool_handle;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
+
+  napi_value result;
+  
+  double res = indy_close_pool_ledger(
+    command_handle,
+    pool_handle,
+    close_pool_ledger_on_pool_ledger_closed
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
@@ -152,5 +249,28 @@ napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
   /// Common*
   /// Ledger*
   printf("delete_pool_ledger_config\n");
-  return NULL;
+  
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* config_name = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], config_name);
+
+  napi_value result;
+
+  double res = indy_delete_pool_ledger_config(
+    command_handle,
+    config_name,
+    delete_pool_ledger_config_on_pool_ledger_config_deleted
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
