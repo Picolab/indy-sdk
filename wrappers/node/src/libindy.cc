@@ -1,12 +1,15 @@
 
 #include <napi.h>
-
 #include <indy_types.h>
 #include <indy_core.h>
 
 #include "napi_macros.h"
-
 #include "agent.h"
+#include "signus.h"
+#include "anoncreds.h"
+#include "ledger.h"
+#include "pool.h"
+#include "wallet.h"
 
 struct async_work_data {
   char* indy_function_name;
@@ -86,11 +89,6 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
   return NULL;
 }
 
-napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
-  printf("create_and_store_my_did\n");
-  return NULL;
-}
-
 napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   printf("create_pool_ledger_config\n");
   return NULL;
@@ -98,11 +96,6 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
 
 napi_value create_wallet(napi_env env, napi_callback_info info) {
   printf("create_wallet\n");
-  return NULL;
-}
-
-napi_value decrypt(napi_env env, napi_callback_info info) {
-  printf("decrypt\n");
   return NULL;
 }
 
@@ -116,31 +109,6 @@ napi_value delete_wallet(napi_env env, napi_callback_info info) {
   return NULL;
 }
 
-napi_value encrypt(napi_env env, napi_callback_info info) {
-  printf("encrypt\n");
-  return NULL;
-}
-
-napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info info) {
-  printf("issuer_create_and_store_claim_def\n");
-  return NULL;
-}
-
-napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info info) {
-  printf("issuer_create_and_store_revoc_reg\n");
-  return NULL;
-}
-
-napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
-  printf("issuer_create_claim\n");
-  return NULL;
-}
-
-napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
-  printf("issuer_revoke_claim\n");
-  return NULL;
-}
-
 napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   printf("open_pool_ledger\n");
   return NULL;
@@ -148,46 +116,6 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
 
 napi_value open_wallet(napi_env env, napi_callback_info info) {
   printf("open_wallet\n");
-  return NULL;
-}
-
-napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info info) {
-  printf("prover_create_and_store_claim_req\n");
-  return NULL;
-}
-
-napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
-  printf("prover_create_master_secret\n");
-  return NULL;
-}
-
-napi_value prover_create_proof(napi_env env, napi_callback_info info) {
-  printf("prover_create_proof\n");
-  return NULL;
-}
-
-napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
-  printf("prover_get_claim_offers\n");
-  return NULL;
-}
-
-napi_value prover_get_claims(napi_env env, napi_callback_info info) {
-  printf("prover_get_claims\n");
-  return NULL;
-}
-
-napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info) {
-  printf("prover_get_claims_for_proof_req\n");
-  return NULL;
-}
-
-napi_value prover_store_claim(napi_env env, napi_callback_info info) {
-  printf("prover_store_claim\n");
-  return NULL;
-}
-
-napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
-  printf("prover_store_claim_offer\n");
   return NULL;
 }
 
@@ -201,23 +129,8 @@ napi_value register_wallet_type(napi_env env, napi_callback_info info) {
   return NULL;
 }
 
-napi_value replace_keys(napi_env env, napi_callback_info info) {
-  printf("replace_keys\n");
-  return NULL;
-}
-
-napi_value sign(napi_env env, napi_callback_info info) {
-  printf("sign\n");
-  return NULL;
-}
-
 napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
   printf("sign_and_submit_request\n");
-  return NULL;
-}
-
-napi_value store_their_did(napi_env env, napi_callback_info info) {
-  printf("store_their_did\n");
   return NULL;
 }
 
@@ -225,17 +138,6 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
   printf("submit_request\n");
   return NULL;
 }
-
-napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
-  printf("verifier_verify_proof\n");
-  return NULL;
-}
-
-napi_value verify_signature(napi_env env, napi_callback_info info) {
-  printf("verify_signature\n");
-  return NULL;
-}
-
 
 void init(
   napi_env env,
