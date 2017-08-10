@@ -24,31 +24,6 @@ struct async_work_data {
 
 typedef struct async_work_data async_work_data;
 
-napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
-  printf("close_pool_ledger\n");
-  return NULL;
-}
-
-napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
-  printf("create_pool_ledger_config\n");
-  return NULL;
-}
-
-napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
-  printf("delete_pool_ledger_config\n");
-  return NULL;
-}
-
-napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
-  printf("open_pool_ledger\n");
-  return NULL;
-}
-
-napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
-  printf("refresh_pool_ledger\n");
-  return NULL;
-}
-
 void init(
   napi_env env,
   napi_value exports,
