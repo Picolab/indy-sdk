@@ -235,6 +235,19 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
 }
 
 napi_value delete_wallet(napi_env env, napi_callback_info info) {
+  /// Deletes created wallet.
+  ///
+  /// #Params
+  /// name: Name of the wallet to delete.
+  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
+  ///                    if NULL, then default credentials will be used.
+  ///
+  /// #Returns
+  /// Error code
+  ///
+  /// #Errors
+  /// Common*
+  /// Wallet*
   printf("delete_wallet\n");
   return NULL;
 }
