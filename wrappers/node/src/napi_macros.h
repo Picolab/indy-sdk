@@ -56,6 +56,17 @@
   }
 #endif
 
+#ifndef NAPI_ENSURE_BOOLEAN
+#define NAPI_ENSURE_BOOLEAN(value) \
+  status = napi_typeof(env, value, &type); \
+  NAPI_CHECK_STATUS("napi_typeof"); \
+  if (type != napi_boolean) { \
+    status = napi_throw_type_error(env, "Expected boolean"); \
+    NAPI_CHECK_STATUS("napi_throw_type_error"); \
+    return NULL; \
+  }
+#endif
+
 #ifndef NAPI_EXPECTING_ARGS
 #define NAPI_EXPECTING_ARGS(nargs) \
   napi_status status; \
@@ -78,6 +89,12 @@
   NAPI_CHECK_STATUS("napi_get_value_string_utf8"); \
   status = napi_get_value_string_utf8(env, string, utf8, string_length, &written); \
   NAPI_CHECK_STATUS("napi_get_value_string_utf8");
+#endif
+
+#ifndef NAPI_BOOLEAN_TO_BOOL
+#define NAPI_BOOLEAN_TO_BOOL(boolean, c_bool) \
+  status = napi_get_value_bool(env, boolean, &c_bool); \
+  NAPI_CHECK_STATUS("napi_get_value_bool");
 #endif
 
 #ifndef NAPI_DOUBLE_TO_NUMBER
