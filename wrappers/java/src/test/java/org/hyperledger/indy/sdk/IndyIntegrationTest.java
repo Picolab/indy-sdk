@@ -29,18 +29,14 @@ public class IndyIntegrationTest {
 
 	private static Boolean isWalletRegistered = false;
 
-	@BeforeClass
-	public static void registerWallet() throws IndyException, InterruptedException, ExecutionException {
+	@Before
+	public void setUp() throws IOException, InterruptedException, ExecutionException, IndyException {
+		InitHelper.init();
+		StorageUtils.cleanupStorage();
 		if (!isWalletRegistered){
 			Wallet.registerWalletType("inmem", WalletTypeInmem.getInstance()).get();
 		}
 		isWalletRegistered = true;
-	}
-
-	@Before
-	public void setUp() throws IOException {
-		InitHelper.init();
-		StorageUtils.cleanupStorage();
 	}
 
 	protected HashSet<Pool> openedPools = new HashSet<>();
@@ -49,8 +45,8 @@ public class IndyIntegrationTest {
 	public void tearDown() throws IOException {
 		openedPools.forEach(pool -> {
 			try {
-				pool.closePoolLedger();
-			} catch (IndyException ignore) {
+				pool.closePoolLedger().get();
+			} catch (IndyException | InterruptedException | ExecutionException ignore) {
 			}
 		});
 		openedPools.clear();
