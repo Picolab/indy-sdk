@@ -353,7 +353,7 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
 
   NAPI_ENSURE_NUMBER(argv[0]);
   NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[2]);
   NAPI_ENSURE_STRING(argv[3]);
   NAPI_ENSURE_STRING(argv[4]);
   NAPI_ENSURE_FUNCTION(argv[5]);
@@ -361,13 +361,13 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
   indy_handle_t command_handle;
   size_t string_length, written;
   char* submitter_did = 0;
-  indy_i32_t schema_seq_num;
+  char* schema_seq_num = 0;
   char* signature_type = 0;
   char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
-  NAPI_NUMBER_TO_INT32(argv[2], schema_seq_num);
+  NAPI_STRING_TO_UTF8(argv[2], schema_seq_num);
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], data);
 
@@ -392,7 +392,7 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
 
   NAPI_ENSURE_NUMBER(argv[0]);
   NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[2]);
   NAPI_ENSURE_STRING(argv[3]);
   NAPI_ENSURE_STRING(argv[4]);
   NAPI_ENSURE_FUNCTION(argv[5]);
@@ -400,13 +400,13 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
   indy_handle_t command_handle;
   size_t string_length, written;
   char* submitter_did = 0;
-  indy_i32_t schema_seq_num;
+  char* schema_seq_num = 0;
   char* signature_type = 0;
   char* origin = 0;
   
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
-  NAPI_NUMBER_TO_INT32(argv[2], schema_seq_num);
+  NAPI_STRING_TO_UTF8(argv[2], schema_seq_num);
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], origin);
 
@@ -432,19 +432,19 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
   NAPI_ENSURE_NUMBER(argv[0]);
   NAPI_ENSURE_STRING(argv[1]);
   NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_NUMBER(argv[3]);
+  NAPI_ENSURE_STRING(argv[3]);
   NAPI_ENSURE_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
   size_t string_length, written;
   char* submitter_did = 0;
   char* target_did = 0;
-  indy_i32_t data;
+  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], target_did);
-  NAPI_NUMBER_TO_INT32(argv[3], data);
+  NAPI_STRING_TO_UTF8(argv[3], data);
 
   napi_value result;
   double res = indy_build_node_request(
