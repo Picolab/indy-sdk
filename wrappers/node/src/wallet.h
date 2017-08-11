@@ -6,7 +6,7 @@
 
 #include "napi_macros.h"
 
-void register_wallet_type_on_created(
+indy_error_t register_wallet_type_on_created(
   const char* name,
   const char* config,
   const char* credentials
@@ -17,7 +17,7 @@ void register_wallet_type_on_created(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_opened(
+indy_error_t register_wallet_type_on_opened(
   const char* name,
   const char* config,
   const char* runtime_config,
@@ -33,7 +33,7 @@ void register_wallet_type_on_opened(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_set(
+indy_error_t register_wallet_type_on_set(
   indy_handle_t handle,
   const char* key,
   const char* value
@@ -44,29 +44,29 @@ void register_wallet_type_on_set(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_get(
+indy_error_t register_wallet_type_on_got(
   indy_handle_t handle,
   const char* key,
   const char* const *value_ptr
 ) {
-  printf("register_wallet_type_on_get\n");
+  printf("register_wallet_type_on_got\n");
   printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
 
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_got_not_expired(
+indy_error_t register_wallet_type_on_not_expired_got(
   indy_handle_t handle,
   const char* key,
   const char *const *value_ptr
 ) {
-  printf("register_wallet_type_on_got_not_expired\n");
+  printf("register_wallet_type_on_not_expired_got\n");
   printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
   
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_listed(
+indy_error_t register_wallet_type_on_listed(
   indy_handle_t handle,
   const char* key,
   const char *const *values_json_ptr
@@ -77,7 +77,7 @@ void register_wallet_type_on_listed(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_closed(
+indy_error_t register_wallet_type_on_closed(
   indy_handle_t handle
 ) {
   printf("register_wallet_type_on_closed\n");
@@ -86,7 +86,7 @@ void register_wallet_type_on_closed(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_deleted(
+indy_error_t register_wallet_type_on_deleted(
   const char* name,
   const char* config,
   const char* credentials
@@ -97,7 +97,7 @@ void register_wallet_type_on_deleted(
   // TODO napi_make_callback
 }
 
-void register_wallet_type_on_freed(
+indy_error_t register_wallet_type_on_freed(
   indy_handle_t handle,
   const char* str
 ) {
@@ -149,108 +149,178 @@ void delete_wallet_on_wallet_deleted(
 }
 
 napi_value register_wallet_type(napi_env env, napi_callback_info info) {
-  /// Registers custom wallet implementation.
-  ///
-  /// It allows library user to provide custom wallet implementation.
-  ///
-  /// #Params
-  /// command_handle: Command handle to map callback to caller context.
-  /// xtype: Wallet type name.
-  /// create: WalletType create operation handler
-  /// open: WalletType open operation handler
-  /// set: Wallet set operation handler
-  /// get: Wallet get operation handler
-  /// get_not_expired: Wallet get_not_expired operation handler
-  /// list: Wallet list operation handler
-  /// close: Wallet close operation handler
-  /// delete: WalletType delete operation handler
-  /// free: Handler that allows to de-allocate strings allocated in caller code
-  ///
-  /// #Returns
-  /// Error code
   printf("register_wallet_type\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(11);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_ENSURE_FUNCTION(argv[7]);
+  NAPI_ENSURE_FUNCTION(argv[8]);
+  NAPI_ENSURE_FUNCTION(argv[9]);
+  NAPI_ENSURE_FUNCTION(argv[10]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* wallet_type = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], wallet_type);
+
+  napi_value result;
+  double res = indy_register_wallet_type(
+    command_handle,
+    wallet_type,
+    register_wallet_type_on_created,
+    register_wallet_type_on_opened,
+    register_wallet_type_on_set,
+    register_wallet_type_on_got,
+    register_wallet_type_on_not_expired_got,
+    register_wallet_type_on_listed,
+    register_wallet_type_on_closed,
+    register_wallet_type_on_deleted,
+    register_wallet_type_on_freed
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value create_wallet(napi_env env, napi_callback_info info) {
-  /// Creates a new secure wallet with the given unique name.
-  ///
-  /// #Params
-  /// pool_name: Name of the pool that corresponds to this wallet.
-  /// name: Name of the wallet.
-  /// xtype(optional): Type of the wallet. Defaults to 'default'.
-  ///                  Custom types can be registered with indy_register_wallet_type call.
-  /// config(optional): Wallet configuration json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
   printf("create_wallet\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(7);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_STRING(argv[5]);
+  NAPI_ENSURE_FUNCTION(argv[6]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* pool_name = 0;
+  char* wallet_name = 0;
+  char* wallet_type = 0;
+  char* wallet_config_json = 0;
+  char* wallet_credentials_json = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], pool_name);
+  NAPI_STRING_TO_UTF8(argv[2], wallet_name);
+  NAPI_STRING_TO_UTF8(argv[3], wallet_type);
+  NAPI_STRING_TO_UTF8(argv[4], wallet_config_json);
+  NAPI_STRING_TO_UTF8(argv[5], wallet_credentials_json);
+
+  napi_value result;
+  double res = indy_create_wallet(
+    command_handle,
+    pool_name,
+    wallet_name,
+    wallet_type,
+    wallet_config_json,
+    wallet_credentials_json,
+    create_wallet_on_wallet_created
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value open_wallet(napi_env env, napi_callback_info info) {
-  /// Opens the wallet with specific name.
-  ///
-  /// Wallet with corresponded name must be previously created with indy_create_wallet method.
-  /// It is impossible to open wallet with the same name more than once.
-  ///
-  /// #Params
-  /// name: Name of the wallet.
-  /// runtime_config (optional): Runtime wallet configuration json. if NULL, then default runtime_config will be used. Example:
-  /// {
-  ///     "freshnessTime": string (optional), Amount of minutes to consider wallet value as fresh. Defaults to 24*60.
-  ///     ... List of additional supported keys are defined by wallet type.
-  /// }
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default credentials will be used.
-  ///
-  /// #Returns
-  /// Handle to opened wallet to use in methods that require wallet access.
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
   printf("open_wallet\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(5);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_FUNCTION(argv[4]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* name = 0;
+  char* runtime_config = 0;
+  char* credentials = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], name);
+  NAPI_STRING_TO_UTF8(argv[2], runtime_config);
+  NAPI_STRING_TO_UTF8(argv[3], credentials);
+
+  napi_value result;
+  double res = indy_open_wallet(
+    command_handle,
+    name,
+    runtime_config,
+    credentials,
+    open_wallet_on_wallet_opened
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value close_wallet(napi_env env, napi_callback_info info) {
-  /// Closes opened wallet and frees allocated resources.
-  ///
-  /// #Params
-  /// handle: wallet handle returned by indy_open_wallet.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
   printf("close_wallet\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(3);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_FUNCTION(argv[2]);
+
+  indy_handle_t command_handle, wallet_handle;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+
+  napi_value result;
+  double res = indy_close_wallet(
+    command_handle,
+    wallet_handle,
+    close_wallet_on_wallet_closed
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value delete_wallet(napi_env env, napi_callback_info info) {
-  /// Deletes created wallet.
-  ///
-  /// #Params
-  /// name: Name of the wallet to delete.
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default credentials will be used.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
   printf("delete_wallet\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* name = 0;
+  char* credentials = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], name);
+  NAPI_STRING_TO_UTF8(argv[2], credentials);
+
+  napi_value result;
+  double res = indy_delete_wallet(
+    command_handle,
+    name,
+    credentials,
+    delete_wallet_on_wallet_deleted
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
