@@ -15,6 +15,7 @@ indy_error_t register_wallet_type_on_created(
   printf("name %s, config %s, credentials %s\n", name, config, credentials);
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_opened(
@@ -31,6 +32,7 @@ indy_error_t register_wallet_type_on_opened(
   );
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_set(
@@ -42,6 +44,7 @@ indy_error_t register_wallet_type_on_set(
   printf("handle %d, key %s, value %s\n", handle, key, value);
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_got(
@@ -53,6 +56,7 @@ indy_error_t register_wallet_type_on_got(
   printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_not_expired_got(
@@ -64,6 +68,7 @@ indy_error_t register_wallet_type_on_not_expired_got(
   printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
   
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_listed(
@@ -75,6 +80,7 @@ indy_error_t register_wallet_type_on_listed(
   printf("handle %d, key %s, values json %s\n", handle, key, *(values_json_ptr));
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_closed(
@@ -84,6 +90,7 @@ indy_error_t register_wallet_type_on_closed(
   printf("handle %d\n", handle);
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_deleted(
@@ -95,6 +102,7 @@ indy_error_t register_wallet_type_on_deleted(
   printf("name %s, config %s, credentials %s\n", name, config, credentials);
 
   // TODO napi_make_callback
+  return Success;
 }
 
 indy_error_t register_wallet_type_on_freed(
@@ -105,6 +113,7 @@ indy_error_t register_wallet_type_on_freed(
   printf("handle %d, str %s\n", handle, str);
 
   // TODO napi_make_callback
+  return Success;
 }
 
 void create_wallet_on_wallet_created(
