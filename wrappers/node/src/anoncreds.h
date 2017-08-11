@@ -12,7 +12,7 @@ void verifier_verify_proof_on_proof_verified(
   indy_bool_t verified
 ) {
   printf("verifier_verify_proof_on_proof_verified\n");
-  printf("command handle %d, error %d, verified %d\n");
+  printf("command handle %d, error %d, verified %d\n", command_handle, error, verified);
 
   // TODO napi_make_callback
 }
@@ -169,7 +169,7 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], proof_request_json);
   NAPI_STRING_TO_UTF8(argv[2], proof_json);
   NAPI_STRING_TO_UTF8(argv[3], schemas_json);
-  NAPI_STRING_TO_UTF8(argv[4], claim_defs_json);
+  NAPI_STRING_TO_UTF8(argv[4], claim_defs_jsons);
   NAPI_STRING_TO_UTF8(argv[5], revoc_regs_json);
 
   napi_value result;
@@ -524,7 +524,7 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
     wallet_handle,
     claim_req_json,
     claim_json,
-    revoc_reg_seq_num,
+    revoc_req_seq_num,
     user_revoc_index,
     issuer_create_claim_on_claim_created
   );
