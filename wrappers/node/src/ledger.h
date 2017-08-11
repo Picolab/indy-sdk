@@ -348,62 +348,144 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
   /// #Errors
   /// Common*
   printf("build_claim_def_txn\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(6);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_FUNCTION(argv[5]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* submitter_did = 0;
+  indy_i32_t schema_seq_num;
+  char* signature_type = 0;
+  char* data = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], submitter_did);
+  NAPI_NUMBER_TO_INT32(argv[2], schema_seq_num);
+  NAPI_STRING_TO_UTF8(argv[3], signature_type);
+  NAPI_STRING_TO_UTF8(argv[4], data);
+
+  napi_value result;
+  double res = indy_build_claim_def_txn(
+    command_handle,
+    submitter_did,
+    schema_seq_num,
+    signature_type,
+    data,
+    build_claim_def_txn_on_claim_def_txn_built
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
-  /// Builds a GET_CLAIM_DEF request.
-  ///
-  /// #Params
-  /// command_handle: command handle to map callback to caller context.
-  /// submitter_did: Id of Identity stored in secured Wallet.
-  /// xref: Seq. number of schema
-  /// signature_type: signature type (only CL supported now)
-  /// origin: issuer did
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// Request result as json.
-  ///
-  /// #Errors
-  /// Common*
   printf("build_get_claim_def_txn\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(6);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_FUNCTION(argv[5]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* submitter_did = 0;
+  indy_i32_t schema_seq_num;
+  char* signature_type = 0;
+  char* origin = 0;
+  
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], submitter_did);
+  NAPI_NUMBER_TO_INT32(argv[2], schema_seq_num);
+  NAPI_STRING_TO_UTF8(argv[3], signature_type);
+  NAPI_STRING_TO_UTF8(argv[4], origin);
+
+  napi_value result;
+  double res = indy_build_get_claim_def_txn(
+    command_handle,
+    submitter_did,
+    schema_seq_num,
+    signature_type,
+    origin,
+    build_get_claim_def_txn_on_get_claim_def_txn_built
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value build_node_request(napi_env env, napi_callback_info info) {
-  /// Builds a NODE request.
-  ///
-  /// #Params
-  /// command_handle: command handle to map callback to caller context.
-  /// submitter_did: Id of Identity stored in secured Wallet.
-  /// target_did: Id of Identity stored in secured Wallet.
-  /// data: id of a target NYM record
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// Request result as json.
-  ///
-  /// #Errors
-  /// Common*
   printf("build_node_request\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(5);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_NUMBER(argv[3]);
+  NAPI_ENSURE_FUNCTION(argv[4]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* submitter_did = 0;
+  char* target_did = 0;
+  indy_i32_t data;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], submitter_did);
+  NAPI_STRING_TO_UTF8(argv[2], target_did);
+  NAPI_NUMBER_TO_INT32(argv[3], data);
+
+  napi_value result;
+  double res = indy_build_node_request(
+    command_handle,
+    submitter_did,
+    target_did,
+    data,
+    build_node_request_on_node_request_built
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
-  /// Builds a GET_TXN request.
-  ///
-  /// #Params
-  /// command_handle: command handle to map callback to caller context.
-  /// submitter_did: Id of Identity stored in secured Wallet.
-  /// data: seq_no of transaction in ledger
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// Request result as json.
-  ///
-  /// #Errors
-  /// Common*
   printf("build_get_txn_request\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_STRING(argv[1]);
+  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle;
+  size_t string_length, written;
+  char* submitter_did = 0;
+  indy_i32_t data;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_STRING_TO_UTF8(argv[1], submitter_did);
+  NAPI_NUMBER_TO_INT32(argv[2], data);
+
+  napi_value result;
+  double res = indy_build_get_txn_request(
+    command_handle,
+    submitter_did,
+    data,
+    build_get_txn_request_on_get_txn_request_built
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
