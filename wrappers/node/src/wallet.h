@@ -25,7 +25,10 @@ void register_wallet_type_on_opened(
   indy_handle_t* handle
 ) {
   printf("register_wallet_type_on_opened\n");
-  printf("name %s, config %s, runtime config %s, credentials %s, handle %d\n", name, config, runtime_config, credetials, handle);
+  printf(
+    "name %s, config %s, runtime config %s, credentials %s, handle %d\n",
+    name, config, runtime_config, credentials, *(handle)
+  );
 
   // TODO napi_make_callback
 }
@@ -47,7 +50,7 @@ void register_wallet_type_on_get(
   const char* const *value_ptr
 ) {
   printf("register_wallet_type_on_get\n");
-  printf("handle %d, key %s, value %s\n", handle, key, **value_ptr);
+  printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
 
   // TODO napi_make_callback
 }
@@ -58,7 +61,7 @@ void register_wallet_type_on_got_not_expired(
   const char *const *value_ptr
 ) {
   printf("register_wallet_type_on_got_not_expired\n");
-  printf("handle %d, key %s, value %s\n", handle, key, **value_ptr);
+  printf("handle %d, key %s, value %s\n", handle, key, *(value_ptr));
   
   // TODO napi_make_callback
 }
@@ -69,7 +72,7 @@ void register_wallet_type_on_listed(
   const char *const *values_json_ptr
 ) {
   printf("register_wallet_type_on_listed\n");
-  printf("handle %d, key %s, values json %s\n", handle, key, **values_json_ptr);
+  printf("handle %d, key %s, values json %s\n", handle, key, *(values_json_ptr));
 
   // TODO napi_make_callback
 }
@@ -130,7 +133,7 @@ void close_wallet_on_wallet_closed(
   indy_error_t error
 ) {
   printf("close_wallet_on_wallet_closed\n");
-  printf("command handle %d, error %d\n");
+  printf("command handle %d, error %d\n", command_handle, error);
 
   // TODO napi_make_callback
 }
