@@ -2,6 +2,7 @@
 #ifndef NAPI_CHECK_STATUS_VOID
 #define NAPI_CHECK_STATUS_VOID(method) \
   if (status != napi_ok) { \
+    printf("file %s, line %d\n", __FILE__, __LINE__); \
     napi_throw_error(env, method); \
     return; \
   }
@@ -10,6 +11,7 @@
 #ifndef NAPI_CHECK_STATUS
 #define NAPI_CHECK_STATUS(method) \
   if (status != napi_ok) { \
+    printf("file %s, line %d\n", __FILE__, __LINE__); \
     napi_throw_error(env, method); \
     return NULL; \
   }
