@@ -87,189 +87,249 @@ void create_and_store_my_did_on_my_did_created_and_stored(
 }
 
 napi_value decrypt(napi_env env, napi_callback_info info) {
-  /// Decrypts a message encrypted by a public key associated with my DID.
-  /// The DID with a secret key must be already created and
-  /// stored in a secured wallet (see wallet_create_and_store_my_identity)
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// my_did: DID
-  /// did: DID that signed the message
-  /// encrypted_msg: encrypted message
-  /// nonce: nonce that encrypted message
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// decrypted message
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Crypto*
   printf("decrypt\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(7);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_STRING(argv[5]);
+  NAPI_ENSURE_FUNCTION(argv[6]);
+
+  indy_handle_t command_handle, wallet_handle;
+  size_t string_length, written;
+  char* my_did = 0;
+  char* did = 0;
+  char* encrypted_msg = 0;
+  char* nonce = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_STRING_TO_UTF8(argv[2], my_did);
+  NAPI_STRING_TO_UTF8(argv[3], did);
+  NAPI_STRING_TO_UTF8(argv[4], encrypted_msg);
+  NAPI_STRING_TO_UTF8(argv[5], nonce);
+
+  napi_value result;
+  double res = indy_decrypt(
+    command_handle,
+    wallet_handle,
+    my_did,
+    did,
+    encrypted_msg,
+    nonce,
+    decrypt_on_decrypted
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value encrypt(napi_env env, napi_callback_info info) {
-  /// Encrypts a message by a public key associated with a DID.
-  /// If a secure wallet doesn't contain a public key associated with the given DID,
-  /// then the public key is read from the Ledger.
-  /// Otherwise either an existing public key from wallet is used (see wallet_store_their_identity),
-  /// or it checks the Ledger (according to freshness settings set during initialization)
-  /// whether public key is still the same and updates public key for the DID if needed.
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// my_did: encrypting DID
-  /// did: encrypting DID
-  /// msg: a message to be signed
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// an encrypted message and nonce
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Ledger*
-  /// Crypto*
   printf("encrypt\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(7);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_STRING(argv[5]);
+  NAPI_ENSURE_FUNCTION(argv[6]);
+
+  indy_handle_t command_handle, wallet_handle, pool_handle;
+  size_t string_length, written;
+  char* my_did = 0;
+  char* did = 0;
+  char* msg = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_NUMBER_TO_INT32(argv[2], pool_handle);
+  NAPI_STRING_TO_UTF8(argv[3], my_did);
+  NAPI_STRING_TO_UTF8(argv[4], did);
+  NAPI_STRING_TO_UTF8(argv[5], msg);
+
+  napi_value result;
+  double res = indy_encrypt(
+    command_handle,
+    wallet_handle,
+    pool_handle,
+    my_did,
+    did,
+    msg,
+    encrypt_on_encrypted
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value verify_signature(napi_env env, napi_callback_info info) {
-  /// Verify a signature created by a key associated with a DID.
-  /// If a secure wallet doesn't contain a verkey associated with the given DID,
-  /// then verkey is read from the Ledger.
-  /// Otherwise either an existing verkey from wallet is used (see wallet_store_their_identity),
-  /// or it checks the Ledger (according to freshness settings set during initialization)
-  /// whether verkey is still the same and updates verkey for the DID if needed.
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// pool_handle: pool handle.
-  /// did: DID that signed the message
-  /// signature: a signature to be verified
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// valid: true - if signature is valid, false - otherwise
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Ledger*
-  /// Crypto*
   printf("verify_signature\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(6);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_NUMBER(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_STRING(argv[4]);
+  NAPI_ENSURE_FUNCTION(argv[5]);
+
+  indy_handle_t command_handle, wallet_handle, pool_handle;
+  size_t string_length, written;
+  char* did = 0;
+  char* signature = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_NUMBER_TO_INT32(argv[2], pool_handle);
+  NAPI_STRING_TO_UTF8(argv[3], did);
+  NAPI_STRING_TO_UTF8(argv[4], signature);
+
+  napi_value result;
+  double res = indy_verify_signature(
+    command_handle,
+    wallet_handle,
+    pool_handle,
+    did,
+    signature,
+    verify_signature_on_verified
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value sign(napi_env env, napi_callback_info info) {
-  /// Signs a message by a signing key associated with my DID. The DID with a signing key
-  /// must be already created and stored in a secured wallet (see create_and_store_my_identity)
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// did: signing DID
-  /// msg: a message to be signed
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// a signature string
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Crypto*
   printf("sign\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(5);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_FUNCTION(argv[4]);
+
+  indy_handle_t command_handle, wallet_handle;
+  size_t string_length, written;
+  char* did = 0;
+  char* msg = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_STRING_TO_UTF8(argv[2], did);
+  NAPI_STRING_TO_UTF8(argv[3], msg);
+
+  napi_value result;
+  double res = indy_sign(
+    command_handle,
+    wallet_handle,
+    did,
+    msg,
+    sign_on_signed
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value store_their_did(napi_env env, napi_callback_info info) {
-  /// Saves their DID for a pairwise connection in a secured Wallet,
-  /// so that it can be used to verify transaction.
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// identity_json: Identity information as json. Example:
-  ///     {
-  ///        "did": string, (required)
-  ///        "verkey": string (optional, if only pk is provided),
-  ///        "pk": string (optional, if only verification key is provided),
-  ///        "crypto_type": string, (optional; if not set then ed25519 curve is used;
-  ///               currently only 'ed25519' value is supported for this field)
-  ///     }
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// None
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Crypto*
   printf("store_their_did\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle, wallet_handle;
+  size_t string_length, written;
+  char* identity_json = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_STRING_TO_UTF8(argv[2], identity_json);
+
+  napi_value result;
+  double res = indy_store_their_did(
+    command_handle,
+    wallet_handle,
+    identity_json,
+    store_their_did_on_their_did_stored
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value replace_keys(napi_env env, napi_callback_info info) {
-  /// Generated new keys (signing and encryption keys) for an existing
-  /// DID (owned by the caller of the library).
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// identity_json: Identity information as json. Example:
-  /// {
-  ///     "seed": string, (optional; if not provide then a random one will be created)
-  ///     "crypto_type": string, (optional; if not set then ed25519 curve is used;
-  ///               currently only 'ed25519' value is supported for this field)
-  /// }
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// verkey (for verification of signature) and public_key (for decryption)
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Crypto*
   printf("replace_keys\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(5);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_STRING(argv[3]);
+  NAPI_ENSURE_FUNCTION(argv[4]);
+
+  indy_handle_t command_handle, wallet_handle;
+  size_t string_length, written;
+  char* did = 0;
+  char* identity_json = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_STRING_TO_UTF8(argv[2], did);
+  NAPI_STRING_TO_UTF8(argv[3], identity_json);
+
+  napi_value result;
+  double res = indy_replace_keys(
+    command_handle,
+    wallet_handle,
+    did,
+    identity_json,
+    replace_keys_on_keys_replaced
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
 
 napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
-  /// Creates keys (signing and encryption keys) for a new
-  /// DID (owned by the caller of the library).
-  /// Identity's DID must be either explicitly provided, or taken as the first 16 bit of verkey.
-  /// Saves the Identity DID with keys in a secured Wallet, so that it can be used to sign
-  /// and encrypt transactions.
-  ///
-  /// #Params
-  /// wallet_handle: wallet handler (created by open_wallet).
-  /// command_handle: command handle to map callback to user context.
-  /// did_json: Identity information as json. Example:
-  /// {
-  ///     "did": string, (optional; if not provided then the first 16 bit of the verkey will be used
-  ///             as a new DID; if provided, then keys will be replaced - key rotation use case)
-  ///     "seed": string, (optional; if not provide then a random one will be created)
-  ///     "crypto_type": string, (optional; if not set then ed25519 curve is used;
-  ///               currently only 'ed25519' value is supported for this field)
-  /// }
-  /// cb: Callback that takes command result as parameter.
-  ///
-  /// #Returns
-  /// DID, verkey (for verification of signature) and public_key (for decryption)
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  /// Crypto*
   printf("create_and_store_my_did\n");
-  return NULL;
+
+  NAPI_EXPECTING_ARGS(4);
+
+  NAPI_ENSURE_NUMBER(argv[0]);
+  NAPI_ENSURE_NUMBER(argv[1]);
+  NAPI_ENSURE_STRING(argv[2]);
+  NAPI_ENSURE_FUNCTION(argv[3]);
+
+  indy_handle_t command_handle, wallet_handle;
+  size_t string_length, written;
+  char* did_json = 0;
+
+  NAPI_NUMBER_TO_INT32(argv[0], command_handle);
+  NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
+  NAPI_STRING_TO_UTF8(argv[2], did_json);
+
+  napi_value result;
+  double res = indy_create_and_store_my_did(
+    command_handle,
+    wallet_handle,
+    did_json,
+    create_and_store_my_did_on_my_did_created_and_stored
+  );
+
+  NAPI_DOUBLE_TO_NUMBER(res, result);
+  return result;
 }
