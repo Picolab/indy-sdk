@@ -10,12 +10,12 @@
   },
   "devDependencies": {
     "blocked": "^1.2.1",
+    "mocha": "^3.5.0",
     "node-gyp": "^3.6.2"
   },
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "node --napi-modules test",
-    "start": "node --napi-modules index.js",
+    "test": "mocha --napi-modules test",
     "libindy-symbols": "nm include/libindy.a | grep ' T _indy_' | awk '{print $3}'"
   },
   "engines": {
