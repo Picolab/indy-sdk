@@ -1,11 +1,4 @@
 
-#include <napi.h>
-
-#include <indy_types.h>
-#include <indy_core.h>
-
-#include "napi_macros.h"
-
 void verifier_verify_proof_on_proof_verified(
   indy_handle_t command_handle,
   indy_error_t error,
@@ -149,21 +142,15 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* proof_request_json = 0;
-  char* proof_json = 0;
-  char* schemas_json = 0;
-  char* claim_defs_jsons = 0;
-  char* revoc_regs_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], proof_request_json);
@@ -192,24 +179,17 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(9);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_STRING(argv[6]);
-  NAPI_ENSURE_STRING(argv[7]);
-  NAPI_ENSURE_FUNCTION(argv[8]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_STRING(argv[6]);
+  NAPI_REQUIRED_STRING(argv[7]);
+  NAPI_REQUIRED_FUNCTION(argv[8]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* proof_req_json = 0;
-  char* requested_claims_json = 0;
-  char* schemas_json = 0;
-  char* master_secret_name = 0;
-  char* claim_defs_json = 0;
-  char* revoc_regs_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -242,14 +222,12 @@ napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* proof_request_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -272,14 +250,12 @@ napi_value prover_get_claims(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* filter_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -302,14 +278,12 @@ napi_value prover_store_claim(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* claims_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -333,20 +307,15 @@ napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info in
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* prover_did = 0;
-  char* claim_offer_json = 0;
-  char* claim_def_json = 0;
-  char* master_secret_name = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -375,14 +344,12 @@ napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* master_secret_name = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -405,14 +372,12 @@ napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_OPTIONAL_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* filter_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -436,14 +401,12 @@ napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* claim_offer_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -466,11 +429,11 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_NUMBER(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle, wallet_handle;
   indy_i32_t revoc_reg_seq_num, user_revoc_index;
@@ -498,17 +461,15 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_NUMBER(argv[4]);
-  NAPI_ENSURE_NUMBER(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_OPTIONAL_NUMBER(argv[4]);
+  NAPI_OPTIONAL_NUMBER(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* claim_req_json = 0;
-  char* claim_json = 0;
   indy_i32_t revoc_req_seq_num, user_revoc_index;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
@@ -538,16 +499,14 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_NUMBER(argv[3]);
-  NAPI_ENSURE_NUMBER(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* issuer_did = 0;
   indy_i32_t schema_seq_num, max_claim_num;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
@@ -576,19 +535,15 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_BOOLEAN(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_OPTIONAL_STRING(argv[4]);
+  NAPI_REQUIRED_BOOLEAN(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* issuer_did = 0;
-  char* schema_json = 0;
-  char* signature_type = 0;
   bool create_non_revoc;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
