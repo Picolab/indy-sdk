@@ -16,6 +16,8 @@
   "scripts": {
     "install": "node-gyp rebuild",
     "test": "mocha --napi-modules test",
+    "macos-errno": "less /usr/include/sys/errno.h",
+    "libhash": "cd src/hash; make test && make && make clean",
     "libindy-symbols": "nm include/libindy.a | grep ' T _indy_' | awk '{print $3}'"
   },
   "engines": {
