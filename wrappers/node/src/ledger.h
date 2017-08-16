@@ -1,11 +1,4 @@
 
-#include <napi.h>
-
-#include <indy_types.h>
-#include <indy_core.h>
-
-#include "napi_macros.h"
-
 void sign_and_submit_request_on_request_signed_and_submitted(
   indy_handle_t command_handle,
   indy_error_t error,
@@ -154,17 +147,14 @@ napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, pool_handle, wallet_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* request_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
@@ -191,14 +181,12 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, pool_handle;
-  size_t string_length, written;
-  char* request_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
@@ -221,15 +209,12 @@ napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -252,21 +237,15 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
-  char* verkey = 0;
-  char* alias = 0;
-  char* role = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -295,21 +274,15 @@ napi_value build_attrib_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
-  char* hash = 0;
-  char* raw = 0;
-  char* encrypted = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -338,17 +311,13 @@ napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
-  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -373,15 +342,12 @@ napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -404,15 +370,12 @@ napi_value build_schema_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -435,17 +398,13 @@ napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* dest = 0;
-  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -470,19 +429,14 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* schema_seq_num = 0;
-  char* signature_type = 0;
-  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -509,19 +463,14 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* schema_seq_num = 0;
-  char* signature_type = 0;
-  char* origin = 0;
   
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -548,17 +497,13 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
-  char* target_did = 0;
-  char* data = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
@@ -583,14 +528,12 @@ napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* submitter_did = 0;
   indy_i32_t data;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
