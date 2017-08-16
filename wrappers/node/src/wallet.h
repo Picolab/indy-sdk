@@ -1,11 +1,4 @@
 
-#include <napi.h>
-
-#include <indy_types.h>
-#include <indy_core.h>
-
-#include "napi_macros.h"
-
 indy_error_t register_wallet_type_on_created(
   const char* name,
   const char* config,
@@ -162,21 +155,19 @@ napi_value register_wallet_type(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(11);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_FUNCTION(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
-  NAPI_ENSURE_FUNCTION(argv[7]);
-  NAPI_ENSURE_FUNCTION(argv[8]);
-  NAPI_ENSURE_FUNCTION(argv[9]);
-  NAPI_ENSURE_FUNCTION(argv[10]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_FUNCTION(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
+  NAPI_REQUIRED_FUNCTION(argv[7]);
+  NAPI_REQUIRED_FUNCTION(argv[8]);
+  NAPI_REQUIRED_FUNCTION(argv[9]);
+  NAPI_REQUIRED_FUNCTION(argv[10]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* wallet_type = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], wallet_type);
@@ -205,21 +196,15 @@ napi_value create_wallet(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_OPTIONAL_STRING(argv[3]);
+  NAPI_OPTIONAL_STRING(argv[4]);
+  NAPI_OPTIONAL_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* pool_name = 0;
-  char* wallet_name = 0;
-  char* wallet_type = 0;
-  char* wallet_config_json = 0;
-  char* wallet_credentials_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], pool_name);
@@ -248,17 +233,13 @@ napi_value open_wallet(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_OPTIONAL_STRING(argv[2]);
+  NAPI_OPTIONAL_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* name = 0;
-  char* runtime_config = 0;
-  char* credentials = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], name);
@@ -283,9 +264,9 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(3);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_FUNCTION(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_FUNCTION(argv[2]);
 
   indy_handle_t command_handle, wallet_handle;
 
@@ -308,15 +289,12 @@ napi_value delete_wallet(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_OPTIONAL_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* name = 0;
-  char* credentials = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], name);
