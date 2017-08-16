@@ -16,27 +16,140 @@ var block_timer = blocked(function(ms) {
   }
 }, {threshold: 60})
 
+var foo = 0
+var bar = setInterval(function() {
+  console.log('---------------------------------- JS TIMER', foo++)
+}, 5)
+
 describe('libindy', function() {
+
+  this.timeout(60 * 1000)
 
   after(function() {
     clearInterval(block_timer)
+    clearInterval(foo)
   })
 
-  describe('bindings', function() {
-    var funcs = Object.keys(indy)
-    funcs.splice(funcs.indexOf('errors'), 1)
+  // describe('bindings', function() {
+  //   var funcs = Object.keys(indy)
+  //   funcs.splice(funcs.indexOf('errors'), 1)
 
-    funcs.forEach(function(func) {
-      describe(func, function() {
-        it('should throw if given no arguments', function(done) {
-          try {
-            indy[func]()
-          } catch (e) {
-            return done()
-          }
-          return done(new Error(`${func_name} did not throw`))
-        })
-      })
+  //   funcs.forEach(function(func) {
+  //     describe(func, function() {
+  //       it('should throw if given no arguments', function(done) {
+  //         try {
+  //           indy[func]()
+  //         } catch (e) {
+  //           return done()
+  //         }
+  //         return done(new Error(`${func_name} did not throw`))
+  //       })
+  //     })
+  //   })
+  // })
+
+  // it('create wallet', function(done) {
+  //   var res = indy.create_wallet('default', 'default', null, null, null, function(err) {
+  //     console.log('create_wallet callback', err)
+  //   })
+  //   console.log('error?', res, errors[res])
+  // })
+
+  // it('open wallet', function(done) {
+  //   var res = indy.open_wallet('foo', 'foo', 'foo', function(err, handle) {
+  //     console.log('open_wallet callback', err, handle)
+  //   })
+  //   console.log('error?', res, errors[res])
+  // })
+
+  // it('create pool ledger config', function(done) {
+  //   indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //     console.log('create_pool_ledger_config callback', errors[err])
+  //     done()
+  //   })
+  //   // var calls = 3
+  //   // var res = 0
+  //   // indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //   //   console.log('create_pool_ledger_config callback', errors[err])
+  //   //   res += 1
+  //   //   console.log('====================== calling from', res)
+  //   //   if (res == calls) return done()
+  //   // })
+  //   // indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //   //   console.log('create_pool_ledger_config callback', errors[err])
+  //   //   res += 1
+  //   //   console.log('====================== calling from', res)
+  //   //   if (res == calls) return done()
+  //   // })
+  //   // indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //   //   console.log('create_pool_ledger_config callback', errors[err])
+  //   //   res += 1
+  //   //   console.log('====================== calling from', res)
+  //   //   if (res == calls) return done()
+  //   // })
+  // })
+
+  it('open pool ledger', function(done) {
+    var res = indy.open_pool_ledger('foo', null, function(err, res) {
+      console.log('open_pool_ledger callback', errors[err], res)
+      done()
     })
+    if (res != 0) {
+      console.log(errors[res])
+      return done(new Error('should not be called'))
+    }
   })
+
+  // it('n pool ledger calls', function(done) {
+  //   var calls = 8, responses = 0
+  //   var res1 = indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res2 = indy.open_pool_ledger('foo', 'foo', function(err, res) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res3 = indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res4 = indy.open_pool_ledger('foo', 'foo', function(err, res) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res5 = indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res6 = indy.open_pool_ledger('foo', 'foo', function(err, res) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res7 = indy.create_pool_ledger_config('foo', 'foo', function(err) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+  //   var res8 = indy.open_pool_ledger('foo', 'foo', function(err, res) {
+  //     responses += 1
+  //     console.log('responses', responses)
+  //     if (responses === calls) return done()
+  //   })
+    
+  //   console.log('res1', res1, errors[res1])
+  //   console.log('res2', res2, errors[res2])
+  //   console.log('res3', res3, errors[res3])
+  //   console.log('res4', res4, errors[res4])
+  //   console.log('res5', res5, errors[res5])
+  //   console.log('res6', res6, errors[res6])
+  //   console.log('res7', res7, errors[res7])
+  //   console.log('res8', res8, errors[res8])
+  // })
 })
