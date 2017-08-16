@@ -2,8 +2,28 @@
 
 var indy = require('bindings')('indy')
 
+// we don't need this...
 delete indy.path
 
+// command handle to map to caller context
+var max = Math.pow(2, 31) - 1
+var min = Math.pow(-2, 31)
+var handle = min - 1
+Object.keys(indy).forEach(function(key) {
+  var func = indy[key]
+  indy[key] = function() {
+    if (handle == max) {
+      console.log('WARNING handle rollover')
+      handle = min
+    } else {
+      handle += 1
+    }
+    console.log('HANDLE', handle)
+    return func.call(indy, handle, ...arguments)
+  }
+})
+
+// merge the error codes and export
 module.exports = Object.assign(indy, {
   errors: {
     0: 'Success',
