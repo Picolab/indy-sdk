@@ -1,11 +1,4 @@
 
-#include <napi.h>
-
-#include <indy_types.h>
-#include <indy_core.h>
-
-#include "napi_macros.h"
-
 void decrypt_on_decrypted(
   indy_handle_t command_handle,
   indy_error_t error,
@@ -91,20 +84,15 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* my_did = 0;
-  char* did = 0;
-  char* encrypted_msg = 0;
-  char* nonce = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -133,19 +121,15 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_STRING(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_STRING(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, wallet_handle, pool_handle;
-  size_t string_length, written;
-  char* my_did = 0;
-  char* did = 0;
-  char* msg = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -174,17 +158,14 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, wallet_handle, pool_handle;
-  size_t string_length, written;
-  char* did = 0;
-  char* signature = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -211,16 +192,13 @@ napi_value sign(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* did = 0;
-  char* msg = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -245,14 +223,12 @@ napi_value store_their_did(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* identity_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -275,16 +251,13 @@ napi_value replace_keys(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* did = 0;
-  char* identity_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
@@ -309,14 +282,12 @@ napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, wallet_handle;
-  size_t string_length, written;
-  char* did_json = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
