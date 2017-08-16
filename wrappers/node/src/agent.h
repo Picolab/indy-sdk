@@ -1,11 +1,4 @@
 
-#include <napi.h>
-
-#include <indy_types.h>
-#include <indy_core.h>
-
-#include "napi_macros.h"
-
 void agent_connect_on_connect(
   indy_handle_t command_handle,
   indy_error_t error,
@@ -140,24 +133,20 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(6);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_NUMBER(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, listener_handle, pool_handle, wallet_handle;
-  size_t string_length, written;
-  char* did = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], listener_handle);
   NAPI_NUMBER_TO_INT32(argv[2], pool_handle);
   NAPI_NUMBER_TO_INT32(argv[3], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[4], did);
-
-  // TODO store ref to user callback(s) and heap allocate a data context
 
   double res = indy_agent_add_identity(
     command_handle,
@@ -179,9 +168,9 @@ napi_value agent_close_connection(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(3);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_FUNCTION(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_FUNCTION(argv[2]);
 
   indy_handle_t command_handle, connection_handle;
 
@@ -205,9 +194,9 @@ napi_value agent_close_listener(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(3);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_FUNCTION(argv[2]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_FUNCTION(argv[2]);
 
   indy_handle_t command_handle, listener_handle;
 
@@ -231,26 +220,21 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
   
   NAPI_EXPECTING_ARGS(7);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_STRING(argv[4]);
-  NAPI_ENSURE_FUNCTION(argv[5]);
-  NAPI_ENSURE_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_STRING(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
+  NAPI_REQUIRED_FUNCTION(argv[6]);
 
   indy_handle_t command_handle, pool_handle, wallet_handle;
-  size_t string_length, written;
-  char* sender_did = 0;
-  char* receiver_did = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
   NAPI_NUMBER_TO_INT32(argv[2], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[3], sender_did);
   NAPI_STRING_TO_UTF8(argv[4], receiver_did);
-
-  // TODO store ref to user callback(s) and heap allocate a data context
 
   double res = indy_agent_connect(
     command_handle,
@@ -273,20 +257,16 @@ napi_value agent_listen(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_STRING(argv[1]);
-  NAPI_ENSURE_FUNCTION(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_STRING(argv[1]);
+  NAPI_REQUIRED_FUNCTION(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle;
-  size_t string_length, written;
-  char* endpoint = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], endpoint);
-
-  // TODO store ref to user callback(s) and heap allocate a data context
 
   double res = indy_agent_listen(
     command_handle,
@@ -307,15 +287,13 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(5);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_NUMBER(argv[2]);
-  NAPI_ENSURE_STRING(argv[3]);
-  NAPI_ENSURE_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[3]);
+  NAPI_REQUIRED_FUNCTION(argv[4]);
 
   indy_handle_t command_handle, listener_handle, wallet_handle;
-  size_t string_length, written;
-  char* did = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], listener_handle);
@@ -341,14 +319,12 @@ napi_value agent_send(napi_env env, napi_callback_info info) {
 
   NAPI_EXPECTING_ARGS(4);
 
-  NAPI_ENSURE_NUMBER(argv[0]);
-  NAPI_ENSURE_NUMBER(argv[1]);
-  NAPI_ENSURE_STRING(argv[2]);
-  NAPI_ENSURE_FUNCTION(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[0]);
+  NAPI_REQUIRED_NUMBER(argv[1]);
+  NAPI_REQUIRED_STRING(argv[2]);
+  NAPI_REQUIRED_FUNCTION(argv[3]);
 
   indy_handle_t command_handle, connection_handle;
-  size_t string_length, written;
-  char* message = 0;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
