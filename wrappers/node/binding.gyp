@@ -2,7 +2,9 @@
   "targets": [
     {
       "target_name": "libindy",
-      "sources": ["src/libindy.cc"],
+      "sources": [
+        "src/libindy.cc"
+      ],
       "defines": [
         "NAPI_DISABLE_CPP_EXCEPTIONS"
       ],
@@ -12,10 +14,12 @@
       ],
       "libraries": [
         "-L<(module_root_dir)/include",
-        "-lindy"
+        "-lindy",
+        "-lhash"
       ],
       "dependencies": [
-        "<!(node -p \"require('node-addon-api').gyp\")"
+        # KEEPME until i understand why
+        # "<!(node -p \"require('node-addon-api').gyp\")"
       ]
     }
   ],
