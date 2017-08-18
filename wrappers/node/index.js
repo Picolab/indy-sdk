@@ -1,6 +1,8 @@
 
 
-var indy = require('bindings')('indy')
+// var indy = require('bindings')('indy')
+
+var indy = require('./build/Debug/indy')
 
 // we don't need this...
 delete indy.path
