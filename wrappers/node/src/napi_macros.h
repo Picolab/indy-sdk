@@ -198,12 +198,14 @@
 
 #ifndef NAPI_ASYNC_CANCEL
 #define NAPI_ASYNC_CANCEL(work) \
+  callback->cancelled = true; \
   status = napi_cancel_async_work(env, work); \
   if (status == napi_ok) { \
     NAPI_ASYNC_DELETE(work); \
+    printf("========================== FREEING CALLBACK %d\n", callback->handle); \
+    free_callback(callback->handle); \
   } else if (status == napi_generic_failure) { \
     printf("work already executing, cannot cancel!\n"); \
-    callback->cancelled = true; \
   } else { \
     printf("file %s, line %d\n", __FILE__, __LINE__); \
     napi_throw_error(env, "napi_cancel_async_work"); \
