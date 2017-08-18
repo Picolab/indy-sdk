@@ -15,11 +15,12 @@
   },
   "scripts": {
     "install": "node-gyp rebuild",
+    "build": "node-gyp build",
     "test": "mocha --napi-modules test",
-    "macos-errno": "less /usr/include/sys/errno.h",
     "libhash": "cd src/hash; make test && make && make clean",
     "libindy-symbols": "nm include/libindy.a | grep ' T _indy_' | awk '{print $3}'",
-    "libindy": "cd ../../libindy; PKG_CONFIG_ALLOW_CROSS=1 CARGO_INCREMENTAL=1 RUST_LOG=indy=trace RUST_TEST_THREADS=1 OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2l cargo build; cp -r target/debug/libindy.dylib ../wrappers/node/include"
+    "libindy": "cd ../../libindy; PKG_CONFIG_ALLOW_CROSS=1 CARGO_INCREMENTAL=1 RUST_LOG=indy=trace RUST_TEST_THREADS=1 OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2l cargo build; cp -r target/debug/libindy.dylib ../wrappers/node/include",
+    "xcode": "node-gyp configure -- -f xcode"
   },
   "engines": {
     "node": ">=8.0.0"
