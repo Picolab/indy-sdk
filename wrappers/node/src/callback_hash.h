@@ -25,6 +25,17 @@ typedef struct indy_callback indy_callback;
 
 hash_t* callbacks = hash_new();
 
+char* handle_to_key(indy_handle_t handle) {
+  size_t len = 12;
+  char* key = (char*) malloc(len);
+  size_t written = snprintf(key, len, "%d", handle);
+  if (written >= len) {
+    printf("============================= FATAL handle too large\n");
+  }
+  printf("snprintf result %s %lu %lu\n", key, sizeof key, strlen(key));
+  return key;
+}
+
 indy_callback* new_callback(
   indy_handle_t handle,
   napi_env env,
@@ -38,14 +49,23 @@ indy_callback* new_callback(
     exit(1);
   }
 
+  printf("======================= ALLOCATED callback %d\n", handle);
+
   // defaults
   callback->handle = handle;
   callback->cancelled = false;
   callback->called = false;
   callback->completed = false;
+
+  callback->char_results = (char**) malloc(sizeof(callback->char_results));
+  if (callback->char_results == NULL) {
+    perror("malloc callback->char_results failed");
+    exit(1);
+  }
+
   callback->n_char_results = 0;
   callback->n_handle_results = 0;
-
+  
   status = napi_create_reference(
     env,
     js_callback,
@@ -57,24 +77,45 @@ indy_callback* new_callback(
 }
 
 int has_callback(indy_handle_t handle) {
-  return hash_has(callbacks, handle);
+  char* key = handle_to_key(handle);
+  int has = hash_has(callbacks, key);
+  free(key);
+  return has;
 }
 
 void set_callback(indy_callback* callback) {
   if (has_callback(callback->handle)) return;
-  hash_set(callbacks, callback->handle, callback);
+  char* key = handle_to_key(callback->handle);
+  hash_set(callbacks, key, callback);
 }
 
 indy_callback* get_callback(indy_handle_t handle) {
-  return (indy_callback*) hash_get(callbacks, handle);
+  char* key = handle_to_key(handle);
+  indy_callback* callback = (indy_callback*) hash_get(callbacks, key);
+  if (!callback) {
+    printf("==================================== CALLBACK NULL\n");
+    free(key);
+    return NULL;
+  }
+  free(key);
+  return callback;
 }
 
 void free_callback(indy_handle_t handle) {
-  if (!has_callback(handle)) return;
   indy_callback* callback = get_callback(handle);
   if (callback == NULL) return;
-  hash_del(callbacks, handle);
+  char* key = handle_to_key(handle);
+  if (key != NULL) {
+    hash_del(callbacks, key);
+    free(key);
+  }
+  if (callback->char_results != NULL) {
+    printf("freeing callback->char_results\n");
+    free(callback->char_results);
+    callback->char_results = NULL;
+  }
   free(callback);
+  callback = NULL;
 }
 
 #endif
