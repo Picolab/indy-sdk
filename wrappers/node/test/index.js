@@ -14,7 +14,7 @@ var block_timer = blocked(function(ms) {
     assert.fail(null, null, `event loop was blocked for ${ms} ms`)
     process.exit(1)
   }
-}, {threshold: 40})
+}, {threshold: 60})
 
 var foo = 0
 var bar = setInterval(function() {
