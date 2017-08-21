@@ -5,7 +5,7 @@ void verifier_verify_proof_on_proof_verified(
   indy_bool_t verified
 ) {
   printf("verifier_verify_proof_on_proof_verified\n");
-  printf("command handle %d, error %d, verified %d\n", command_handle, error, verified);
+  // printf("command handle %d, error %d, verified %d\n", command_handle, error, verified);
 
   // TODO napi_make_callback
 }
@@ -16,7 +16,7 @@ void prover_create_proof_on_proof_created(
   const char* proof_json
 ) {
   printf("prover_create_proof_on_proof_created\n");
-  printf("command handle %d, error %d, proof json %s\n", command_handle, error, proof_json);
+  // printf("command handle %d, error %d, proof json %s\n", command_handle, error, proof_json);
 }
 
 void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
@@ -25,7 +25,7 @@ void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
   const char* claims_json
 ) {
   printf("prover_get_claims_for_proof_req_on_claims_for_proof_req_got\n");
-  printf("command handle %d, error %d, claims json %s\n", command_handle, error, claims_json);
+  // printf("command handle %d, error %d, claims json %s\n", command_handle, error, claims_json);
 
   // TODO napi_make_callback
 }
@@ -427,6 +427,9 @@ napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
 napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
   printf("issuer_revoke_claim\n");
 
+  napi_value result;
+  int res;
+
   NAPI_EXPECTING_ARGS(5);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -443,8 +446,16 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[2], revoc_reg_seq_num);
   NAPI_NUMBER_TO_INT32(argv[3], user_revoc_index);
 
-  napi_value result;
-  double res = indy_issuer_revoke_claim(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_issuer_revoke_claim(
     command_handle,
     wallet_handle,
     revoc_reg_seq_num,
@@ -452,12 +463,22 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
     issuer_revoke_claim_on_claim_revoked
   );
 
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
   printf("issuer_create_claim\n");
+  
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -479,8 +500,16 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[4], revoc_req_seq_num);
   NAPI_NUMBER_TO_INT32(argv[5], user_revoc_index);
 
-  napi_value result;
-  double res = indy_issuer_create_claim(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_issuer_create_claim(
     command_handle,
     wallet_handle,
     claim_req_json,
@@ -490,12 +519,22 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
     issuer_create_claim_on_claim_created
   );
 
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info info) {
   printf("issuer_create_and_store_revoc_reg\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -515,8 +554,16 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
   NAPI_NUMBER_TO_INT32(argv[3], schema_seq_num);
   NAPI_NUMBER_TO_INT32(argv[4], max_claim_num);
 
-  napi_value result;
-  double res = indy_issuer_create_and_store_revoc_reg(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_issuer_create_and_store_revoc_reg(
     command_handle,
     wallet_handle,
     issuer_did,
@@ -524,14 +571,23 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
     max_claim_num,
     issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored
   );
+  
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
-
   return result;
 }
 
 napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info info) {
   printf("issuer_create_and_store_claim_def\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -553,8 +609,16 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
   NAPI_STRING_TO_UTF8(argv[4], signature_type);
   NAPI_BOOLEAN_TO_BOOL(argv[5], create_non_revoc);
 
-  napi_value result;
-  double res = indy_issuer_create_and_store_claim_def(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_issuer_create_and_store_claim_def(
     command_handle,
     wallet_handle,
     issuer_did,
@@ -564,7 +628,13 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
     issuer_create_and_store_claim_def_on_claim_def_created_and_stored
   );
 
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
