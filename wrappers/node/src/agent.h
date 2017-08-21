@@ -6,14 +6,18 @@ void agent_connect_on_connect(
 ) {
   // invoke user callback mapped to command_handle
   printf("agent_connect_on_connect\n");
-  printf(
-    "command handle %d, error %d, connection handle %d\n",
-    command_handle,
-    error,
-    connection_handle
-  );
 
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(command_handle);
+
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->handle_results.push_back(connection_handle);
+  callback->n_handle_results = 1;
+  callback->completed = true;
 }
 
 void agent_connect_on_message(
@@ -22,14 +26,18 @@ void agent_connect_on_message(
   const char* message
 ) {
   printf("agent_connect_on_message\n");
-  printf(
-    "connection handle %d, error %d, message %s\n",
-    connection_handle,
-    error,
-    message
-  );
   
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(connection_handle);
+
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->char_results.push_back((char*) message);
+  callback->n_char_results = 1;
+  callback->completed = true;
 }
 
 void agent_listen_on_listening(
@@ -38,14 +46,18 @@ void agent_listen_on_listening(
   indy_handle_t listener_handle
 ) {
   printf("agent_listen_on_listening\n");
-  printf(
-    "command handle %d, error %d, listener handle %d\n",
-    command_handle,
-    error,
-    listener_handle
-  );
+  
+  indy_callback* callback = get_callback(command_handle);
 
-  // TODO napi_make_callback
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->handle_results.push_back(listener_handle);
+  callback->n_handle_results = 1;
+  callback->completed = true;
 }
 
 void agent_listen_on_connection(
@@ -56,16 +68,20 @@ void agent_listen_on_connection(
   const char* receiver_did
 ) {
   printf("agent_listen_on_connection\n");
-  printf(
-    "listener handle %d, error %d, connection handle %d, sender did %s, receiver did %s\n",
-    listener_handle,
-    error,
-    connection_handle,
-    sender_did,
-    receiver_did
-  );
   
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(listener_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->handle_results.push_back(connection_handle);
+  callback->n_handle_results = 1;
+  callback->char_results.push_back((char*) sender_did);
+  callback->char_results.push_back((char*) receiver_did);
+  callback->n_char_results = 2;
+  callback->completed = true;
 }
 
 void agent_listen_on_message(
@@ -74,9 +90,18 @@ void agent_listen_on_message(
   const char* message
 ) {
   printf("agent_listen_on_message\n");
-  printf("connection handle %d, error %d, message %s\n", connection_handle, error, message);
+  // printf("connection handle %d, error %d, message %s\n", connection_handle, error, message);
 
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(connection_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->char_results.push_back((char*) message);
+  callback->n_char_results = 1;
+  callback->completed = true;
 }
 
 void agent_add_identity_on_identity_added(
@@ -84,9 +109,16 @@ void agent_add_identity_on_identity_added(
   indy_error_t error
 ) {
   printf("agent_add_identity_on_identity_added\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  // printf("command handle %d, error %d\n", command_handle, error);
 
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->completed = true;
 }
 
 void agent_remove_identity_on_identity_removed(
@@ -94,9 +126,15 @@ void agent_remove_identity_on_identity_removed(
   indy_error_t error
 ) {
   printf("agent_remove_identity_on_identity_removed\n");
-  printf("command handle %d, error %d\n", command_handle, error);
   
-  // TODO napi_make_callback
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->completed = true;
 }
 
 void agent_send_on_message_sent(
@@ -104,9 +142,15 @@ void agent_send_on_message_sent(
   indy_error_t error
 ) {
   printf("agent_send_on_message_sent\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  callback->error = error;
+  callback->completed = true;
 }
 
 void agent_close_connection_on_connection_closed(
@@ -114,9 +158,15 @@ void agent_close_connection_on_connection_closed(
   indy_error_t error
 ) {
   printf("agent_close_connection_on_connection_closed\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  callback->error = error;
+  callback->completed = true;
 }
 
 void agent_close_listener_on_listener_closed(
@@ -124,12 +174,22 @@ void agent_close_listener_on_listener_closed(
   indy_error_t error
 ) {
   printf("agent_close_listener\n");
-  printf("command handle %d, error %d\n", command_handle, error);
-  // TODO napi_make_callback
+  
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  callback->error = error;
+  callback->completed = true;
 }
 
 napi_value agent_add_identity(napi_env env, napi_callback_info info) {
   printf("agent_add_identity\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -148,7 +208,16 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[3], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[4], did);
 
-  double res = indy_agent_add_identity(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_add_identity(
     command_handle,
     listener_handle,
     pool_handle,
@@ -157,14 +226,22 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
     agent_add_identity_on_identity_added
   );
 
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value agent_close_connection(napi_env env, napi_callback_info info) {
   printf("agent_close_connection\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(3);
 
@@ -177,20 +254,37 @@ napi_value agent_close_connection(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
 
-  double res = indy_agent_close_connection(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+  
+  res = indy_agent_close_connection(
     command_handle,
     connection_handle,
     agent_close_connection_on_connection_closed
   );
 
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value agent_close_listener(napi_env env, napi_callback_info info) {
   printf("agent_close_listener\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(3);
 
@@ -203,21 +297,42 @@ napi_value agent_close_listener(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], listener_handle);
 
-  double res = indy_agent_close_listener(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_close_listener(
     command_handle,
     listener_handle,
     agent_close_listener_on_listener_closed
   );
 
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value agent_connect(napi_env env, napi_callback_info info) {
   printf("agent_connect\n");
   
+  // TODO
+  perror("TODO callbacks for agent_listen");
+  exit(1);
+
+  napi_value result;
+  int res;
+
   NAPI_EXPECTING_ARGS(7);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -236,7 +351,16 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], sender_did);
   NAPI_STRING_TO_UTF8(argv[4], receiver_did);
 
-  double res = indy_agent_connect(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_connect(
     command_handle,
     pool_handle,
     wallet_handle,
@@ -245,15 +369,27 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
     agent_connect_on_connect,
     agent_connect_on_message
   );
+
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
   
-  napi_value result;
   NAPI_DOUBLE_TO_NUMBER(res, result);
-  
   return result;
 }
 
 napi_value agent_listen(napi_env env, napi_callback_info info) {
   printf("agent_listen\n");
+
+  // TODO
+  perror("TODO callbacks for agent_listen");
+  exit(1);
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -268,22 +404,39 @@ napi_value agent_listen(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], endpoint);
 
-  double res = indy_agent_listen(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_listen(
     command_handle,
     endpoint,
     agent_listen_on_listening,
     agent_listen_on_connection,
     agent_listen_on_message
   );
-  
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
 
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
+  
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
   printf("agent_remove_identity\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -300,7 +453,17 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[2], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[3], did);
 
-  double res = indy_agent_remove_identity(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_remove_identity(
     command_handle,
     listener_handle,
     wallet_handle,
@@ -308,14 +471,22 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
     agent_remove_identity_on_identity_removed
   );
 
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value agent_send(napi_env env, napi_callback_info info) {
   printf("agent_send\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -330,15 +501,29 @@ napi_value agent_send(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
   NAPI_STRING_TO_UTF8(argv[2], message);
 
-  double res = indy_agent_send(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  res = indy_agent_send(
     command_handle,
     connection_handle,
     message,
     agent_send_on_message_sent
   );
 
-  napi_value result;
-  NAPI_DOUBLE_TO_NUMBER(res, result);
+  if (res == 0) {
+    NAPI_ASYNC_CREATE(task, callback);
+    NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
+  }
 
+  NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
