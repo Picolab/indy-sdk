@@ -5,9 +5,18 @@ void sign_and_submit_request_on_request_signed_and_submitted(
   const char* request_result_json
 ) {
   printf("sign_and_submit_request_on_request_signed_and_submitted\n");
-  printf("command handle %d, error %d, request result json %s\n", command_handle, error, request_result_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_result_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void submit_request_on_request_submitted(
@@ -16,9 +25,18 @@ void submit_request_on_request_submitted(
   const char* request_result_json
 ) {
   printf("submit_request_on_request_submitted\n");
-  printf("command handle %d, error %d, request result json %s\n", command_handle, error, request_result_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_result_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_ddo_request_on_get_ddo_request_built(
@@ -27,9 +45,18 @@ void build_get_ddo_request_on_get_ddo_request_built(
   const char* request_result_json
 ) {
   printf("build_get_ddo_request_on_get_ddo_request_built\n");
-  printf("command handle %d, error %d, request result json %s\n", command_handle, error, request_result_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_result_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_nym_request_on_nym_request_built(
@@ -38,9 +65,18 @@ void build_nym_request_on_nym_request_built(
   const char* request_json
 ) {
   printf("build_nym_request_on_nym_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_attrib_request_on_attrib_request_built(
@@ -49,9 +85,18 @@ void build_attrib_request_on_attrib_request_built(
   const char* request_json
 ) {
   printf("build_attrib_request_on_attrib_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_attrib_request_on_get_attrib_request_built(
@@ -60,9 +105,18 @@ void build_get_attrib_request_on_get_attrib_request_built(
   const char* request_json
 ) {
   printf("build_get_attrib_request_on_get_attrib_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_nym_request_on_get_nym_request_built(
@@ -71,9 +125,18 @@ void build_get_nym_request_on_get_nym_request_built(
   const char* request_json
 ) {
   printf("build_get_nym_request_on_get_nym_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_schema_request_on_schema_request_built(
@@ -82,9 +145,18 @@ void build_schema_request_on_schema_request_built(
   const char* request_json
 ) {
   printf("build_schema_request_on_schema_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_schema_request_on_get_schema_request_built(
@@ -93,9 +165,18 @@ void build_get_schema_request_on_get_schema_request_built(
   const char* request_json
 ) {
   printf("build_get_schema_request_on_get_schema_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_claim_def_txn_on_claim_def_txn_built(
@@ -104,9 +185,18 @@ void build_claim_def_txn_on_claim_def_txn_built(
   const char* request_json
 ) {
   printf("build_claim_def_txn_on_claim_def_txn_built\n");
-  printf("command handle %d, error %d, request_json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_claim_def_txn_on_get_claim_def_txn_built(
@@ -115,9 +205,18 @@ void build_get_claim_def_txn_on_get_claim_def_txn_built(
   const char* request_json
 ) {
   printf("build_get_claim_def_txn_on_get_claim_def_txn_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_node_request_on_node_request_built(
@@ -126,9 +225,18 @@ void build_node_request_on_node_request_built(
   const char* request_json
 ) {
   printf("build_node_request_on_node_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void build_get_txn_request_on_get_txn_request_built(
@@ -137,13 +245,25 @@ void build_get_txn_request_on_get_txn_request_built(
   const char* request_json
 ) {
   printf("build_get_txn_request_on_get_txn_request_built\n");
-  printf("command handle %d, error %d, request json %s\n", command_handle, error, request_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) request_json);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
   printf("sign_and_submit_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -162,8 +282,19 @@ napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], submitter_did);
   NAPI_STRING_TO_UTF8(argv[4], request_json);
 
-  napi_value result;
-  double res = indy_sign_and_submit_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_sign_and_submit_request(
     command_handle,
     pool_handle,
     wallet_handle,
@@ -172,12 +303,19 @@ napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
     sign_and_submit_request_on_request_signed_and_submitted
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value submit_request(napi_env env, napi_callback_info info) {
   printf("submit_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -192,13 +330,28 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
   NAPI_STRING_TO_UTF8(argv[2], request_json);
 
-  napi_value result;
-  double res = indy_submit_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_submit_request(
     command_handle,
     pool_handle,
     request_json,
     submit_request_on_request_submitted
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -206,6 +359,9 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
 
 napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
   printf("build_get_ddo_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -220,13 +376,28 @@ napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], target_did);
 
-  napi_value result;
-  double res = indy_build_get_ddo_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_ddo_request(
     command_handle,
     submitter_did,
     target_did,
     build_get_ddo_request_on_get_ddo_request_built
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -234,6 +405,9 @@ napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
 
 napi_value build_nym_request(napi_env env, napi_callback_info info) {
   printf("build_nym_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -254,8 +428,19 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], alias);
   NAPI_STRING_TO_UTF8(argv[5], role);
 
-  napi_value result;
-  double res = indy_build_nym_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_nym_request(
     command_handle,
     submitter_did,
     target_did,
@@ -264,6 +449,10 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
     role,
     build_nym_request_on_nym_request_built
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
   
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -271,6 +460,9 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
 
 napi_value build_attrib_request(napi_env env, napi_callback_info info) {
   printf("build_attrib_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -291,8 +483,19 @@ napi_value build_attrib_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], raw);
   NAPI_STRING_TO_UTF8(argv[5], encrypted);
 
-  napi_value result;
-  double res = indy_build_attrib_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_attrib_request(
     command_handle,
     submitter_did,
     target_did,
@@ -302,12 +505,19 @@ napi_value build_attrib_request(napi_env env, napi_callback_info info) {
     build_attrib_request_on_attrib_request_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
   printf("build_get_attrib_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -324,8 +534,19 @@ napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], target_did);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  napi_value result;
-  double res = indy_build_get_attrib_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_attrib_request(
     command_handle,
     submitter_did,
     target_did,
@@ -333,12 +554,19 @@ napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
     build_get_attrib_request_on_get_attrib_request_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
   printf("build_get_nym_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -353,13 +581,28 @@ napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], target_did);
 
-  napi_value result;
-  double res = indy_build_get_nym_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_nym_request(
     command_handle,
     submitter_did,
     target_did,
     build_get_nym_request_on_get_nym_request_built
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -367,6 +610,9 @@ napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
 
 napi_value build_schema_request(napi_env env, napi_callback_info info) {
   printf("build_schema_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -381,13 +627,28 @@ napi_value build_schema_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], data);
 
-  napi_value result;
-  double res = indy_build_schema_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_schema_request(
     command_handle,
     submitter_did,
     data,
     build_schema_request_on_schema_request_built
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -395,6 +656,9 @@ napi_value build_schema_request(napi_env env, napi_callback_info info) {
 
 napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
   printf("build_get_schema_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -411,8 +675,19 @@ napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], dest);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  napi_value result;
-  double res = indy_build_get_schema_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_schema_request(
     command_handle,
     submitter_did,
     dest,
@@ -420,12 +695,19 @@ napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
     build_get_schema_request_on_get_schema_request_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
   printf("build_claim_def_txn\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -444,8 +726,19 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], data);
 
-  napi_value result;
-  double res = indy_build_claim_def_txn(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_claim_def_txn(
     command_handle,
     submitter_did,
     schema_seq_num,
@@ -454,12 +747,19 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
     build_claim_def_txn_on_claim_def_txn_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
   printf("build_get_claim_def_txn\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -478,8 +778,19 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], origin);
 
-  napi_value result;
-  double res = indy_build_get_claim_def_txn(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_claim_def_txn(
     command_handle,
     submitter_did,
     schema_seq_num,
@@ -488,12 +799,19 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
     build_get_claim_def_txn_on_get_claim_def_txn_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_node_request(napi_env env, napi_callback_info info) {
   printf("build_node_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -510,8 +828,19 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], target_did);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  napi_value result;
-  double res = indy_build_node_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_node_request(
     command_handle,
     submitter_did,
     target_did,
@@ -519,12 +848,19 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
     build_node_request_on_node_request_built
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
   printf("build_get_txn_request\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -540,13 +876,28 @@ napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_NUMBER_TO_INT32(argv[2], data);
 
-  napi_value result;
-  double res = indy_build_get_txn_request(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_build_get_txn_request(
     command_handle,
     submitter_did,
     data,
     build_get_txn_request_on_get_txn_request_built
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
