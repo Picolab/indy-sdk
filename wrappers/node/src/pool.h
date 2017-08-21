@@ -4,18 +4,16 @@ void create_pool_ledger_config_on_pool_ledger_config_created(
   indy_error_t error
 ) {
   printf("create_pool_ledger_config_on_pool_ledger_config_created\n");
-  // printf("command handle %d, error %d\n", command_handle, error);
-
   indy_callback* callback = get_callback(command_handle);
-
   if (!callback) {
     perror("FATAL pointer to callback struct was null\n");
     exit(1);
   }
 
+  std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->completed = true;
-  printf("config_created completed = true\n");
+  callback->cv.notify_one();
 }
 
 void open_pool_ledger_on_pool_ledger_opened(
@@ -24,19 +22,18 @@ void open_pool_ledger_on_pool_ledger_opened(
   indy_handle_t pool_handle
 ) {
   printf("open_pool_ledger_on_pool_ledger_opened\n");
-  // printf("command handle %d, error %d, pool handle %d\n", command_handle, error, pool_handle);
-
   indy_callback* callback = get_callback(command_handle);
-  if (callback == NULL) {
+  if (!callback) {
     printf("FATAL pointer to callback struct was null\n");
     return;
   }
 
+  std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->handle_results.push_back(pool_handle);
   callback->n_handle_results = 1;
   callback->completed = true;
-  printf("ledger_opened completed = true\n");
+  callback->cv.notify_one();
 }
 
 void refresh_pool_ledger_on_pool_ledger_refreshed(
@@ -44,18 +41,16 @@ void refresh_pool_ledger_on_pool_ledger_refreshed(
   indy_error_t error
 ) {
   printf("refresh_pool_ledger_on_pool_ledger_refreshed\n");
-  // printf("command handle %d, error %d\n", command_handle, error);
-
   indy_callback* callback = get_callback(command_handle);
-
-  if (callback == NULL) {
+  if (!callback) {
     printf("FATAL pointer to callback struct was null\n");
     return;
   }
 
+  std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->completed = true;
-  printf("ledger_refreshed completed = true\n");
+  callback->cv.notify_one();
 }
 
 void close_pool_ledger_on_pool_ledger_closed(
@@ -63,18 +58,16 @@ void close_pool_ledger_on_pool_ledger_closed(
   indy_error_t error
 ) {
   printf("close_pool_ledger_on_pool_ledger_closed\n");
-  // printf("command handle %d, error %d\n", command_handle, error);
-
   indy_callback* callback = get_callback(command_handle);
-
-  if (callback == NULL) {
+  if (!callback) {
     printf("FATAL pointer to callback struct was null\n");
     return;
   }
 
+  std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->completed = true;
-  printf("ledger_closed completed = true\n");
+  callback->cv.notify_one();
 }
 
 void delete_pool_ledger_config_on_pool_ledger_config_deleted(
@@ -82,17 +75,16 @@ void delete_pool_ledger_config_on_pool_ledger_config_deleted(
   indy_error_t error
 ) {
   printf("delete_pool_ledger_config_on_pool_ledger_config_deleted\n");
-  // printf("command handle %d, error %d\n", command_handle, error);
-
   indy_callback* callback = get_callback(command_handle);
-  if (callback == NULL) {
+  if (!callback) {
     printf("FATAL pointer to callback struct was null\n");
     return;
   }
 
+  std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->completed = true;
-  printf("config_deleted completed = true\n");
+  callback->cv.notify_one();
 }
 
 napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
@@ -115,7 +107,6 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], config);
 
   indy_callback* callback = new_callback(command_handle, env, argv[3]);
-
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -124,6 +115,9 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_create_pool_ledger_config(
     command_handle,
     config_name,
@@ -131,11 +125,8 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
     create_pool_ledger_config_on_pool_ledger_config_created
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -162,7 +153,6 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], config);
 
   indy_callback* callback = new_callback(command_handle, env, argv[3]);
-
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -171,6 +161,9 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_open_pool_ledger(
     command_handle,
     config_name,
@@ -178,11 +171,8 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
     open_pool_ledger_on_pool_ledger_opened
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -216,17 +206,17 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_refresh_pool_ledger(
     command_handle,
     pool_handle,
     refresh_pool_ledger_on_pool_ledger_refreshed
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -260,17 +250,17 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_close_pool_ledger(
     command_handle,
     pool_handle,
     close_pool_ledger_on_pool_ledger_closed
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -303,17 +293,17 @@ napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_delete_pool_ledger_config(
     command_handle,
     config_name,
     delete_pool_ledger_config_on_pool_ledger_config_deleted
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
