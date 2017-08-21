@@ -2,6 +2,8 @@
 #ifndef CALLBACK_HASH_INCLUDED
 #define CALLBACK_HASH_INCLUDED
 
+#include <thread>
+
 #include "napi.h"
 #include "indy_core.h"
 #include "indy_types.h"
@@ -10,7 +12,9 @@
 
 struct indy_callback {
   indy_handle_t handle;
-  napi_ref callback_ref; // FIXME support N libindy callbacks per struct
+  napi_ref callback_ref;
+  std::mutex mutex;
+  std::condition_variable cv;
   bool cancelled;
   bool completed;
   bool called;
@@ -21,7 +25,7 @@ struct indy_callback {
   size_t n_handle_results;
   std::vector<indy_handle_t> handle_results;
   size_t n_bool_results;
-  std::vector<bool> bool_results;
+  std::vector<indy_bool_t> bool_results;
 };
 
 typedef struct indy_callback indy_callback;
@@ -33,9 +37,9 @@ char* handle_to_key(indy_handle_t handle) {
   char* key = (char*) malloc(len);
   size_t written = snprintf(key, len, "%d", handle);
   if (written >= len) {
-    printf("============================= FATAL handle too large\n");
+    printf("FATAL handle_to_key: handle too large\n");
+    exit(1);
   }
-  printf("snprintf result %s %lu %lu\n", key, sizeof key, strlen(key));
   return key;
 }
 
@@ -45,8 +49,7 @@ indy_callback* new_callback(
   napi_value js_callback
 ) {
   napi_status status;
-  // indy_callback* callback = (indy_callback*) malloc(sizeof(indy_callback));
-  indy_callback* callback = (indy_callback*) new indy_callback;
+  indy_callback* callback = new indy_callback;
 
   if (!callback) {
     perror("malloc indy_callback failed");
@@ -92,12 +95,11 @@ void set_callback(indy_callback* callback) {
 indy_callback* get_callback(indy_handle_t handle) {
   char* key = handle_to_key(handle);
   indy_callback* callback = (indy_callback*) hash_get(callbacks, key);
+  free(key);
   if (!callback) {
     printf("==================================== CALLBACK NULL\n");
-    free(key);
     return NULL;
   }
-  free(key);
   return callback;
 }
 
@@ -109,19 +111,7 @@ void free_callback(indy_handle_t handle) {
     hash_del(callbacks, key);
     free(key);
   }
-  // if (callback->char_results != NULL) {
-  //   printf("freeing callback->char_results\n");
-  //   free(callback->char_results);
-  //   callback->char_results = NULL;
-  // }
-
-  // if (callback->callback_ref != NULL) {
-  //   printf("freeing callback->callback_ref\n");
-  //   free(callback->callback_ref);
-  // }
-  // free(callback);
   delete callback;
-  callback = NULL;
 }
 
 #endif
