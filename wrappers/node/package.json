@@ -20,7 +20,8 @@
     "libhash": "cd src/hash; make test && make && make clean",
     "libindy-symbols": "nm include/libindy.a | grep ' T _indy_' | awk '{print $3}'",
     "libindy": "cd ../../libindy; PKG_CONFIG_ALLOW_CROSS=1 CARGO_INCREMENTAL=1 RUST_LOG=indy=trace RUST_TEST_THREADS=1 OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2l cargo build; cp -r target/debug/libindy.dylib ../wrappers/node/include && say \"lib indy compilation complete\"",
-    "xcode": "node-gyp configure -- -f xcode && open build/binding.xcodeproj"
+    "xcode": "node-gyp configure -- -f xcode && open build/binding.xcodeproj",
+    "test-until-failure": "while npm test; do :; done; say \"test failure\"; read -p \"continue testing? (y/n) \" continue; if [[ $continue == 'y' ]]; then npm run test-until-failure; fi"
   },
   "engines": {
     "node": ">=8.0.0"
