@@ -14,7 +14,7 @@ var block_timer = blocked(function(ms) {
     assert.fail(null, null, `event loop was blocked for ${ms} ms`)
     process.exit(1)
   }
-}, {threshold: 60})
+}, {threshold: 40})
 
 var foo = 0
 var bar = setInterval(function() {
@@ -63,31 +63,23 @@ describe('libindy', function() {
   //   console.log('error?', res, errors[res])
   // })
 
-  it('create pool ledger config', function(done) {
-  //   indy.create_pool_ledger_config('foo', 'foo', function(err) {
-  //     console.log('create_pool_ledger_config callback', errors[err])
-  //     done()
-  //   })
-    var calls = 1
-    var res = 0
-    indy.create_pool_ledger_config('foo', 'foo', function(err) {
-      // console.log('create_pool_ledger_config callback', errors[err])
-      res += 1
-      console.log('====================== calling from', res, errors[err])
-      if (res == calls) return done()
+  it('concurrency', function(done) {
+    var calls = 2
+    var returned = 0
+    
+    var a = indy.create_pool_ledger_config('foo', 'foo', function(err) {
+      returned += 1
+      console.log('====================== calling from', returned, errors[err])
+      if (returned == calls) return done()
     })
-    // indy.create_pool_ledger_config('foo', 'foo', function(err) {
-    //   // console.log('create_pool_ledger_config callback', errors[err])
-    //   res += 1
-    //   console.log('====================== calling from', res)
-    //   if (res == calls) return done()
-    // })
-    // indy.create_pool_ledger_config('foo', 'foo', function(err) {
-    //   // console.log('create_pool_ledger_config callback', errors[err])
-    //   res += 1
-    //   console.log('====================== calling from', res)
-    //   if (res == calls) return done()
-    // })
+    if (a > 0) return done(new Error('create_pool_ledger_config failed'))
+
+    var b = indy.open_pool_ledger('foo', 'foo', function(err, res) {
+      returned += 1
+      console.log('====================== calling from', returned, errors[err], res)
+      if (returned == calls) return done()
+    })
+    if (b > 0) return done(new Error('open_pool_ledger failed'))
   })
 
   // it('open pool ledger', function(done) {
