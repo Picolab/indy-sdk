@@ -5,9 +5,18 @@ void verifier_verify_proof_on_proof_verified(
   indy_bool_t verified
 ) {
   printf("verifier_verify_proof_on_proof_verified\n");
-  // printf("command handle %d, error %d, verified %d\n", command_handle, error, verified);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_bool_results = 1;
+  callback->bool_results.push_back(verified);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_create_proof_on_proof_created(
@@ -16,7 +25,18 @@ void prover_create_proof_on_proof_created(
   const char* proof_json
 ) {
   printf("prover_create_proof_on_proof_created\n");
-  // printf("command handle %d, error %d, proof json %s\n", command_handle, error, proof_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) proof_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
@@ -25,9 +45,18 @@ void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
   const char* claims_json
 ) {
   printf("prover_get_claims_for_proof_req_on_claims_for_proof_req_got\n");
-  // printf("command handle %d, error %d, claims json %s\n", command_handle, error, claims_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) claims_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_get_claims_on_claims_got(
@@ -36,9 +65,18 @@ void prover_get_claims_on_claims_got(
   const char* claims_json
 ) {
   printf("prover_get_claims_on_claims_got\n");
-  printf("command handle %d, error %d, claims json %s\n", command_handle, error, claims_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) claims_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_store_claim_on_claim_stored(
@@ -46,9 +84,16 @@ void prover_store_claim_on_claim_stored(
   indy_error_t error
 ) {
   printf("prover_store_claim_on_claim_stored\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_create_and_store_claim_req_on_claim_req_created_and_stored(
@@ -57,9 +102,18 @@ void prover_create_and_store_claim_req_on_claim_req_created_and_stored(
   const char* claim_req_json
 ) {
   printf("prover_create_and_store_claim_req_on_claim_req_created_and_stored\n");
-  printf("command handle %d, error %d, claim req json %s\n", command_handle, error, claim_req_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) claim_req_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_create_master_secret_on_master_secret_created(
@@ -67,9 +121,16 @@ void prover_create_master_secret_on_master_secret_created(
   indy_error_t error
 ) {
   printf("prover_create_master_secret_on_master_secret_created\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_get_claim_offers_on_claim_offers_got(
@@ -78,9 +139,18 @@ void prover_get_claim_offers_on_claim_offers_got(
   const char* claim_offers_json
 ) {
   printf("prover_get_claim_offers_on_claim_offers_got\n");
-  printf("command handle %d, error %d, claim offers json %s\n", command_handle, error, claim_offers_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) claim_offers_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void prover_store_claim_offer_on_claim_offer_stored(
@@ -88,7 +158,16 @@ void prover_store_claim_offer_on_claim_offer_stored(
   indy_error_t error
 ) {
   printf("prover_store_claim_offer_on_claim_offer_stored\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
+
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void issuer_revoke_claim_on_claim_revoked(
@@ -97,9 +176,18 @@ void issuer_revoke_claim_on_claim_revoked(
   const char* revoc_reg_update_json
 ) {
   printf("issuer_revoke_claim_on_claim_revoked\n");
-  printf("command handle %d, error %d, revocation reg update json %s\n", command_handle, error, revoc_reg_update_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) revoc_reg_update_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void issuer_create_claim_on_claim_created(
@@ -109,9 +197,19 @@ void issuer_create_claim_on_claim_created(
   const char* claim_json
 ) {
   printf("issuer_create_claim_on_claim_created\n");
-  printf("command handle %d, error %d, revocation reg update json %s, claim json %s\n", command_handle, error, revoc_reg_update_json, claim_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 2;
+  callback->char_results.push_back((char*) revoc_reg_update_json);
+  callback->char_results.push_back((char*) claim_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored(
@@ -121,9 +219,19 @@ void issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored(
   const char* revoc_reg_uuid
 ) {
   printf("issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored\n");
-  printf("command handle %d, error %d, revocation reg json %s, revocation reg uuid %s\n", command_handle, error, revoc_reg_json, revoc_reg_uuid);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 2;
+  callback->char_results.push_back((char*) revoc_reg_json);
+  callback->char_results.push_back((char*) revoc_reg_uuid);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void issuer_create_and_store_claim_def_on_claim_def_created_and_stored(
@@ -132,13 +240,25 @@ void issuer_create_and_store_claim_def_on_claim_def_created_and_stored(
   const char* claim_def_json
 ) {
   printf("issuer_create_and_store_claim_def_on_claim_def_created_and_stored\n");
-  printf("command handle %d, error %d, claim def json %s\n", command_handle, error, claim_def_json);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->n_char_results = 1;
+  callback->char_results.push_back((char*) claim_def_json);
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
   printf("verifier_verify_proof\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -159,8 +279,19 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], claim_defs_jsons);
   NAPI_STRING_TO_UTF8(argv[5], revoc_regs_json);
 
-  napi_value result;
-  double res = indy_verifier_verify_proof(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_verifier_verify_proof(
     command_handle,
     proof_request_json,
     proof_json,
@@ -170,12 +301,19 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
     verifier_verify_proof_on_proof_verified
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value prover_create_proof(napi_env env, napi_callback_info info) {
   printf("prover_create_proof\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(9);
 
@@ -200,8 +338,19 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[6], claim_defs_json);
   NAPI_STRING_TO_UTF8(argv[7], revoc_regs_json);
 
-  napi_value result;
-  double res = indy_prover_create_proof(
+  indy_callback* callback = new_callback(command_handle, env, argv[8]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_create_proof(
     command_handle,
     wallet_handle,
     proof_req_json,
@@ -212,6 +361,10 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
     revoc_regs_json,
     prover_create_proof_on_proof_created
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -219,7 +372,10 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
 
 napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info) {
   printf("prover_get_claims_for_proof_req\n");
-
+  
+  napi_value result;
+  int res;
+  
   NAPI_EXPECTING_ARGS(4);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -233,13 +389,28 @@ napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], proof_request_json);
 
-  napi_value result;
-  double res = indy_prover_get_claims_for_proof_req(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_get_claims_for_proof_req(
     command_handle,
     wallet_handle,
     proof_request_json,
     prover_get_claims_for_proof_req_on_claims_for_proof_req_got
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -247,7 +418,10 @@ napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info
 
 napi_value prover_get_claims(napi_env env, napi_callback_info info) {
   printf("prover_get_claims\n");
-
+  
+  napi_value result;
+  int res;
+  
   NAPI_EXPECTING_ARGS(4);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -261,13 +435,28 @@ napi_value prover_get_claims(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], filter_json);
 
-  napi_value result;
-  double res = indy_prover_get_claims(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_get_claims(
     command_handle,
     wallet_handle,
     filter_json,
     prover_get_claims_on_claims_got
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -275,7 +464,10 @@ napi_value prover_get_claims(napi_env env, napi_callback_info info) {
 
 napi_value prover_store_claim(napi_env env, napi_callback_info info) {
   printf("prover_store_claim\n");
-
+  
+  napi_value result;
+  int res;
+  
   NAPI_EXPECTING_ARGS(4);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -289,22 +481,39 @@ napi_value prover_store_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], claims_json);
 
-  napi_value result;
-  double res = indy_prover_store_claim(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_store_claim(
     command_handle,
     wallet_handle,
     claims_json,
     prover_store_claim_on_claim_stored
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
-
   return result;
 }
 
 napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info info) {
   printf("prover_create_and_store_claim_req\n");
-
+  
+  napi_value result;
+  int res;
+  
   NAPI_EXPECTING_ARGS(7);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -323,9 +532,20 @@ napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info in
   NAPI_STRING_TO_UTF8(argv[3], claim_offer_json);
   NAPI_STRING_TO_UTF8(argv[4], claim_def_json);
   NAPI_STRING_TO_UTF8(argv[5], master_secret_name);
+  
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
 
-  napi_value result;
-  double res = indy_prover_create_and_store_claim_req(
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_create_and_store_claim_req(
     command_handle,
     wallet_handle,
     prover_did,
@@ -333,15 +553,21 @@ napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info in
     claim_def_json,
     master_secret_name, prover_create_and_store_claim_req_on_claim_req_created_and_stored
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
-
   return result;
 }
 
 napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
   printf("prover_create_master_secret\n");
-
+  
+  napi_value result;
+  int res;
+  
   NAPI_EXPECTING_ARGS(4);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -355,13 +581,28 @@ napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], master_secret_name);
 
-  napi_value result;
-  double res = indy_prover_create_master_secret(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_create_master_secret(
     command_handle,
     wallet_handle,
     master_secret_name,
     prover_create_master_secret_on_master_secret_created
   );
+  
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -369,6 +610,9 @@ napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
 
 napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
   printf("prover_get_claim_offers\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -383,21 +627,38 @@ napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], filter_json);
 
-  napi_value result;
-  double res = indy_prover_get_claim_offers(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_get_claim_offers(
     command_handle,
     wallet_handle,
     filter_json,
     prover_get_claim_offers_on_claim_offers_got
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
   
   NAPI_DOUBLE_TO_NUMBER(res, result);
-
   return result;
 }
 
 napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
   printf("prover_store_claim_offer\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -412,13 +673,28 @@ napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], claim_offer_json);
 
-  napi_value result;
-  double res = indy_prover_store_claim_offer(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_prover_store_claim_offer(
     command_handle,
     wallet_handle,
     claim_offer_json,
     prover_store_claim_offer_on_claim_offer_stored
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -455,6 +731,9 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_issuer_revoke_claim(
     command_handle,
     wallet_handle,
@@ -463,11 +742,8 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
     issuer_revoke_claim_on_claim_revoked
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -509,6 +785,9 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_issuer_create_claim(
     command_handle,
     wallet_handle,
@@ -519,11 +798,8 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
     issuer_create_claim_on_claim_created
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -563,6 +839,9 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_issuer_create_and_store_revoc_reg(
     command_handle,
     wallet_handle,
@@ -572,11 +851,8 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
     issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored
   );
   
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -618,6 +894,9 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
 
   set_callback(callback);
 
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
   res = indy_issuer_create_and_store_claim_def(
     command_handle,
     wallet_handle,
@@ -628,11 +907,8 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
     issuer_create_and_store_claim_def_on_claim_def_created_and_stored
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
