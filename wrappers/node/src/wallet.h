@@ -114,9 +114,16 @@ void create_wallet_on_wallet_created(
   indy_error_t error
 ) {
   printf("create_wallet_on_wallet_created\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void open_wallet_on_wallet_opened(
@@ -125,9 +132,18 @@ void open_wallet_on_wallet_opened(
   indy_handle_t wallet_handle
 ) {
   printf("open_wallet_on_wallet_opened\n");
-  printf("command handle %d, error %d, wallet handle %d\n", command_handle, error, wallet_handle);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->handle_results.push_back(wallet_handle);
+  callback->n_handle_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void close_wallet_on_wallet_closed(
@@ -135,9 +151,16 @@ void close_wallet_on_wallet_closed(
   indy_error_t error
 ) {
   printf("close_wallet_on_wallet_closed\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void delete_wallet_on_wallet_deleted(
@@ -145,13 +168,26 @@ void delete_wallet_on_wallet_deleted(
   indy_error_t error
 ) {
   printf("delete_wallet_on_wallet_deleted\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 napi_value register_wallet_type(napi_env env, napi_callback_info info) {
   printf("register_wallet_type\n");
+
+  napi_value result;
+  int res;
+
+  printf("TODO callbacks for register_wallet_type\n");
+  exit(1);
 
   NAPI_EXPECTING_ARGS(11);
 
@@ -172,8 +208,19 @@ napi_value register_wallet_type(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], wallet_type);
 
-  napi_value result;
-  double res = indy_register_wallet_type(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_register_wallet_type(
     command_handle,
     wallet_type,
     register_wallet_type_on_created,
@@ -187,12 +234,19 @@ napi_value register_wallet_type(napi_env env, napi_callback_info info) {
     register_wallet_type_on_freed
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value create_wallet(napi_env env, napi_callback_info info) {
   printf("create_wallet\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -213,8 +267,19 @@ napi_value create_wallet(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], wallet_config_json);
   NAPI_STRING_TO_UTF8(argv[5], wallet_credentials_json);
 
-  napi_value result;
-  double res = indy_create_wallet(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_create_wallet(
     command_handle,
     pool_name,
     wallet_name,
@@ -224,12 +289,19 @@ napi_value create_wallet(napi_env env, napi_callback_info info) {
     create_wallet_on_wallet_created
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value open_wallet(napi_env env, napi_callback_info info) {
   printf("open_wallet\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -246,8 +318,19 @@ napi_value open_wallet(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], runtime_config);
   NAPI_STRING_TO_UTF8(argv[3], credentials);
 
-  napi_value result;
-  double res = indy_open_wallet(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_open_wallet(
     command_handle,
     name,
     runtime_config,
@@ -255,12 +338,19 @@ napi_value open_wallet(napi_env env, napi_callback_info info) {
     open_wallet_on_wallet_opened
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value close_wallet(napi_env env, napi_callback_info info) {
   printf("close_wallet\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(3);
 
@@ -273,12 +363,27 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
 
-  napi_value result;
-  double res = indy_close_wallet(
+  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_close_wallet(
     command_handle,
     wallet_handle,
     close_wallet_on_wallet_closed
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -286,6 +391,9 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
 
 napi_value delete_wallet(napi_env env, napi_callback_info info) {
   printf("delete_wallet\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -300,13 +408,28 @@ napi_value delete_wallet(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], name);
   NAPI_STRING_TO_UTF8(argv[2], credentials);
 
-  napi_value result;
-  double res = indy_delete_wallet(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_delete_wallet(
     command_handle,
     name,
     credentials,
     delete_wallet_on_wallet_deleted
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
