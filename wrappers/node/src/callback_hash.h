@@ -2,9 +2,9 @@
 #ifndef CALLBACK_HASH_INCLUDED
 #define CALLBACK_HASH_INCLUDED
 
-#include <napi.h>
-#include <indy_core.h>
-#include <indy_types.h>
+#include "napi.h"
+#include "indy_core.h"
+#include "indy_types.h"
 
 #include "hash/hash.h"
 
@@ -14,11 +14,14 @@ struct indy_callback {
   bool cancelled;
   bool completed;
   bool called;
+  bool persists;
   indy_error_t error;
   size_t n_char_results;
-  char** char_results;
+  std::vector<char*> char_results;
   size_t n_handle_results;
-  indy_handle_t handle_results[];
+  std::vector<indy_handle_t> handle_results;
+  size_t n_bool_results;
+  std::vector<bool> bool_results;
 };
 
 typedef struct indy_callback indy_callback;
@@ -42,7 +45,8 @@ indy_callback* new_callback(
   napi_value js_callback
 ) {
   napi_status status;
-  indy_callback* callback = (indy_callback*) malloc(sizeof(indy_callback));
+  // indy_callback* callback = (indy_callback*) malloc(sizeof(indy_callback));
+  indy_callback* callback = (indy_callback*) new indy_callback;
 
   if (!callback) {
     perror("malloc indy_callback failed");
@@ -56,12 +60,7 @@ indy_callback* new_callback(
   callback->cancelled = false;
   callback->called = false;
   callback->completed = false;
-
-  callback->char_results = (char**) malloc(sizeof(callback->char_results));
-  if (callback->char_results == NULL) {
-    perror("malloc callback->char_results failed");
-    exit(1);
-  }
+  callback->persists = false;
 
   callback->n_char_results = 0;
   callback->n_handle_results = 0;
@@ -73,6 +72,7 @@ indy_callback* new_callback(
     &callback->callback_ref
   );
   NAPI_CHECK_STATUS("napi_create_reference");
+
   return callback;
 }
 
@@ -109,12 +109,18 @@ void free_callback(indy_handle_t handle) {
     hash_del(callbacks, key);
     free(key);
   }
-  if (callback->char_results != NULL) {
-    printf("freeing callback->char_results\n");
-    free(callback->char_results);
-    callback->char_results = NULL;
-  }
-  free(callback);
+  // if (callback->char_results != NULL) {
+  //   printf("freeing callback->char_results\n");
+  //   free(callback->char_results);
+  //   callback->char_results = NULL;
+  // }
+
+  // if (callback->callback_ref != NULL) {
+  //   printf("freeing callback->callback_ref\n");
+  //   free(callback->callback_ref);
+  // }
+  // free(callback);
+  delete callback;
   callback = NULL;
 }
 
