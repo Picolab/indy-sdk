@@ -1,8 +1,8 @@
 
-#include <time.h>
-#include <errno.h>
+// #include <time.h>
+// #include <errno.h>
 
-#include <napi.h>
+#include "napi.h"
 
 void complete(napi_env env, napi_status async_work_status, void* data);
 void execute(napi_env env, void* data);
@@ -45,10 +45,17 @@ void complete(
   void* data
 ) {
   printf("entering complete\n");
+
   indy_callback* callback = (indy_callback*) data;
 
-  if (!callback) {
+  if (callback == NULL) {
     printf("============================= NULL\n");
+    return;
+  }
+
+  if (async_work_status == napi_cancelled) {
+    printf("============================ CANCELLED\n");
+    // NOTE void* data already freed by macro
     return;
   }
 
@@ -59,11 +66,7 @@ void complete(
     return;
   }
 
-  if (
-    async_work_status == napi_cancelled ||
-    callback->cancelled == true
-  ) {
-    printf("============================ CANCELLED %d\n", callback->handle);
+  if (callback->cancelled == true) {
     printf("========================== FREEING CALLBACK %d\n", callback->handle);
     free_callback(callback->handle);
     return;
@@ -82,24 +85,33 @@ void complete(
     );
     NAPI_CHECK_STATUS_VOID("napi_create_async_work");
     callback = (indy_callback*) data;
+    
     if (callback->completed == true) {
       status = napi_delete_async_work(env, work);
       NAPI_CHECK_STATUS_VOID("napi_delete_async_work");
       printf("======================================== going to NEVERMIND\n");
+
       if (callback->called == true) {
         printf("============================ CALLED %d\n", callback->handle);
         printf("========================== FREEING CALLBACK %d\n", callback->handle);
         free_callback(callback->handle);
         return;
       }
+
       goto nevermind;
     }
+
     status = napi_queue_async_work(env, work);
     NAPI_CHECK_STATUS_VOID("napi_queue_async_work");
     return;
   }
 
   nevermind:
+
+  napi_handle_scope scope;
+  
+  status = napi_open_handle_scope(env, &scope);
+  NAPI_CHECK_STATUS_VOID("napi_open_handle_scope");
 
   napi_value global, err, js_callback;
 
@@ -118,13 +130,13 @@ void complete(
     napi_throw_error(env, "napi_get_reference_value");
     return;
   }
+
   if (!js_callback) {
     printf("------------------------- js_callback is NULL\n");
     printf("========================== FREEING CALLBACK %d\n", callback->handle);
     free_callback(callback->handle);
     return;
   }
-  
 
   status = napi_delete_reference(env, callback->callback_ref);
   if (status != napi_ok) {
@@ -145,26 +157,23 @@ void complete(
 
   argv[0] = err;
   size_t argc_idx = 1;
-  size_t i = 0;
-  for (; i < callback->n_handle_results; i++, argc_idx++) {
+
+  for (indy_handle_t handle : callback->handle_results) {
     napi_value res;
-    printf("attempting to bind arg %d\n", callback->handle_results[i]);
-    status = napi_create_number(env, (double) callback->handle_results[i], &res);
+    printf("attempting to bind arg %d\n", handle);
+    status = napi_create_number(env, (double) handle, &res);
     NAPI_CHECK_STATUS_VOID("napi_create_number");
     argv[argc_idx] = res;
+    argc_idx += 1;
   }
 
-  for (i = 0; i < callback->n_char_results; i++, argc_idx++) {
+  for (char* char_res : callback->char_results) {
     napi_value res;
-    printf("attempting to bind arg %s\n", callback->char_results[i]);
-    status = napi_create_string_utf8(
-      env,
-      callback->char_results[i],
-      strlen(callback->char_results[i]),
-      &res
-    );
+    printf("attempting to bind arg %s\n", char_res);
+    status = napi_create_string_utf8(env, char_res, strlen(char_res), &res);
     NAPI_CHECK_STATUS_VOID("napi_create_string_utf8");
     argv[argc_idx] = res;
+    argc_idx += 1;
   }
 
   printf("before napi_make_callback\n");
@@ -188,5 +197,8 @@ void complete(
   printf("========================== FREEING CALLBACK %d\n", callback->handle);
   free_callback(callback->handle);
   
+  status = napi_close_handle_scope(env, scope);
+  NAPI_CHECK_STATUS_VOID("napi_close_handle_scope");
+
   printf("leaving complete\n");
 }
