@@ -17,7 +17,6 @@ struct indy_callback {
   std::condition_variable cv;
   bool cancelled;
   bool completed;
-  bool called;
   bool persists;
   indy_error_t error;
   size_t n_char_results;
@@ -61,12 +60,11 @@ indy_callback* new_callback(
   // defaults
   callback->handle = handle;
   callback->cancelled = false;
-  callback->called = false;
   callback->completed = false;
   callback->persists = false;
-
   callback->n_char_results = 0;
   callback->n_handle_results = 0;
+  callback->n_bool_results = 0;
   
   status = napi_create_reference(
     env,
