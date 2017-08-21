@@ -33,7 +33,7 @@ void open_pool_ledger_on_pool_ledger_opened(
   }
 
   callback->error = error;
-  callback->handle_results[0] = pool_handle;
+  callback->handle_results.push_back(pool_handle);
   callback->n_handle_results = 1;
   callback->completed = true;
   printf("ledger_opened completed = true\n");
@@ -134,6 +134,8 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
   if (res == 0) {
     NAPI_ASYNC_CREATE(task, callback);
     NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -142,6 +144,9 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
 
 napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   printf("open_pool_ledger\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -157,10 +162,16 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], config);
 
   indy_callback* callback = new_callback(command_handle, env, argv[3]);
+
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
   set_callback(callback);
 
-  napi_value result;
-  double res = indy_open_pool_ledger(
+  res = indy_open_pool_ledger(
     command_handle,
     config_name,
     config,
@@ -170,6 +181,8 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
   if (res == 0) {
     NAPI_ASYNC_CREATE(task, callback);
     NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -179,6 +192,9 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
 napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
   printf("refresh_pool_ledger\n");
 
+  napi_value result;
+  int res;
+
   NAPI_EXPECTING_ARGS(3);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -191,10 +207,16 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
 
   indy_callback* callback = new_callback(command_handle, env, argv[2]);
+
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
   set_callback(callback);
 
-  napi_value result;
-  double res = indy_refresh_pool_ledger(
+  res = indy_refresh_pool_ledger(
     command_handle,
     pool_handle,
     refresh_pool_ledger_on_pool_ledger_refreshed
@@ -203,6 +225,8 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
   if (res == 0) {
     NAPI_ASYNC_CREATE(task, callback);
     NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -212,6 +236,9 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
 napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
   printf("close_pool_ledger\n");
 
+  napi_value result;
+  int res;
+
   NAPI_EXPECTING_ARGS(3);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -224,10 +251,16 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
 
   indy_callback* callback = new_callback(command_handle, env, argv[2]);
+
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
   set_callback(callback);
 
-  napi_value result;
-  double res = indy_close_pool_ledger(
+  res = indy_close_pool_ledger(
     command_handle,
     pool_handle,
     close_pool_ledger_on_pool_ledger_closed
@@ -236,6 +269,8 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
   if (res == 0) {
     NAPI_ASYNC_CREATE(task, callback);
     NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -245,6 +280,9 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
 napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
   printf("delete_pool_ledger_config\n");
   
+  napi_value result;
+  int res;
+
   NAPI_EXPECTING_ARGS(3);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
@@ -257,10 +295,15 @@ napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], config_name);
 
   indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
   set_callback(callback);
 
-  napi_value result;
-  double res = indy_delete_pool_ledger_config(
+  res = indy_delete_pool_ledger_config(
     command_handle,
     config_name,
     delete_pool_ledger_config_on_pool_ledger_config_deleted
@@ -269,6 +312,8 @@ napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
   if (res == 0) {
     NAPI_ASYNC_CREATE(task, callback);
     NAPI_ASYNC_START(task);
+  } else {
+    free_callback(callback->handle);
   }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
