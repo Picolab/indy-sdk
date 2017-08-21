@@ -105,10 +105,8 @@ void free_callback(indy_handle_t handle) {
   indy_callback* callback = get_callback(handle);
   if (callback == NULL) return;
   char* key = handle_to_key(handle);
-  if (key != NULL) {
-    hash_del(callbacks, key);
-    free(key);
-  }
+  hash_del(callbacks, key);
+  free(key);
   delete callback;
 }
 
