@@ -5,9 +5,18 @@ void decrypt_on_decrypted(
   const char* decrypted
 ) {
   printf("decrypt_on_decrypted\n");
-  printf("command handle %d, error %d, decrypted %s\n", command_handle, error, decrypted);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) decrypted);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void encrypt_on_encrypted(
@@ -17,9 +26,19 @@ void encrypt_on_encrypted(
   const char* nonce
 ) {
   printf("encrypt_on_encrypted\n");
-  printf("command handle %d, error %d, encrypted %s, nonce %s\n", command_handle, error, encrypted, nonce);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) encrypted);
+  callback->char_results.push_back((char*) nonce);
+  callback->n_char_results = 2;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void verify_signature_on_verified(
@@ -28,9 +47,18 @@ void verify_signature_on_verified(
   indy_bool_t verified
 ) {
   printf("verify_signature_on_verified\n");
-  printf("command handle %d, error %d, verified %d\n", command_handle, error, verified);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->bool_results.push_back(verified);
+  callback->n_bool_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void sign_on_signed(
@@ -39,9 +67,18 @@ void sign_on_signed(
   const char* signature
 ) {
   printf("sign_on_signed\n");
-  printf("command handle %d, error %d, signature %s\n", command_handle, error, signature);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) signature);
+  callback->n_char_results = 1;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void store_their_did_on_their_did_stored(
@@ -49,9 +86,16 @@ void store_their_did_on_their_did_stored(
   indy_error_t error
 ) {
   printf("store_their_did_on_their_did_stored\n");
-  printf("command handle %d, error %d\n", command_handle, error);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void replace_keys_on_keys_replaced(
@@ -61,9 +105,19 @@ void replace_keys_on_keys_replaced(
   const char* encryption_key
 ) {
   printf("replace_keys_on_keys_replaced\n");
-  printf("command handle %d, error %d, signing key %s, encryption key %s\n", command_handle, error, signing_key, encryption_key);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) signing_key);
+  callback->char_results.push_back((char*) encryption_key);
+  callback->n_char_results = 2;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 void create_and_store_my_did_on_my_did_created_and_stored(
@@ -74,13 +128,27 @@ void create_and_store_my_did_on_my_did_created_and_stored(
   const char* encryption_key
 ) {
   printf("create_and_store_my_did_on_my_did_created_and_stored\n");
-  printf("command handle %d, error %d, did %s, signing key %s, encryption key %s\n", command_handle, error, did, signing_key, encryption_key);
+  indy_callback* callback = get_callback(command_handle);
+  if (!callback) {
+    perror("FATAL pointer to callback struct was null\n");
+    exit(1);
+  }
 
-  // TODO napi_make_callback
+  std::lock_guard<std::mutex> lock(callback->mutex);
+  callback->error = error;
+  callback->char_results.push_back((char*) did);
+  callback->char_results.push_back((char*) signing_key);
+  callback->char_results.push_back((char*) encryption_key);
+  callback->n_char_results = 3;
+  callback->completed = true;
+  callback->cv.notify_one();
 }
 
 napi_value decrypt(napi_env env, napi_callback_info info) {
   printf("decrypt\n");
+  
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -101,8 +169,19 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], encrypted_msg);
   NAPI_STRING_TO_UTF8(argv[5], nonce);
 
-  napi_value result;
-  double res = indy_decrypt(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_decrypt(
     command_handle,
     wallet_handle,
     my_did,
@@ -112,12 +191,19 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
     decrypt_on_decrypted
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value encrypt(napi_env env, napi_callback_info info) {
   printf("encrypt\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(7);
 
@@ -138,8 +224,19 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], did);
   NAPI_STRING_TO_UTF8(argv[5], msg);
 
-  napi_value result;
-  double res = indy_encrypt(
+  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_encrypt(
     command_handle,
     wallet_handle,
     pool_handle,
@@ -149,12 +246,19 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
     encrypt_on_encrypted
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value verify_signature(napi_env env, napi_callback_info info) {
   printf("verify_signature\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(6);
 
@@ -173,8 +277,19 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], did);
   NAPI_STRING_TO_UTF8(argv[4], signature);
 
-  napi_value result;
-  double res = indy_verify_signature(
+  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_verify_signature(
     command_handle,
     wallet_handle,
     pool_handle,
@@ -183,12 +298,19 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
     verify_signature_on_verified
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value sign(napi_env env, napi_callback_info info) {
   printf("sign\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -205,8 +327,19 @@ napi_value sign(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], did);
   NAPI_STRING_TO_UTF8(argv[3], msg);
 
-  napi_value result;
-  double res = indy_sign(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_sign(
     command_handle,
     wallet_handle,
     did,
@@ -214,12 +347,19 @@ napi_value sign(napi_env env, napi_callback_info info) {
     sign_on_signed
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value store_their_did(napi_env env, napi_callback_info info) {
   printf("store_their_did\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -234,13 +374,28 @@ napi_value store_their_did(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], identity_json);
 
-  napi_value result;
-  double res = indy_store_their_did(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_store_their_did(
     command_handle,
     wallet_handle,
     identity_json,
     store_their_did_on_their_did_stored
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
@@ -248,6 +403,9 @@ napi_value store_their_did(napi_env env, napi_callback_info info) {
 
 napi_value replace_keys(napi_env env, napi_callback_info info) {
   printf("replace_keys\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(5);
 
@@ -264,8 +422,19 @@ napi_value replace_keys(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], did);
   NAPI_STRING_TO_UTF8(argv[3], identity_json);
 
-  napi_value result;
-  double res = indy_replace_keys(
+  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_replace_keys(
     command_handle,
     wallet_handle,
     did,
@@ -273,12 +442,19 @@ napi_value replace_keys(napi_env env, napi_callback_info info) {
     replace_keys_on_keys_replaced
   );
 
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
+
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
 }
 
 napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
   printf("create_and_store_my_did\n");
+
+  napi_value result;
+  int res;
 
   NAPI_EXPECTING_ARGS(4);
 
@@ -293,13 +469,28 @@ napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], did_json);
 
-  napi_value result;
-  double res = indy_create_and_store_my_did(
+  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  if (!callback) {
+    res = 1;
+    NAPI_DOUBLE_TO_NUMBER(res, result);
+    return result;
+  }
+
+  set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
+
+  res = indy_create_and_store_my_did(
     command_handle,
     wallet_handle,
     did_json,
     create_and_store_my_did_on_my_did_created_and_stored
   );
+
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
+  }
 
   NAPI_DOUBLE_TO_NUMBER(res, result);
   return result;
