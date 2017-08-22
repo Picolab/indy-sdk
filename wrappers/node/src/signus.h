@@ -2,7 +2,8 @@
 void decrypt_on_decrypted(
   indy_handle_t command_handle,
   indy_error_t error,
-  const char* decrypted
+  const indy_u8_t* decrypted,
+  indy_u32_t decrypted_length
 ) {
   #ifdef INDY_LOG_DEBUG
   printf("decrypt_on_decrypted\n");
@@ -21,8 +22,10 @@ void decrypt_on_decrypted(
 void encrypt_on_encrypted(
   indy_handle_t command_handle,
   indy_error_t error,
-  const char* encrypted,
-  const char* nonce
+  const indy_u8_t* encrypted,
+  indy_u32_t encrypted_length,
+  const indy_u8_t* nonce,
+  indy_u32_t nonce_length
 ) {
   #ifdef INDY_LOG_DEBUG
   printf("encrypt_on_encrypted\n");
@@ -61,7 +64,8 @@ void verify_signature_on_verified(
 void sign_on_signed(
   indy_handle_t command_handle,
   indy_error_t error,
-  const char* signature
+  const indy_u8_t* signature,
+  indy_u32_t signature_length
 ) {
   #ifdef INDY_LOG_DEBUG
   printf("sign_on_signed\n");
@@ -146,27 +150,33 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(7);
+  NAPI_EXPECTING_ARGS(9);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
   NAPI_REQUIRED_STRING(argv[2]);
   NAPI_REQUIRED_STRING(argv[3]);
-  NAPI_REQUIRED_STRING(argv[4]);
-  NAPI_REQUIRED_STRING(argv[5]);
-  NAPI_REQUIRED_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[7]);
+  NAPI_REQUIRED_FUNCTION(argv[8]);
 
   indy_handle_t command_handle, wallet_handle;
+  indy_u32_t encrypted_message, nonce;
+  indy_u32_t encrypted_message_length, nonce_length;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], my_did);
   NAPI_STRING_TO_UTF8(argv[3], did);
-  NAPI_STRING_TO_UTF8(argv[4], encrypted_msg);
-  NAPI_STRING_TO_UTF8(argv[5], nonce);
+  NAPI_NUMBER_TO_UINT32(argv[4], encrypted_message);
+  NAPI_NUMBER_TO_UINT32(argv[5], encrypted_message_length);
+  NAPI_NUMBER_TO_UINT32(argv[6], nonce);
+  NAPI_NUMBER_TO_UINT32(argv[7], nonce_length);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[6]);
+  js_callbacks.push_back(argv[8]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -179,13 +189,19 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
   NAPI_ASYNC_CREATE(task, callback);
   NAPI_ASYNC_START(task);
 
+  // explicit assignments to shut the compiler up
+  indy_u8_t enc_msg = static_cast<indy_u8_t>(encrypted_message);
+  indy_u8_t n = static_cast<indy_u8_t>(nonce);
+
   res = indy_decrypt(
     command_handle,
     wallet_handle,
     my_did,
     did,
-    encrypted_msg,
-    nonce,
+    &enc_msg,
+    encrypted_message_length,
+    &n,
+    nonce_length,
     decrypt_on_decrypted
   );
 
@@ -205,27 +221,31 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(7);
+  NAPI_EXPECTING_ARGS(8);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
   NAPI_REQUIRED_NUMBER(argv[2]);
   NAPI_REQUIRED_STRING(argv[3]);
   NAPI_REQUIRED_STRING(argv[4]);
-  NAPI_REQUIRED_STRING(argv[5]);
-  NAPI_REQUIRED_FUNCTION(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[6]);
+  NAPI_REQUIRED_FUNCTION(argv[7]);
 
   indy_handle_t command_handle, wallet_handle, pool_handle;
+  indy_u32_t message;
+  indy_u32_t message_length;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_NUMBER_TO_INT32(argv[2], pool_handle);
   NAPI_STRING_TO_UTF8(argv[3], my_did);
   NAPI_STRING_TO_UTF8(argv[4], did);
-  NAPI_STRING_TO_UTF8(argv[5], msg);
+  NAPI_NUMBER_TO_UINT32(argv[5], message);
+  NAPI_NUMBER_TO_UINT32(argv[6], message_length);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[6]);
+  js_callbacks.push_back(argv[7]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -238,13 +258,17 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
   NAPI_ASYNC_CREATE(task, callback);
   NAPI_ASYNC_START(task);
 
+  // explicit casts to silence the compiler
+  indy_u8_t msg = static_cast<indy_u8_t>(message);
+
   res = indy_encrypt(
     command_handle,
     wallet_handle,
     pool_handle,
     my_did,
     did,
-    msg,
+    &msg,
+    message_length,
     encrypt_on_encrypted
   );
 
@@ -264,25 +288,32 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(6);
+  NAPI_EXPECTING_ARGS(9);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
   NAPI_REQUIRED_NUMBER(argv[2]);
   NAPI_REQUIRED_STRING(argv[3]);
-  NAPI_REQUIRED_STRING(argv[4]);
-  NAPI_REQUIRED_FUNCTION(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[5]);
+  NAPI_REQUIRED_NUMBER(argv[6]);
+  NAPI_REQUIRED_NUMBER(argv[7]);
+  NAPI_REQUIRED_FUNCTION(argv[8]);
 
   indy_handle_t command_handle, wallet_handle, pool_handle;
+  indy_u32_t message, message_length, signature, signature_length;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_NUMBER_TO_INT32(argv[2], pool_handle);
   NAPI_STRING_TO_UTF8(argv[3], did);
-  NAPI_STRING_TO_UTF8(argv[4], signature);
+  NAPI_NUMBER_TO_UINT32(argv[4], message);
+  NAPI_NUMBER_TO_UINT32(argv[5], message_length);
+  NAPI_NUMBER_TO_UINT32(argv[6], signature);
+  NAPI_NUMBER_TO_UINT32(argv[7], signature_length);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[5]);
+  js_callbacks.push_back(argv[8]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -295,12 +326,19 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
   NAPI_ASYNC_CREATE(task, callback);
   NAPI_ASYNC_START(task);
 
+  // explicit casts to silence the compiler
+  indy_u8_t msg = static_cast<indy_u8_t>(message);
+  indy_u8_t sig = static_cast<indy_u8_t>(signature);
+
   res = indy_verify_signature(
     command_handle,
     wallet_handle,
     pool_handle,
     did,
-    signature,
+    &msg,
+    message_length,
+    &sig,
+    signature_length,
     verify_signature_on_verified
   );
 
@@ -320,23 +358,26 @@ napi_value sign(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(5);
+  NAPI_EXPECTING_ARGS(6);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
   NAPI_REQUIRED_STRING(argv[2]);
-  NAPI_REQUIRED_STRING(argv[3]);
-  NAPI_REQUIRED_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[3]);
+  NAPI_REQUIRED_NUMBER(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, wallet_handle;
+  indy_u32_t message, message_length;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], did);
-  NAPI_STRING_TO_UTF8(argv[3], msg);
+  NAPI_NUMBER_TO_UINT32(argv[3], message);
+  NAPI_NUMBER_TO_UINT32(argv[4], message_length);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[4]);
+  js_callbacks.push_back(argv[5]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -349,11 +390,15 @@ napi_value sign(napi_env env, napi_callback_info info) {
   NAPI_ASYNC_CREATE(task, callback);
   NAPI_ASYNC_START(task);
 
+  // explicit casts to silence the compiler
+  indy_u8_t msg = static_cast<indy_u8_t>(message);
+
   res = indy_sign(
     command_handle,
     wallet_handle,
     did,
-    msg,
+    &msg,
+    message_length,
     sign_on_signed
   );
 
