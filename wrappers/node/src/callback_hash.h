@@ -39,11 +39,11 @@ indy_callback* new_callback(
   indy_callback* callback = new indy_callback;
 
   if (!callback) {
-    perror("malloc indy_callback failed");
-    exit(1);
+    #ifdef INDY_LOG_ERROR
+    printf("FATAL failed to allocate an indy_callback struct for handle %d\n", handle);
+    #endif
+    return NULL;
   }
-
-  printf("======================= ALLOCATED callback %d\n", handle);
 
   // defaults
   callback->handle = handle;
@@ -52,12 +52,20 @@ indy_callback* new_callback(
   callback->multiple = false;
   callback->creates_new_callback_from_results = false;
   
+  #ifdef INDY_LOG_DEBUG
+  printf("creating strong references to javascript values for handle %d\n", handle);
+  #endif
+
   for (napi_value js_callback : js_callbacks) {
     napi_ref callback_ref;
     status = napi_create_reference(env, js_callback, 1, &callback_ref);
     NAPI_CHECK_STATUS("napi_create_reference");
     callback->callback_refs.push_back(callback_ref);
   }
+
+  #ifdef INDY_LOG_DEBUG
+  printf("ALLOCATED indy_callback struct for handle %d\n", handle);
+  #endif
 
   return callback;
 }
@@ -68,8 +76,11 @@ indy_callback* new_callback_from_existing(
   bool creates_new_callback_from_results,
   bool multiple
 ) {
+  #ifdef INDY_LOG_DEBUG
+  printf("copying javascript callback values for handle %d to new indy_callback struct\n", existing_callback->handle);
+  #endif
+
   napi_status status;
-  // copy the current callback functions to the new struct
   std::vector<napi_value> js_callbacks;
   for (napi_ref callback_ref : existing_callback->callback_refs) {
     napi_value js_callback;
@@ -78,12 +89,17 @@ indy_callback* new_callback_from_existing(
     js_callbacks.push_back(js_callback);
   }
   indy_callback* callback = new_callback(existing_callback->handle_results.at(0), env, js_callbacks);
+  if (!callback) return NULL;
   callback->creates_new_callback_from_results = creates_new_callback_from_results;
   callback->multiple = multiple;
   return callback;
 }
 
 void reset_callback(indy_callback* callback) {
+  if (!callback) return;
+  #ifdef INDY_LOG_DEBUG
+  printf("resetting indy_callback struct result vectors for handle %d\n", callback->handle);
+  #endif
   callback->cancelled = false;
   callback->completed = false;
   callback->error = Success;
@@ -96,11 +112,18 @@ indy_callback* get_callback(indy_handle_t handle) {
   try {
     return callbacks.at(handle);
   } catch (std::out_of_range ex) {
+    #ifdef INDY_LOG_ERROR
+    printf("failed to find indy_callback struct for handle %d\n", handle);
+    #endif
     return NULL;
   }
 }
 
 void set_callback(indy_callback* callback) {
+  if (!callback) return;
+  #ifdef INDY_LOG_DEBUG
+  printf("adding indy_callback struct for handle %d to global map\n", callback->handle);
+  #endif
   callbacks.insert(
     std::pair<
       indy_handle_t,
@@ -115,6 +138,9 @@ void set_callback(indy_callback* callback) {
 void free_callback(indy_handle_t handle) {
   indy_callback* callback = get_callback(handle);
   if (callback == NULL) return;
+  #ifdef INDY_LOG_DEBUG
+  printf("deallocating and removing indy_callback struct for handle %d from global map\n", handle);
+  #endif
   callbacks.erase(handle);
   delete callback;
 }
