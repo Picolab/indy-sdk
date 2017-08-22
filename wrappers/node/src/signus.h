@@ -14,7 +14,6 @@ void decrypt_on_decrypted(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) decrypted);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -36,7 +35,6 @@ void encrypt_on_encrypted(
   callback->error = error;
   callback->char_results.push_back((char*) encrypted);
   callback->char_results.push_back((char*) nonce);
-  callback->n_char_results = 2;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -56,7 +54,6 @@ void verify_signature_on_verified(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->bool_results.push_back(verified);
-  callback->n_bool_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -76,7 +73,6 @@ void sign_on_signed(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) signature);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -115,7 +111,6 @@ void replace_keys_on_keys_replaced(
   callback->error = error;
   callback->char_results.push_back((char*) signing_key);
   callback->char_results.push_back((char*) encryption_key);
-  callback->n_char_results = 2;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -139,7 +134,6 @@ void create_and_store_my_did_on_my_did_created_and_stored(
   callback->char_results.push_back((char*) did);
   callback->char_results.push_back((char*) signing_key);
   callback->char_results.push_back((char*) encryption_key);
-  callback->n_char_results = 3;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -169,7 +163,9 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], encrypted_msg);
   NAPI_STRING_TO_UTF8(argv[5], nonce);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -224,7 +220,9 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], did);
   NAPI_STRING_TO_UTF8(argv[5], msg);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -277,7 +275,9 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], did);
   NAPI_STRING_TO_UTF8(argv[4], signature);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -327,7 +327,9 @@ napi_value sign(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], did);
   NAPI_STRING_TO_UTF8(argv[3], msg);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -374,7 +376,9 @@ napi_value store_their_did(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], identity_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -422,7 +426,9 @@ napi_value replace_keys(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], did);
   NAPI_STRING_TO_UTF8(argv[3], identity_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -469,7 +475,9 @@ napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], did_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
