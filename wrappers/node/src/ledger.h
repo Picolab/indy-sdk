@@ -14,7 +14,6 @@ void sign_and_submit_request_on_request_signed_and_submitted(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_result_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -34,7 +33,6 @@ void submit_request_on_request_submitted(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_result_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -54,7 +52,6 @@ void build_get_ddo_request_on_get_ddo_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_result_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -74,7 +71,6 @@ void build_nym_request_on_nym_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -94,7 +90,6 @@ void build_attrib_request_on_attrib_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -114,7 +109,6 @@ void build_get_attrib_request_on_get_attrib_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -134,7 +128,6 @@ void build_get_nym_request_on_get_nym_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -154,7 +147,6 @@ void build_schema_request_on_schema_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -174,7 +166,6 @@ void build_get_schema_request_on_get_schema_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -194,7 +185,6 @@ void build_claim_def_txn_on_claim_def_txn_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -214,7 +204,6 @@ void build_get_claim_def_txn_on_get_claim_def_txn_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -234,7 +223,6 @@ void build_node_request_on_node_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -254,7 +242,6 @@ void build_get_txn_request_on_get_txn_request_built(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) request_json);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -282,7 +269,9 @@ napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], submitter_did);
   NAPI_STRING_TO_UTF8(argv[4], request_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -330,7 +319,9 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], pool_handle);
   NAPI_STRING_TO_UTF8(argv[2], request_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -376,7 +367,9 @@ napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], target_did);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -428,7 +421,9 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], alias);
   NAPI_STRING_TO_UTF8(argv[5], role);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -483,7 +478,9 @@ napi_value build_attrib_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], raw);
   NAPI_STRING_TO_UTF8(argv[5], encrypted);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -534,7 +531,9 @@ napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], target_did);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -581,7 +580,9 @@ napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], target_did);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -627,7 +628,9 @@ napi_value build_schema_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_STRING_TO_UTF8(argv[2], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -675,7 +678,9 @@ napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], dest);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -726,7 +731,9 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -778,7 +785,9 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], signature_type);
   NAPI_STRING_TO_UTF8(argv[4], origin);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -828,7 +837,9 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[2], target_did);
   NAPI_STRING_TO_UTF8(argv[3], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -876,7 +887,9 @@ napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[1], submitter_did);
   NAPI_NUMBER_TO_INT32(argv[2], data);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
