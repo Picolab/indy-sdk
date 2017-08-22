@@ -4,12 +4,12 @@ void decrypt_on_decrypted(
   indy_error_t error,
   const char* decrypted
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("decrypt_on_decrypted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -24,12 +24,12 @@ void encrypt_on_encrypted(
   const char* encrypted,
   const char* nonce
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("encrypt_on_encrypted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -44,12 +44,12 @@ void verify_signature_on_verified(
   indy_error_t error,
   indy_bool_t verified
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("verify_signature_on_verified\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -63,12 +63,12 @@ void sign_on_signed(
   indy_error_t error,
   const char* signature
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("sign_on_signed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -81,12 +81,12 @@ void store_their_did_on_their_did_stored(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("store_their_did_on_their_did_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -100,12 +100,12 @@ void replace_keys_on_keys_replaced(
   const char* signing_key,
   const char* encryption_key
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("replace_keys_on_keys_replaced\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -122,12 +122,12 @@ void create_and_store_my_did_on_my_did_created_and_stored(
   const char* signing_key,
   const char* encryption_key
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_and_store_my_did_on_my_did_created_and_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -139,7 +139,9 @@ void create_and_store_my_did_on_my_did_created_and_stored(
 }
 
 napi_value decrypt(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("decrypt\n");
+  #endif
   
   napi_value result;
   int res;
@@ -196,7 +198,9 @@ napi_value decrypt(napi_env env, napi_callback_info info) {
 }
 
 napi_value encrypt(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("encrypt\n");
+  #endif
 
   napi_value result;
   int res;
@@ -253,7 +257,9 @@ napi_value encrypt(napi_env env, napi_callback_info info) {
 }
 
 napi_value verify_signature(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("verify_signature\n");
+  #endif
 
   napi_value result;
   int res;
@@ -307,7 +313,9 @@ napi_value verify_signature(napi_env env, napi_callback_info info) {
 }
 
 napi_value sign(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("sign\n");
+  #endif
 
   napi_value result;
   int res;
@@ -358,7 +366,9 @@ napi_value sign(napi_env env, napi_callback_info info) {
 }
 
 napi_value store_their_did(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("store_their_did\n");
+  #endif
 
   napi_value result;
   int res;
@@ -406,7 +416,9 @@ napi_value store_their_did(napi_env env, napi_callback_info info) {
 }
 
 napi_value replace_keys(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("replace_keys\n");
+  #endif
 
   napi_value result;
   int res;
@@ -457,7 +469,9 @@ napi_value replace_keys(napi_env env, napi_callback_info info) {
 }
 
 napi_value create_and_store_my_did(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_and_store_my_did\n");
+  #endif
 
   napi_value result;
   int res;
