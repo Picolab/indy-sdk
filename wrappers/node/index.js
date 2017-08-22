@@ -20,7 +20,6 @@ Object.keys(indy).forEach(function(key) {
     } else {
       handle += 1
     }
-    console.log('HANDLE', handle)
     return func.call(indy, handle, ...arguments)
   }
 })
