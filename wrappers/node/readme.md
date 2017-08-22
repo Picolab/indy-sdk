@@ -14,6 +14,16 @@ this addon is still experimental, expect some parts of it to function incorrectl
 * copy the header files from `../libindy/include` to `./include`
 * run `npm install` from `.`
 
+## supporting shell scripts
+
+* `install`: reinstall node-gyp (and other dependencies) and recompile all native sources
+* `build`: compile all native sources (accepts `--debug` flag to compile with debug symbols)
+* `test`: run javascript test suite
+* `libindy-symbols`: list exported symbols from libindy
+* `libindy`: build libindy
+* `xcode`: generate a xcode project to run sources against lldb
+* `test-loop`: run test suite until a failure occurs
+
 ## debugging
 
 * `nvm use || nvm install`
@@ -31,3 +41,4 @@ this addon is still experimental, expect some parts of it to function incorrectl
 * ci with travis and appveyor
 * fully redistributable package
 * `register_wallet_type`
+* it ought to be possible to (mostly) automate the generation of bindings from the output of `npm run libindy-symbols`
