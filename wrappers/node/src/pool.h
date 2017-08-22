@@ -3,12 +3,12 @@ void create_pool_ledger_config_on_pool_ledger_config_created(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_pool_ledger_config_on_pool_ledger_config_created\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -21,12 +21,12 @@ void open_pool_ledger_on_pool_ledger_opened(
   indy_error_t error,
   indy_handle_t pool_handle
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("open_pool_ledger_on_pool_ledger_opened\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    printf("FATAL pointer to callback struct was null\n");
-    return;
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -39,12 +39,12 @@ void refresh_pool_ledger_on_pool_ledger_refreshed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("refresh_pool_ledger_on_pool_ledger_refreshed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    printf("FATAL pointer to callback struct was null\n");
-    return;
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -56,12 +56,12 @@ void close_pool_ledger_on_pool_ledger_closed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("close_pool_ledger_on_pool_ledger_closed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    printf("FATAL pointer to callback struct was null\n");
-    return;
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -73,12 +73,12 @@ void delete_pool_ledger_config_on_pool_ledger_config_deleted(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("delete_pool_ledger_config_on_pool_ledger_config_deleted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    printf("FATAL pointer to callback struct was null\n");
-    return;
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -87,7 +87,9 @@ void delete_pool_ledger_config_on_pool_ledger_config_deleted(
 }
 
 napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_pool_ledger_config\n");
+  #endif
 
   napi_value result;
   int res;
@@ -135,7 +137,9 @@ napi_value create_pool_ledger_config(napi_env env, napi_callback_info info) {
 }
 
 napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("open_pool_ledger\n");
+  #endif
 
   napi_value result;
   int res;
@@ -183,7 +187,9 @@ napi_value open_pool_ledger(napi_env env, napi_callback_info info) {
 }
 
 napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("refresh_pool_ledger\n");
+  #endif
 
   napi_value result;
   int res;
@@ -228,7 +234,9 @@ napi_value refresh_pool_ledger(napi_env env, napi_callback_info info) {
 }
 
 napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("close_pool_ledger\n");
+  #endif
 
   napi_value result;
   int res;
@@ -273,7 +281,9 @@ napi_value close_pool_ledger(napi_env env, napi_callback_info info) {
 }
 
 napi_value delete_pool_ledger_config(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("delete_pool_ledger_config\n");
+  #endif
   
   napi_value result;
   int res;
