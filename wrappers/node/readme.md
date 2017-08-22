@@ -1,9 +1,7 @@
 
-# node bindings to libindy
+# libindy for node.js
 
-this addon is still experimental, expect some parts of it to function incorrectly.
-
-[n-api](https://npmjs.org/package/node-addon-api) is being used to call into c++, which means only node v8.0.0 and above will work (at least, until n-api has been backported to older node versions)
+this addon is still experimental, expect some parts of it to function incorrectly. it uses [n-api](https://npmjs.org/package/node-addon-api) to call into node from c++.
 
 ## prerequisites
 
@@ -12,17 +10,24 @@ this addon is still experimental, expect some parts of it to function incorrectl
 ## building
 
 * build `libindy` by following [platform-specific instructions](https://github.com/hyperledger/indy-sdk/tree/master/doc)
-* copy the resulting static library contained in `../libindy/target/$target_name` to `./include/`
-* copy the header files contained in `../libindy/include` to `./include`
+* copy the resulting static library from `../libindy/target/$target_name` to `./include/`
+* copy the header files from `../libindy/include` to `./include`
 * run `npm install` from `.`
-* finally, either:
-  - copy the resulting addon (`indy.node`) from `./build/Release` into your project
-  - or copy this directory into your project's `node_modules` directory and `require` as `indy-sdk`
 
 ## debugging
 
-* ensure you're running the correct node version with `nvm use || nvm install`
-* build in debug mode `npm install --debug`
-* create and open an xcode project `npm run xcode`
-* edit the project to use the scheme file located at `test/libindy.xcscheme`
+* `nvm use || nvm install`
+* `npm install --debug`
+* `npm run xcode`
+* import project scheme from `test/libindy.xcscheme`
 * run
+
+## todos
+
+* find a better way to allocate and schedule new callbacks from callbacks that return handle results (due to limitations in n-api, the way it's been implemented is quite leaky. modifying libindy to know about n-api would help loads here.)
+* test with gcc
+* javascript tests
+* tests against a sovrin node
+* ci with travis and appveyor
+* fully redistributable package
+* `register_wallet_type`
