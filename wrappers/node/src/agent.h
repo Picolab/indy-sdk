@@ -4,12 +4,12 @@ void agent_connect_on_connect(
   indy_error_t error,
   indy_handle_t connection_handle
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_connect_on_connect\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -24,12 +24,12 @@ void agent_connect_on_message(
   indy_error_t error,
   const char* message
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_connect_on_message\n");
+  #endif
+
   indy_callback* callback = get_callback(connection_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -43,12 +43,12 @@ void agent_listen_on_listening(
   indy_error_t error,
   indy_handle_t listener_handle
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_listen_on_listening\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -65,12 +65,12 @@ void agent_listen_on_connection(
   const char* sender_did,
   const char* receiver_did
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_listen_on_connection\n");
+  #endif
+
   indy_callback* callback = get_callback(listener_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -87,12 +87,12 @@ void agent_listen_on_message(
   indy_error_t error,
   const char* message
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_listen_on_message\n");
+  #endif
+
   indy_callback* callback = get_callback(connection_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -105,12 +105,12 @@ void agent_add_identity_on_identity_added(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_add_identity_on_identity_added\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -122,12 +122,12 @@ void agent_remove_identity_on_identity_removed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_remove_identity_on_identity_removed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -139,12 +139,12 @@ void agent_send_on_message_sent(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_send_on_message_sent\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -156,12 +156,12 @@ void agent_close_connection_on_connection_closed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_close_connection_on_connection_closed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -173,12 +173,12 @@ void agent_close_listener_on_listener_closed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_close_listener\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -187,7 +187,9 @@ void agent_close_listener_on_listener_closed(
 }
 
 napi_value agent_add_identity(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_add_identity\n");
+  #endif
 
   napi_value result;
   int res;
@@ -241,7 +243,9 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_close_connection(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_close_connection\n");
+  #endif
 
   napi_value result;
   int res;
@@ -286,7 +290,9 @@ napi_value agent_close_connection(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_close_listener(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_close_listener\n");
+  #endif
 
   napi_value result;
   int res;
@@ -331,7 +337,9 @@ napi_value agent_close_listener(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_connect(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_connect\n");
+  #endif
 
   napi_value result;
   int res;
@@ -391,7 +399,9 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_listen(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_listen\n");
+  #endif
 
   napi_value result;
   int res;
@@ -445,7 +455,9 @@ napi_value agent_listen(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_remove_identity\n");
+  #endif
 
   napi_value result;
   int res;
@@ -496,7 +508,9 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
 }
 
 napi_value agent_send(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("agent_send\n");
+  #endif
 
   napi_value result;
   int res;
