@@ -14,11 +14,11 @@ void agent_connect_on_connect(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->handle_results.push_back(connection_handle);
-  callback->n_handle_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
 
+// NOTE called multiple times
 void agent_connect_on_message(
   indy_handle_t connection_handle,
   indy_error_t error,
@@ -34,7 +34,6 @@ void agent_connect_on_message(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) message);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -54,11 +53,11 @@ void agent_listen_on_listening(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->handle_results.push_back(listener_handle);
-  callback->n_handle_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
 
+// NOTE called multiple times
 void agent_listen_on_connection(
   indy_handle_t listener_handle,
   indy_error_t error,
@@ -76,14 +75,13 @@ void agent_listen_on_connection(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->handle_results.push_back(connection_handle);
-  callback->n_handle_results = 1;
   callback->char_results.push_back((char*) sender_did);
   callback->char_results.push_back((char*) receiver_did);
-  callback->n_char_results = 2;
   callback->completed = true;
   callback->cv.notify_one();
 }
 
+// NOTE called multiple times
 void agent_listen_on_message(
   indy_handle_t connection_handle,
   indy_error_t error,
@@ -99,7 +97,6 @@ void agent_listen_on_message(
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
   callback->char_results.push_back((char*) message);
-  callback->n_char_results = 1;
   callback->completed = true;
   callback->cv.notify_one();
 }
@@ -212,7 +209,9 @@ napi_value agent_add_identity(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[3], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[4], did);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -258,7 +257,9 @@ napi_value agent_close_connection(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[2]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -301,7 +302,9 @@ napi_value agent_close_listener(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], listener_handle);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[2]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -329,10 +332,6 @@ napi_value agent_close_listener(napi_env env, napi_callback_info info) {
 
 napi_value agent_connect(napi_env env, napi_callback_info info) {
   printf("agent_connect\n");
-  
-  // TODO
-  perror("TODO callbacks for agent_listen");
-  exit(1);
 
   napi_value result;
   int res;
@@ -355,12 +354,18 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[3], sender_did);
   NAPI_STRING_TO_UTF8(argv[4], receiver_did);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
     return result;
   }
+
+  callback->libindy_method = "agent_connect_connect";
+  callback->creates_new_callback_from_results = true;
 
   set_callback(callback);
 
@@ -388,10 +393,6 @@ napi_value agent_connect(napi_env env, napi_callback_info info) {
 napi_value agent_listen(napi_env env, napi_callback_info info) {
   printf("agent_listen\n");
 
-  // TODO
-  perror("TODO callbacks for agent_listen");
-  exit(1);
-
   napi_value result;
   int res;
 
@@ -408,14 +409,24 @@ napi_value agent_listen(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_STRING_TO_UTF8(argv[1], endpoint);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[2]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[2]);
+  js_callbacks.push_back(argv[3]);
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
     return result;
   }
 
+  callback->libindy_method = "agent_listen_listening";
+  callback->creates_new_callback_from_results = true;
+
   set_callback(callback);
+
+  NAPI_ASYNC_CREATE(task, callback);
+  NAPI_ASYNC_START(task);
 
   res = indy_agent_listen(
     command_handle,
@@ -425,11 +436,8 @@ napi_value agent_listen(napi_env env, napi_callback_info info) {
     agent_listen_on_message
   );
 
-  if (res == 0) {
-    NAPI_ASYNC_CREATE(task, callback);
-    NAPI_ASYNC_START(task);
-  } else {
-    free_callback(callback->handle);
+  if (res != 0) {
+    NAPI_ASYNC_CANCEL(task);
   }
   
   NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -457,7 +465,9 @@ napi_value agent_remove_identity(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[2], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[3], did);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -504,7 +514,9 @@ napi_value agent_send(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], connection_handle);
   NAPI_STRING_TO_UTF8(argv[2], message);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
