@@ -5,7 +5,7 @@
 
 #include "logging_macros.h"
 #include "napi_macros.h"
-#include "callback_hash.h"
+#include "indy_callback.h"
 #include "napi_util.h"
 
 #include "agent.h"

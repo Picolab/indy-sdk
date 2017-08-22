@@ -1,6 +1,6 @@
 
-#ifndef CALLBACK_HASH_INCLUDED
-#define CALLBACK_HASH_INCLUDED
+#ifndef INDY_CALLBACK_INCLUDED
+#define INDY_CALLBACK_INCLUDED
 
 #include <map>
 #include <thread>
