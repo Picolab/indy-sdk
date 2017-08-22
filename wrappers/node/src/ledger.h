@@ -4,12 +4,12 @@ void sign_and_submit_request_on_request_signed_and_submitted(
   indy_error_t error,
   const char* request_result_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("sign_and_submit_request_on_request_signed_and_submitted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -23,12 +23,12 @@ void submit_request_on_request_submitted(
   indy_error_t error,
   const char* request_result_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("submit_request_on_request_submitted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -42,12 +42,12 @@ void build_get_ddo_request_on_get_ddo_request_built(
   indy_error_t error,
   const char* request_result_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_ddo_request_on_get_ddo_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -61,12 +61,12 @@ void build_nym_request_on_nym_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_nym_request_on_nym_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -80,12 +80,12 @@ void build_attrib_request_on_attrib_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_attrib_request_on_attrib_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -99,12 +99,12 @@ void build_get_attrib_request_on_get_attrib_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_attrib_request_on_get_attrib_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -118,12 +118,12 @@ void build_get_nym_request_on_get_nym_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_nym_request_on_get_nym_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -137,12 +137,12 @@ void build_schema_request_on_schema_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_schema_request_on_schema_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -156,12 +156,12 @@ void build_get_schema_request_on_get_schema_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_schema_request_on_get_schema_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -175,12 +175,12 @@ void build_claim_def_txn_on_claim_def_txn_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_claim_def_txn_on_claim_def_txn_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -194,12 +194,12 @@ void build_get_claim_def_txn_on_get_claim_def_txn_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_claim_def_txn_on_get_claim_def_txn_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -213,12 +213,12 @@ void build_node_request_on_node_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_node_request_on_node_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -232,12 +232,12 @@ void build_get_txn_request_on_get_txn_request_built(
   indy_error_t error,
   const char* request_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_txn_request_on_get_txn_request_built\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -247,7 +247,9 @@ void build_get_txn_request_on_get_txn_request_built(
 }
 
 napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("sign_and_submit_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -301,7 +303,9 @@ napi_value sign_and_submit_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value submit_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("submit_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -349,7 +353,9 @@ napi_value submit_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_ddo_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -397,7 +403,9 @@ napi_value build_get_ddo_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_nym_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_nym_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -454,7 +462,9 @@ napi_value build_nym_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_attrib_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_attrib_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -511,7 +521,9 @@ napi_value build_attrib_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_attrib_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -562,7 +574,9 @@ napi_value build_get_attrib_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_nym_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -610,7 +624,9 @@ napi_value build_get_nym_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_schema_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_schema_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -658,7 +674,9 @@ napi_value build_schema_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_schema_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -709,7 +727,9 @@ napi_value build_get_schema_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_claim_def_txn\n");
+  #endif
 
   napi_value result;
   int res;
@@ -763,7 +783,9 @@ napi_value build_claim_def_txn(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_claim_def_txn\n");
+  #endif
 
   napi_value result;
   int res;
@@ -817,7 +839,9 @@ napi_value build_get_claim_def_txn(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_node_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_node_request\n");
+  #endif
 
   napi_value result;
   int res;
@@ -868,7 +892,9 @@ napi_value build_node_request(napi_env env, napi_callback_info info) {
 }
 
 napi_value build_get_txn_request(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("build_get_txn_request\n");
+  #endif
 
   napi_value result;
   int res;
