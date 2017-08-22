@@ -151,6 +151,19 @@
   }
 #endif
 
+#ifndef NAPI_NUMBER_TO_UINT32
+#define NAPI_NUMBER_TO_UINT32(number, ui32) \
+  NAPI_TYPEOF(number); \
+  if (type != napi_number) { \
+    ui32 = 0; \
+  } else { \
+    status = napi_get_value_uint32( \
+      env, number, &ui32 \
+    ); \
+    NAPI_CHECK_STATUS("napi_get_value_uint32"); \
+  }
+#endif
+
 #ifndef NAPI_STRING_TO_UTF8
 #define NAPI_STRING_TO_UTF8(string, utf8) \
   NAPI_TYPEOF(string); \
