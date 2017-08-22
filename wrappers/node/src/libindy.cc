@@ -3,6 +3,7 @@
 #include "indy_types.h"
 #include "indy_core.h"
 
+#include "logging_macros.h"
 #include "napi_macros.h"
 #include "callback_hash.h"
 #include "napi_util.h"
@@ -20,8 +21,10 @@ void init(
   napi_value module,
   void* priv
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("TRACE init\n");
-
+  #endif
+  
   napi_status status;
   napi_value fn;
 
