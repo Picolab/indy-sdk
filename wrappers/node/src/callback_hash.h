@@ -2,50 +2,38 @@
 #ifndef CALLBACK_HASH_INCLUDED
 #define CALLBACK_HASH_INCLUDED
 
+#include <map>
 #include <thread>
 
 #include "napi.h"
 #include "indy_core.h"
 #include "indy_types.h"
 
-#include "hash/hash.h"
-
 struct indy_callback {
+  const char* libindy_method;
   indy_handle_t handle;
-  napi_ref callback_ref;
-  std::mutex mutex;
-  std::condition_variable cv;
+  indy_error_t error;
   bool cancelled;
   bool completed;
-  bool persists;
-  indy_error_t error;
-  size_t n_char_results;
+  bool multiple;
+  bool has_new;
+  bool creates_new_callback_from_results;
+  std::mutex mutex;
+  std::condition_variable cv;
+  std::vector<napi_ref> callback_refs;
   std::vector<char*> char_results;
-  size_t n_handle_results;
   std::vector<indy_handle_t> handle_results;
-  size_t n_bool_results;
   std::vector<indy_bool_t> bool_results;
 };
 
 typedef struct indy_callback indy_callback;
 
-hash_t* callbacks = hash_new();
-
-char* handle_to_key(indy_handle_t handle) {
-  size_t len = 12;
-  char* key = (char*) malloc(len);
-  size_t written = snprintf(key, len, "%d", handle);
-  if (written >= len) {
-    printf("FATAL handle_to_key: handle too large\n");
-    exit(1);
-  }
-  return key;
-}
+std::map<indy_handle_t, indy_callback*> callbacks;
 
 indy_callback* new_callback(
   indy_handle_t handle,
   napi_env env,
-  napi_value js_callback
+  std::vector<napi_value> js_callbacks
 ) {
   napi_status status;
   indy_callback* callback = new indy_callback;
@@ -61,52 +49,73 @@ indy_callback* new_callback(
   callback->handle = handle;
   callback->cancelled = false;
   callback->completed = false;
-  callback->persists = false;
-  callback->n_char_results = 0;
-  callback->n_handle_results = 0;
-  callback->n_bool_results = 0;
+  callback->multiple = false;
+  callback->creates_new_callback_from_results = false;
   
-  status = napi_create_reference(
-    env,
-    js_callback,
-    1,
-    &callback->callback_ref
-  );
-  NAPI_CHECK_STATUS("napi_create_reference");
+  for (napi_value js_callback : js_callbacks) {
+    napi_ref callback_ref;
+    status = napi_create_reference(env, js_callback, 1, &callback_ref);
+    NAPI_CHECK_STATUS("napi_create_reference");
+    callback->callback_refs.push_back(callback_ref);
+  }
 
   return callback;
 }
 
-int has_callback(indy_handle_t handle) {
-  char* key = handle_to_key(handle);
-  int has = hash_has(callbacks, key);
-  free(key);
-  return has;
+indy_callback* new_callback_from_existing(
+  napi_env env,
+  indy_callback* existing_callback,
+  bool creates_new_callback_from_results,
+  bool multiple
+) {
+  napi_status status;
+  // copy the current callback functions to the new struct
+  std::vector<napi_value> js_callbacks;
+  for (napi_ref callback_ref : existing_callback->callback_refs) {
+    napi_value js_callback;
+    status = napi_get_reference_value(env, callback_ref, &js_callback);
+    NAPI_CHECK_STATUS("napi_get_reference_value");
+    js_callbacks.push_back(js_callback);
+  }
+  indy_callback* callback = new_callback(existing_callback->handle_results.at(0), env, js_callbacks);
+  callback->creates_new_callback_from_results = creates_new_callback_from_results;
+  callback->multiple = multiple;
+  return callback;
 }
 
-void set_callback(indy_callback* callback) {
-  if (has_callback(callback->handle)) return;
-  char* key = handle_to_key(callback->handle);
-  hash_set(callbacks, key, callback);
+void reset_callback(indy_callback* callback) {
+  callback->cancelled = false;
+  callback->completed = false;
+  callback->error = Success;
+  callback->char_results.clear();
+  callback->handle_results.clear();
+  callback->bool_results.clear();
 }
 
 indy_callback* get_callback(indy_handle_t handle) {
-  char* key = handle_to_key(handle);
-  indy_callback* callback = (indy_callback*) hash_get(callbacks, key);
-  free(key);
-  if (!callback) {
-    printf("==================================== CALLBACK NULL\n");
+  try {
+    return callbacks.at(handle);
+  } catch (std::out_of_range ex) {
     return NULL;
   }
-  return callback;
+}
+
+void set_callback(indy_callback* callback) {
+  callbacks.insert(
+    std::pair<
+      indy_handle_t,
+      indy_callback*
+    >(
+      callback->handle,
+      callback
+    )
+  );
 }
 
 void free_callback(indy_handle_t handle) {
   indy_callback* callback = get_callback(handle);
   if (callback == NULL) return;
-  char* key = handle_to_key(handle);
-  hash_del(callbacks, key);
-  free(key);
+  callbacks.erase(handle);
   delete callback;
 }
 
