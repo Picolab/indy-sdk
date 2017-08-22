@@ -70,7 +70,9 @@ void init(
   NAPI_DEFINE_METHOD("create_wallet", create_wallet);
   NAPI_DEFINE_METHOD("delete_wallet", delete_wallet);
   NAPI_DEFINE_METHOD("open_wallet", open_wallet);
-  NAPI_DEFINE_METHOD("register_wallet_type", register_wallet_type);
+  
+  // NOTE excluding for now
+  // NAPI_DEFINE_METHOD("register_wallet_type", register_wallet_type);
 
   NAPI_DEFINE_METHOD("create_pool_ledger_config", create_pool_ledger_config);
   NAPI_DEFINE_METHOD("close_pool_ledger", close_pool_ledger);
