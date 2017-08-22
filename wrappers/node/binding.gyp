@@ -5,28 +5,30 @@
       "sources": [
         "src/libindy.cc"
       ],
-      'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
-      'xcode_settings': {
-        'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-        'CLANG_CXX_LIBRARY': 'libc++',
-        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      "cflags!": ["-fno-exceptions"],
+      "cflags_cc!": ["-fno-exceptions"],
+      "xcode_settings": {
+        "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+        "CLANG_CXX_LIBRARY": "libc++",
+        "MACOSX_DEPLOYMENT_TARGET": "10.7",
       },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      "msvs_settings": {
+        "VCCLCompilerTool": {
+          "ExceptionHandling": 1
+        },
       },
-      # KEEPME disabled exceptions
-      # "defines": [
-      #   "NAPI_DISABLE_CPP_EXCEPTIONS"
-      # ],
+      
+      "defines": [
+      #   "NAPI_DISABLE_CPP_EXCEPTIONS" # KEEPME disabled exceptions
+        "INDY_LOG_LEVEL=<!(if [ \"$indy_log_level\" != '' ]; then echo $indy_log_level; else echo 3; fi)"
+      ],
       "include_dirs": [
         "include",
         "<!@(node -p \"require('node-addon-api').include\")"
       ],
       "libraries": [
         "-L<(module_root_dir)/include",
-        "-lindy",
-        "-lhash"
+        "-lindy"
       ],
       "dependencies": [
         # KEEPME until i understand why
