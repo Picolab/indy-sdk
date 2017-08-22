@@ -157,12 +157,10 @@
   size_t length_##utf8 = napi_string_length(env, string); \
   char utf8[length_##utf8]; \
   if (type != napi_string) { \
-    printf("string was falsy\n"); \
     utf8[0] = '\0'; \
   } else { \
     status = napi_get_value_string_utf8(env, string, utf8, length_##utf8, NULL); \
     NAPI_CHECK_STATUS("napi_get_value_string_utf8"); \
-    printf("string marshalled %s\n", utf8); \
   }
 #endif
 
@@ -201,10 +199,8 @@
   status = napi_cancel_async_work(env, work); \
   if (status == napi_ok) { \
     NAPI_ASYNC_DELETE(work); \
-    printf("========================== FREEING CALLBACK %d\n", callback->handle); \
     free_callback(callback->handle); \
   } else if (status == napi_generic_failure) { \
-    printf("work already executing, cannot cancel!\n"); \
     std::lock_guard<std::mutex> lock(callback->mutex); \
     callback->cancelled = true; \
     callback->cv.notify_one(); \
