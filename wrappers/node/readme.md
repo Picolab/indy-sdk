@@ -29,7 +29,7 @@ this addon is still experimental, expect some parts of it to function incorrectl
 * `nvm use || nvm install`
 * `npm install --debug`
 * `npm run xcode`
-* import project scheme from `test/libindy.xcscheme`
+* import project scheme from `test/libindy.xcscheme` and modify executable path and arguments
 * run
 
 ## todos
