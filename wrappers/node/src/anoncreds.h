@@ -13,7 +13,6 @@ void verifier_verify_proof_on_proof_verified(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_bool_results = 1;
   callback->bool_results.push_back(verified);
   callback->completed = true;
   callback->cv.notify_one();
@@ -33,7 +32,6 @@ void prover_create_proof_on_proof_created(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) proof_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -53,7 +51,6 @@ void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) claims_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -73,7 +70,6 @@ void prover_get_claims_on_claims_got(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) claims_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -110,7 +106,6 @@ void prover_create_and_store_claim_req_on_claim_req_created_and_stored(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) claim_req_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -147,7 +142,6 @@ void prover_get_claim_offers_on_claim_offers_got(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) claim_offers_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -184,7 +178,6 @@ void issuer_revoke_claim_on_claim_revoked(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) revoc_reg_update_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -205,7 +198,6 @@ void issuer_create_claim_on_claim_created(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 2;
   callback->char_results.push_back((char*) revoc_reg_update_json);
   callback->char_results.push_back((char*) claim_json);
   callback->completed = true;
@@ -227,7 +219,6 @@ void issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 2;
   callback->char_results.push_back((char*) revoc_reg_json);
   callback->char_results.push_back((char*) revoc_reg_uuid);
   callback->completed = true;
@@ -248,7 +239,6 @@ void issuer_create_and_store_claim_def_on_claim_def_created_and_stored(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
-  callback->n_char_results = 1;
   callback->char_results.push_back((char*) claim_def_json);
   callback->completed = true;
   callback->cv.notify_one();
@@ -279,7 +269,9 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[4], claim_defs_jsons);
   NAPI_STRING_TO_UTF8(argv[5], revoc_regs_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -338,7 +330,9 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
   NAPI_STRING_TO_UTF8(argv[6], claim_defs_json);
   NAPI_STRING_TO_UTF8(argv[7], revoc_regs_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[8]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[8]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -389,7 +383,9 @@ napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], proof_request_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -435,7 +431,9 @@ napi_value prover_get_claims(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], filter_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -481,7 +479,9 @@ napi_value prover_store_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], claims_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -533,7 +533,9 @@ napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info in
   NAPI_STRING_TO_UTF8(argv[4], claim_def_json);
   NAPI_STRING_TO_UTF8(argv[5], master_secret_name);
   
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -581,7 +583,9 @@ napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], master_secret_name);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -627,7 +631,9 @@ napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], filter_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -673,7 +679,9 @@ napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], claim_offer_json);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[3]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[3]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -722,7 +730,9 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[2], revoc_reg_seq_num);
   NAPI_NUMBER_TO_INT32(argv[3], user_revoc_index);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[4]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[4]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -776,7 +786,9 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
   NAPI_NUMBER_TO_INT32(argv[4], revoc_req_seq_num);
   NAPI_NUMBER_TO_INT32(argv[5], user_revoc_index);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -830,7 +842,9 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
   NAPI_NUMBER_TO_INT32(argv[3], schema_seq_num);
   NAPI_NUMBER_TO_INT32(argv[4], max_claim_num);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[5]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[5]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
@@ -885,7 +899,9 @@ napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info in
   NAPI_STRING_TO_UTF8(argv[4], signature_type);
   NAPI_BOOLEAN_TO_BOOL(argv[5], create_non_revoc);
 
-  indy_callback* callback = new_callback(command_handle, env, argv[6]);
+  std::vector<napi_value> js_callbacks;
+  js_callbacks.push_back(argv[6]);
+  indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
     NAPI_DOUBLE_TO_NUMBER(res, result);
