@@ -4,12 +4,12 @@ void verifier_verify_proof_on_proof_verified(
   indy_error_t error,
   indy_bool_t verified
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("verifier_verify_proof_on_proof_verified\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -23,12 +23,12 @@ void prover_create_proof_on_proof_created(
   indy_error_t error,
   const char* proof_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_proof_on_proof_created\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -42,12 +42,12 @@ void prover_get_claims_for_proof_req_on_claims_for_proof_req_got(
   indy_error_t error,
   const char* claims_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claims_for_proof_req_on_claims_for_proof_req_got\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -61,12 +61,12 @@ void prover_get_claims_on_claims_got(
   indy_error_t error,
   const char* claims_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claims_on_claims_got\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -79,12 +79,12 @@ void prover_store_claim_on_claim_stored(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_store_claim_on_claim_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -97,12 +97,12 @@ void prover_create_and_store_claim_req_on_claim_req_created_and_stored(
   indy_error_t error,
   const char* claim_req_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_and_store_claim_req_on_claim_req_created_and_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -115,12 +115,12 @@ void prover_create_master_secret_on_master_secret_created(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_master_secret_on_master_secret_created\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -133,12 +133,12 @@ void prover_get_claim_offers_on_claim_offers_got(
   indy_error_t error,
   const char* claim_offers_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claim_offers_on_claim_offers_got\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -151,12 +151,12 @@ void prover_store_claim_offer_on_claim_offer_stored(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_store_claim_offer_on_claim_offer_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -169,12 +169,12 @@ void issuer_revoke_claim_on_claim_revoked(
   indy_error_t error,
   const char* revoc_reg_update_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_revoke_claim_on_claim_revoked\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -189,12 +189,12 @@ void issuer_create_claim_on_claim_created(
   const char* revoc_reg_update_json,
   const char* claim_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_claim_on_claim_created\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -210,12 +210,12 @@ void issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored(
   const char* revoc_reg_json,
   const char* revoc_reg_uuid
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_and_store_revoc_reg_on_revoc_reg_created_and_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -230,12 +230,12 @@ void issuer_create_and_store_claim_def_on_claim_def_created_and_stored(
   indy_error_t error,
   const char* claim_def_json
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_and_store_claim_def_on_claim_def_created_and_stored\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -245,7 +245,9 @@ void issuer_create_and_store_claim_def_on_claim_def_created_and_stored(
 }
 
 napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("verifier_verify_proof\n");
+  #endif
 
   napi_value result;
   int res;
@@ -302,7 +304,9 @@ napi_value verifier_verify_proof(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_create_proof(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_proof\n");
+  #endif
 
   napi_value result;
   int res;
@@ -365,7 +369,9 @@ napi_value prover_create_proof(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claims_for_proof_req\n");
+  #endif
   
   napi_value result;
   int res;
@@ -413,7 +419,9 @@ napi_value prover_get_claims_for_proof_req(napi_env env, napi_callback_info info
 }
 
 napi_value prover_get_claims(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claims\n");
+  #endif
   
   napi_value result;
   int res;
@@ -461,7 +469,9 @@ napi_value prover_get_claims(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_store_claim(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_store_claim\n");
+  #endif
   
   napi_value result;
   int res;
@@ -509,7 +519,9 @@ napi_value prover_store_claim(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_and_store_claim_req\n");
+  #endif
   
   napi_value result;
   int res;
@@ -565,7 +577,9 @@ napi_value prover_create_and_store_claim_req(napi_env env, napi_callback_info in
 }
 
 napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_create_master_secret\n");
+  #endif
   
   napi_value result;
   int res;
@@ -613,7 +627,9 @@ napi_value prover_create_master_secret(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_get_claim_offers\n");
+  #endif
 
   napi_value result;
   int res;
@@ -661,7 +677,9 @@ napi_value prover_get_claim_offers(napi_env env, napi_callback_info info) {
 }
 
 napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("prover_store_claim_offer\n");
+  #endif
 
   napi_value result;
   int res;
@@ -709,7 +727,9 @@ napi_value prover_store_claim_offer(napi_env env, napi_callback_info info) {
 }
 
 napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_revoke_claim\n");
+  #endif
 
   napi_value result;
   int res;
@@ -761,7 +781,9 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
 }
 
 napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_claim\n");
+  #endif
   
   napi_value result;
   int res;
@@ -819,7 +841,9 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
 }
 
 napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_and_store_revoc_reg\n");
+  #endif
 
   napi_value result;
   int res;
@@ -874,7 +898,9 @@ napi_value issuer_create_and_store_revoc_reg(napi_env env, napi_callback_info in
 }
 
 napi_value issuer_create_and_store_claim_def(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("issuer_create_and_store_claim_def\n");
+  #endif
 
   napi_value result;
   int res;
