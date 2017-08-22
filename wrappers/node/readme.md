@@ -1,7 +1,7 @@
 
 # libindy for node.js
 
-this addon is still experimental, expect some parts of it to function incorrectly. it uses [n-api](https://npmjs.org/package/node-addon-api) to call into node from c++.
+this addon is still experimental, expect some parts of it to function incorrectly or not at all. it uses [n-api](https://npmjs.org/package/node-addon-api) to call into node from c++.
 
 ## prerequisites
 
