@@ -113,12 +113,12 @@ void create_wallet_on_wallet_created(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_wallet_on_wallet_created\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -131,12 +131,12 @@ void open_wallet_on_wallet_opened(
   indy_error_t error,
   indy_handle_t wallet_handle
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("open_wallet_on_wallet_opened\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -149,12 +149,12 @@ void close_wallet_on_wallet_closed(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("close_wallet_on_wallet_closed\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -166,12 +166,12 @@ void delete_wallet_on_wallet_deleted(
   indy_handle_t command_handle,
   indy_error_t error
 ) {
+  #ifdef INDY_LOG_DEBUG
   printf("delete_wallet_on_wallet_deleted\n");
+  #endif
+
   indy_callback* callback = get_callback(command_handle);
-  if (!callback) {
-    perror("FATAL pointer to callback struct was null\n");
-    exit(1);
-  }
+  if (!callback) return;
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
@@ -242,7 +242,9 @@ void delete_wallet_on_wallet_deleted(
 // }
 
 napi_value create_wallet(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("create_wallet\n");
+  #endif
 
   napi_value result;
   int res;
@@ -299,7 +301,9 @@ napi_value create_wallet(napi_env env, napi_callback_info info) {
 }
 
 napi_value open_wallet(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("open_wallet\n");
+  #endif
 
   napi_value result;
   int res;
@@ -350,7 +354,9 @@ napi_value open_wallet(napi_env env, napi_callback_info info) {
 }
 
 napi_value close_wallet(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("close_wallet\n");
+  #endif
 
   napi_value result;
   int res;
@@ -395,7 +401,9 @@ napi_value close_wallet(napi_env env, napi_callback_info info) {
 }
 
 napi_value delete_wallet(napi_env env, napi_callback_info info) {
+  #ifdef INDY_LOG_DEBUG
   printf("delete_wallet\n");
+  #endif
 
   napi_value result;
   int res;
