@@ -3,3 +3,6 @@ build
 include
 node_modules
 *.log
+
+# running containers by id
+.containers
