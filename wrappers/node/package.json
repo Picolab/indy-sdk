@@ -14,7 +14,7 @@
     "node-gyp": "^3.6.2"
   },
   "scripts": {
-    "install": "node-gyp rebuild",
+    "install": "npm run libindy && node-gyp rebuild",
     "build": "node-gyp build",
     "test": "mocha --napi-modules test/index.js",
     "libindy-symbols": "nm include/libindy.dylib | grep ' T _indy_' | awk '{print $3}'",
