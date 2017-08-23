@@ -9,10 +9,7 @@ this addon is still experimental, expect some parts of it to function incorrectl
 
 ## building
 
-* build `libindy` by following [platform-specific instructions](https://github.com/hyperledger/indy-sdk/tree/master/doc)
-* copy the resulting static library from `../libindy/target/$target_name` to `./include/`
-* copy the header files from `../libindy/include` to `./include`
-* run `npm install` from `.`
+* `npm install` from `.`
 
 ## supporting shell scripts
 
@@ -34,6 +31,7 @@ this addon is still experimental, expect some parts of it to function incorrectl
 
 ## todos
 
+* windows build
 * find a better way to allocate and schedule new callbacks from callbacks that return handle results (due to limitations in n-api, the way it's been implemented is quite leaky. modifying libindy to know about n-api would help loads here.)
 * test with gcc
 * javascript tests
