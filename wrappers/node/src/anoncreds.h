@@ -734,24 +734,26 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(5);
+  NAPI_EXPECTING_ARGS(6);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
-  NAPI_REQUIRED_NUMBER(argv[2]);
+  NAPI_REQUIRED_STRING(argv[2]);
   NAPI_REQUIRED_NUMBER(argv[3]);
-  NAPI_REQUIRED_FUNCTION(argv[4]);
+  NAPI_REQUIRED_NUMBER(argv[4]);
+  NAPI_REQUIRED_FUNCTION(argv[5]);
 
   indy_handle_t command_handle, wallet_handle;
-  indy_i32_t revoc_reg_seq_num, user_revoc_index;
+  indy_i32_t schema_seq_num, user_revoc_index;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
-  NAPI_NUMBER_TO_INT32(argv[2], revoc_reg_seq_num);
+  NAPI_STRING_TO_UTF8(argv[2], issuer_did);
+  NAPI_NUMBER_TO_INT32(argv[3], schema_seq_num);
   NAPI_NUMBER_TO_INT32(argv[3], user_revoc_index);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[4]);
+  js_callbacks.push_back(argv[5]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -767,7 +769,8 @@ napi_value issuer_revoke_claim(napi_env env, napi_callback_info info) {
   res = indy_issuer_revoke_claim(
     command_handle,
     wallet_handle,
-    revoc_reg_seq_num,
+    issuer_did,
+    schema_seq_num,
     user_revoc_index,
     issuer_revoke_claim_on_claim_revoked
   );
@@ -788,28 +791,30 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
   napi_value result;
   int res;
 
-  NAPI_EXPECTING_ARGS(7);
+  NAPI_EXPECTING_ARGS(8);
 
   NAPI_REQUIRED_NUMBER(argv[0]);
   NAPI_REQUIRED_NUMBER(argv[1]);
   NAPI_REQUIRED_STRING(argv[2]);
   NAPI_REQUIRED_STRING(argv[3]);
-  NAPI_OPTIONAL_NUMBER(argv[4]);
+  NAPI_REQUIRED_STRING(argv[4]);
   NAPI_OPTIONAL_NUMBER(argv[5]);
-  NAPI_REQUIRED_FUNCTION(argv[6]);
+  NAPI_OPTIONAL_NUMBER(argv[6]);
+  NAPI_REQUIRED_FUNCTION(argv[7]);
 
   indy_handle_t command_handle, wallet_handle;
-  indy_i32_t revoc_req_seq_num, user_revoc_index;
+  indy_i32_t schema_seq_num, user_revoc_index;
 
   NAPI_NUMBER_TO_INT32(argv[0], command_handle);
   NAPI_NUMBER_TO_INT32(argv[1], wallet_handle);
   NAPI_STRING_TO_UTF8(argv[2], claim_req_json);
   NAPI_STRING_TO_UTF8(argv[3], claim_json);
-  NAPI_NUMBER_TO_INT32(argv[4], revoc_req_seq_num);
-  NAPI_NUMBER_TO_INT32(argv[5], user_revoc_index);
+  NAPI_STRING_TO_UTF8(argv[4], issuer_did);
+  NAPI_NUMBER_TO_INT32(argv[5], schema_seq_num);
+  NAPI_NUMBER_TO_INT32(argv[6], user_revoc_index);
 
   std::vector<napi_value> js_callbacks;
-  js_callbacks.push_back(argv[6]);
+  js_callbacks.push_back(argv[7]);
   indy_callback* callback = new_callback(command_handle, env, js_callbacks);
   if (!callback) {
     res = 1;
@@ -827,7 +832,8 @@ napi_value issuer_create_claim(napi_env env, napi_callback_info info) {
     wallet_handle,
     claim_req_json,
     claim_json,
-    revoc_req_seq_num,
+    issuer_did,
+    schema_seq_num,
     user_revoc_index,
     issuer_create_claim_on_claim_created
   );
