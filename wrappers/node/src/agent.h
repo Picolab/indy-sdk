@@ -33,6 +33,7 @@ void agent_connect_on_message(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
+  callback->handle_results.push_back(connection_handle);
   callback->char_results.push_back((char*) message);
   callback->completed = true;
   callback->cv.notify_one();
@@ -74,6 +75,7 @@ void agent_listen_on_connection(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
+  callback->handle_results.push_back(listener_handle);
   callback->handle_results.push_back(connection_handle);
   callback->char_results.push_back((char*) sender_did);
   callback->char_results.push_back((char*) receiver_did);
@@ -96,6 +98,7 @@ void agent_listen_on_message(
 
   std::lock_guard<std::mutex> lock(callback->mutex);
   callback->error = error;
+  callback->handle_results.push_back(connection_handle);
   callback->char_results.push_back((char*) message);
   callback->completed = true;
   callback->cv.notify_one();
