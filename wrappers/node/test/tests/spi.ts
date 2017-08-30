@@ -15,6 +15,7 @@ import {
   LibIndy,LibIndyRuntime,
   Ledger
 } from '../../src'
+import * as util from 'util'
 import * as winston from 'winston'
 
 
@@ -61,11 +62,67 @@ describe('SPI - Runtime', function() {
 
   describe('Ledger', function() {
 
+    before(function() {
+      // runs before all tests in this block
+    });
+
+    after(function() {
+      // runs after all tests in this block
+    });
+
+    beforeEach(function() {
+      // runs before each test in this block
+    });
+
+    afterEach(function() {
+      // runs after each test in this block
+    });
+
     describe('AttribRequestsTest', function() {
-      it('testBuildAttribRequestWorksForRawData',function () {
-        assert.fail()
+      let pool;
+      let wallet;
+      const walletName : string= "ledgerWallet";
+      const identifier : string = "Th7MpTaRZVRYnPiabds81Y";
+      const dest : string = "FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4";
+      const endpoint : string = "{\"endpoint\":{\"ha\":\"127.0.0.1:5555\"}}";
+
+      before(function() {
+        // runs before all tests in this block
+
+        //String poolName = PoolUtils.createPoolLedgerConfig();
+        //pool = Pool.openPoolLedger(poolName, null).get();
+
+        //Wallet.createWallet(poolName, walletName, "default", null, null).get();
+        //wallet = Wallet.openWallet(walletName, null, null).get();
       });
 
+      after(function() {
+        // runs after all tests in this block
+        //pool.closePoolLedger().get();
+        //wallet.closeWallet().get();
+        //Wallet.deleteWallet(walletName, null).get();
+      });
+
+      beforeEach(function() {
+        // runs before each test in this block
+      });
+
+      afterEach(function() {
+        // runs after each test in this block
+      });
+
+      it('testBuildAttribRequestWorksForRawData',function () {
+        const expectedResult = util.format("\"identifier\":\"%s\"," +
+                        "\"operation\":{" +
+                        "\"type\":\"100\"," +
+                        "\"dest\":\"%s\"," +
+                        "\"raw\":\"%s\"" +
+                        "}", identifier, dest, endpoint);
+
+        // attribRequest = Ledger.buildAttribRequest(identifier, dest, null, endpoint, null).get();
+
+        // assert.equals(true,attribRequest.replace("\\", "").contains(expectedResult));});
+      });
       it('testBuildAttribRequestWorksForMissedAttribute',function () {
         assert.fail()
       });

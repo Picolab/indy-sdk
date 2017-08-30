@@ -160,7 +160,6 @@ package.
 	middleware capabilities, allowing API consumers to augment and extend
 	the functionality of the core API as they see fit.
 
-
 ## Layered Architecture
 
 The library is implemented in 3 layers:
@@ -189,7 +188,20 @@ Details:
 	is a bridge layer which adapts the FFI to environment constructs
  	like promises, async/await, implicit event loop, guaranteed thread saftey,
 	JSON conversions, static type analysis, and the many, many other benefits of the
-	typescript/node.js environment
+	typescript/node.js environment.
+
+	*Note*: We may ditch the async.ts file completely, as it is not needed.  You
+	can await on promises, and the Async entry point is simply the same methods
+	as the regular entry point, but tagged with async.  The *only* value in the
+	async.ts is the "explicit record" of the fact that the method is async.
+
+	In cases where I've been working with combinations of sync/async libraries, I
+	often stutter over this - resulting in extra debugging because I'm not treating
+	some library function correctly until I check and see "oh, this is *not* async"
+	or vice versa.
+
+	On the other hand, some people might find this distinction annoying and would
+	like to see async.ts removed as it can rightly be considered "unnecessary duplication".
 
 	* [Promise](#bridge/promise.ts)
 	  is a complete reflection of the FFI entry points in item #1 above, but
@@ -615,6 +627,89 @@ Tests have been stubbed out
 	* chai-as-promised
 - normalized coniguration via 'harness.ts'
 - symbolic links to libindy
+
+## Rust Logging
+
+See https://doc.rust-lang.org/log/env_logger/ for information about configuring
+the RUST_LOG output
+
+```
+export RUST_LOG=trace
+```
+
+will generate the most output.
+```
+export RUST_LOG=error
+```
+will suppress most of the output.
+
+## INDY-SDK Debugging Output
+
+The indy-sdk library uses [debug](https://github.com/visionmedia/debug) for
+log level debug traces.  This debug output can be activated as follows:
+
+```
+export DEBUG="indy-sdx:*"
+npm test
+```
+
+## FFI Debugging
+
+The ffi library uses [debug](https://github.com/visionmedia/debug) to handle
+debugging.  This debug output can be activated as follows:
+
+```
+export DEBUG="ffi:*"
+npm test
+```
+
+with categories defined as follows
+
+```
+grep debug node_modules/ffi/lib/* | grep require
+node_modules/ffi/lib/_foreign_function.js:  , debug = require('debug')('ffi:_ForeignFunction')
+node_modules/ffi/lib/callback.js:  , debug = require('debug')('ffi:Callback')
+node_modules/ffi/lib/cif.js:  , debug = require('debug')('ffi:cif')
+node_modules/ffi/lib/cif_var.js:  , debug = require('debug')('ffi:cif_var')
+node_modules/ffi/lib/dynamic_library.js:  , debug = require('debug')('ffi:DynamicLibrary')
+node_modules/ffi/lib/ffi.js:var debug = require('debug')('ffi:ffi')
+node_modules/ffi/lib/foreign_function.js:  , debug = require('debug')('ffi:ForeignFunction')
+node_modules/ffi/lib/foreign_function_var.js:  , debug = require('debug')('ffi:VariadicForeignFunction')
+node_modules/ffi/lib/function.js:  , debug = require('debug')('ffi:FunctionType')
+node_modules/ffi/lib/library.js:  , debug = require('debug')('ffi:Library')
+node_modules/ffi/lib/type.js:var debug = require('debug')('ffi:types')
+```
+
+## Mocha Examples using Chai-as-promised
+
+Promise results can be tested using the following pattern and a sync function()
+```ts
+it('should be ok for single well formed genesis txn', function() {
+	const path = setup_config_file(single_genesis_txn)
+	console.log(path)
+	console.log(JSON.stringify(single_genesis_txn))
+	const promise = libindy.bridge.create_pool_ledger_config("bridge_test_04",{
+		genesis_txn:path
+	})
+	return promise.should.be.fulfilled
+});
+```
+
+Sequences with multiple promises can be used with an async function, by changing from
+promise.should to expect.to
+```ts
+describe('#delete_pool_ledger_config', function() {
+it('should be ok for deleting a configuration created from a single well formed genesis txn', async function() {
+	const path = setup_config_file(single_genesis_txn)
+	const config_name = "bridge_test_05"
+	await libindy.bridge.create_pool_ledger_config(config_name,{
+		genesis_txn:path
+	})
+	const result = await libindy.bridge.delete_pool_ledger_config(config_name);
+	expect(result).to.equal(undefined);
+});
+```
+
 
 ## Fixtures
 

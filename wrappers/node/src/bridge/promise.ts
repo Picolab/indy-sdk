@@ -31,6 +31,7 @@ import {
   build_receive_json_result_callback,
   build_default_callback,
 } from '../ffi'
+const debug = require('debug')('indy-sdk:promise')
 
 export class PromiseImplementation implements libindy_middleware {
   private readonly ffi:any
@@ -52,8 +53,8 @@ export class PromiseImplementation implements libindy_middleware {
   // allow the passing in of either string, object, or undefined and return
   // a JSON safe string
   private stringify_for_rust(payload:any) : string | undefined {
-    if(payload === undefined)
-      return undefined
+    if(payload === undefined || payload === null)
+      return null
     if(typeof payload === "string") {
       if(this.validate_serialized_json_string_parameters)
         return JSON.stringify(JSON.parse(payload))
@@ -115,14 +116,20 @@ export class PromiseImplementation implements libindy_middleware {
       // apply appropriate callback if required
       if ( callback_generator !== null )
         args.push(callback_generator(resolve,reject))
+
+      debug("CALLING:target = %s, args = %j",target.name,args)
       // call through the FFI
       const result = target(this.next_command_handle(),...args)
+
+      debug("RESULT:%s",result)
+
       // these values will be returned by target
       // w/o calling the callback, so we must explicitly check for them
       // and reject the promise
-      if(result != ErrorCode.Success)
+      if(result != ErrorCode.Success) {
+        debug("REJECTING BEFORE CALLBACK:result = %s",result)
         reject(result)
-
+      }
     })
   }
 

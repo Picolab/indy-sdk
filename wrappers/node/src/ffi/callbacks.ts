@@ -35,6 +35,8 @@ import { ErrorCode,IndyError } from '../error'
 // required for ffi.Callback()
 import * as ffi from 'ffi'
 
+const debug = require('debug')('indy-sdk:ffi')
+
 // these three are all promise callback
 // resolves to void or throws error.  the rust library calls continue down this
 // line, with a void resolution and an IndyError in the event of a non-zero
@@ -44,9 +46,11 @@ export function build_default_callback(resolve:any,reject:any) {
   return ffi.Callback(ffi_void, [ffi_command_handle, ffi_error_code],
     (command_handle:rust_command_handle, error_code:rust_error_code) => {
       if(error_code == 0) {
+        debug("RESOLVING:%j",error_code)
         resolve()
       }
       else {
+        debug("REJECTING:%j",error_code)
         reject(new IndyError(error_code))
       }
     });

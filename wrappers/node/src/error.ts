@@ -113,17 +113,23 @@ export enum ErrorCode {
 
 }
 
+export function errname(error_code:ErrorCode) : string {
+  return ErrorCode[error_code]
+}
+
 
 // this is a base error class for throwing, when, for example, a callback
 // only gets an integer and it wants to map it to the Enum
 export class IndyError extends Error {
+  readonly label:string
+  readonly value:number
   readonly code:ErrorCode
   constructor (error_code: ErrorCode) {
     let message = "Error Code Mapping Error:"+error_code
-    let code
+    let label
     try {
-      code = ErrorCode[error_code]
-      message = '' + code
+      label = ErrorCode[error_code]
+      message = '' + label
     }
     catch(error) {
       let message = "Error Code Mapping Error:"+error
@@ -134,10 +140,11 @@ export class IndyError extends Error {
     // Capturing stack trace, excluding constructor call from it.
     Error.captureStackTrace(this, this.constructor);
 
-    // Saving class name in the property of our custom error as a shortcut.
-    this.name = this.constructor.name;
+    this.name = this.constructor.name
 
-    this.code = code
+    this.label = label
+
+    this.code = error_code
 
   }
 };
