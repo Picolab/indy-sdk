@@ -7,13 +7,13 @@ import {
   DID,
   A_DID_Utils,
   A_DID_and_Me,
-  LedgerGenesisConfigName,
   LedgerGenesisConfiguration,
   LedgerLocalRuntimeConfiguration,
   Ledger,
+  Pool,
   LedgerBuilder,
   Wallet
-} from '../spi'
+} from './api'
 import {
   C_LedgerBuilder
 } from './util'
@@ -47,7 +47,8 @@ export function close_pool_ledger(pool_handle:number) : Promise<void> {
 
 export class C_Ledger implements Ledger {
 
-  private closed: boolean
+  readonly pool : Pool
+
   /// Opens pool ledger and performs connecting to pool nodes.
   ///
   /// Pool ledger configuration with corresponded name must be previously created
@@ -70,37 +71,21 @@ export class C_Ledger implements Ledger {
   /// #Errors
   /// Common*
   /// Ledger*
-  constructor(runtime_config:LedgerLocalRuntimeConfiguration) {
-    this.closed = false
-
+  constructor(pool:Pool,runtime_config:LedgerLocalRuntimeConfiguration) {
+    this.pool = pool
+  }
+  async updateConfig(runtime_config:LedgerLocalRuntimeConfiguration) : Promise<void> {
+    await this.close()
+    //await libindy.async.open_pool_ledger()
   }
 
-  /// Refreshes a local copy of a pool ledger and updates pool nodes connections.
-  ///
-  /// #Params
-  /// handle: pool handle returned by indy_open_pool_ledger
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Ledger*
+
   async refresh() : Promise<void> {
+    await this.pool.refresh()
   }
 
-  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
-  ///
-  /// #Params
-  /// handle: pool handle returned by indy_open_pool_ledger.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Ledger*
   async close() : Promise<void> {
+    await this.pool.close()
   }
 
   async sign_and_submit_request(wallet:Wallet,submitter:DID,request:JSON_Datum) {
@@ -124,6 +109,5 @@ export class C_Ledger implements Ledger {
   }) : Promise<Wallet> {
     throw 'nyi'
   }
-
 
 }

@@ -44,15 +44,17 @@ describe('SPI - Runtime', function() {
 
     describe('#newLedger()', function() {
 
-      it('should be able to create a default ledger', async function() {
-        const ledger : Ledger = await libindy.spi.newLedger({
-          name:defaultLocalNetworkConfigurationName,
-          genesis_txn:defaultLocalNetworkGenesisTransactions
-        },
-        {
-
-        });
-
+      it('should be able to create a default ledger',async function() {
+        const ledger : Ledger = await libindy.spi.newLedger(
+          // pool configuration
+          {
+            name:"spi_test_001",
+            genesis_txn:defaultLocalNetworkGenesisTransactions
+          },
+          //
+          {
+            configurationName:"spi_test_001",
+          });
         console.log("ledger:",ledger);
       });
 

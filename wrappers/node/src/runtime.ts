@@ -88,4 +88,6 @@ export class LibIndyRuntime implements LibIndy {
     this.spi = new ServiceImplementation(this,config.spi || {})
   }
 
+
+
 }

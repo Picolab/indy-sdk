@@ -707,7 +707,8 @@ it('should be ok for deleting a configuration created from a single well formed 
 	})
 	const result = await libindy.bridge.delete_pool_ledger_config(config_name);
 	expect(result).to.equal(undefined);
-});
+	});
+})
 ```
 
 
@@ -768,6 +769,16 @@ Concerned about building:
 The wrapper should document the earliest and latest version of libindy that it knows to be compatible. Likewise, it should document what platforms it targets, what use cases it's built for, etc. A wrapper should be able to find libindy using default OS methods (e.g., in the system PATH), but should also provide a way for a specific path to libindy to be specified, such that the wrapper can work either from an OS-wide install of libindy or a version in a particular directory.
 
 we need a solid way to build and tag.... help? ;)
+
+## Casing and Capitalization
+
+The official spec is here - https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
+but I think we should use ```_``` for at least the ffi methods.  Personally I find camelcase
+very difficult to read - so I tend to use ```_``` until forced to do otherwise.
+
+We can just open up a task/todo to track getting this (and other coding guidelines)
+right - there is a tslint config I've left out....  that will provide another source
+of conformance.
 
 ## Addons
 

@@ -10,9 +10,12 @@ import {
   TXN_ID,
   TXN_Type,
   BridgeEntryPoint,
-  AsyncBridgeEntryPoint
+  AsyncBridgeEntryPoint,
+  open_pool_ledger_options,
+  rust_pool_handle
 } from '../bridge/api';
 
+export type DID = string
 
 export interface ServiceProviderInterfaceConfig {
   loadGensisConfigTypes?:boolean,
@@ -34,44 +37,81 @@ export interface LedgerGenesisTransaction {
   as_wrapped_json_string():string
 }
 
-export type DID = string
-
-
-export type LedgerGenesisConfigName = string
 export interface LedgerGenesisConfiguration {
-  name:LedgerGenesisConfigName,
+  name:string,
   ///     "genesis_txn": string (optional), A path to genesis transaction file. If NULL, then a default one will be used.
   ///                    If file doesn't exists default one will be created.  refreshOnOpen?:boolean
-  genesis_txn?:LedgerGenesisTransaction[]
+  genesis_txn?:LedgerGenesisTransaction[] | FilesystemPath
 }
 
-export interface Ledger {
 
+/*
+///     "refreshOnOpen": bool (optional), Forces pool ledger to be refreshed immediately after opening.
+///                      Defaults to true.
+///     "autoRefreshTime": int (optional), After this time in minutes pool ledger will be automatically refreshed.
+///                        Use 0 to disable automatic refresh. Defaults to 24*60.
+///     "networkTimeout": int (optional), Network timeout for communication with nodes in milliseconds.
+///                       Defaults to 20000.  refreshOnOpen?:boolean
+refreshOnOpen?:boolean
+autoRefreshTime?:number
+networkTimeout?:number
+*/
+export type LedgerLocalRuntimeConfiguration = open_pool_ledger_options
+
+
+// with an eye towards redux
+export const POOL_CREATION_EVENT = 'POOL_CREATION_EVENT'
+export const POOL_DELETION_EVENT = 'POOL_DELETION_EVENT'
+export const POOL_ERROR_EVENT = 'POOL_ERROR_EVENT'
+
+
+export interface Pool {
+  readonly name:string
+  readonly genesis_config:LedgerGenesisConfiguration
+  readonly open_config:LedgerLocalRuntimeConfiguration
+  readonly path:FilesystemPath
+  readonly ledger:Ledger
+
+  readonly isReady:boolean
+  readonly isDefault:boolean
+  readonly isOpen:boolean
+  readonly hadTemporaryGenesisFile:boolean
+
+  // this will delete the Pool configuration, and
+  // QUESTION - does this actually blow away any storage?
+  // QUESTION - should we close open ledgers and wallets?
+  // QUESTION - notifications?  Event Listener
+  delete() : Promise<void>
+
+  // get all the genesis transactions, as objects, for this pool
+  // TODO - put the async iterator / iterator support back
+  // genesisTransactions() : Promise<LedgerGenesisTransaction>
+
+  // what does it mean to "Refresh" a pool?
   /// Refreshes a local copy of a pool ledger and updates pool nodes connections.
-  ///
-  /// #Params
-  /// handle: pool handle returned by indy_open_pool_ledger
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Ledger*
   refresh() : Promise<void>
 
-  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
-  ///
-  /// #Params
-  /// handle: pool handle returned by indy_open_pool_ledger.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Ledger*
+  // obtain access to this pool via the Ledger object
+  open(config?:LedgerLocalRuntimeConfiguration) : Promise<Ledger>
+
+  // close this
   close() : Promise<void>
+
+}
+
+
+
+export interface Ledger {
+  readonly pool : Pool
+
+  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
+  close() : Promise<void>
+
+  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
+  refresh() : Promise<void>
+
+  // close and re-open Ledger with new run-time open options to open_pool-Ledger
+  updateConfig(new_config?:open_pool_ledger_options) : Promise<void>
 
   sign_and_submit_request(wallet:Wallet,submitter:DID,request:JSON_Datum) : Promise<void>
 
@@ -80,7 +120,6 @@ export interface Ledger {
   sign_request(wallet:Wallet,submitter:DID,request:JSON_Datum) : Promise<void>
 
   builder_for(submitter:DID) : LedgerBuilder
-
 
   /// Creates a new secure wallet with the given unique name.
   ///
@@ -107,20 +146,8 @@ export interface Ledger {
     wallet_type_credentials?:any
   }) : Promise<Wallet>
 
-}
 
 
-export type LedgerLocalRuntimeConfiguration = {
-  configurationName:string // Configuration Name
-  ///     "refreshOnOpen": bool (optional), Forces pool ledger to be refreshed immediately after opening.
-  ///                      Defaults to true.
-  ///     "autoRefreshTime": int (optional), After this time in minutes pool ledger will be automatically refreshed.
-  ///                        Use 0 to disable automatic refresh. Defaults to 24*60.
-  ///     "networkTimeout": int (optional), Network timeout for communication with nodes in milliseconds.
-  ///                       Defaults to 20000.  refreshOnOpen?:boolean
-  refreshOnOpen?:boolean
-  autoRefreshTime?:number
-  networkTimeout?:number
 }
 
 export interface Target {
@@ -152,10 +179,12 @@ export interface LedgerBuilder {
 
 }
 
+
 export interface WalletTypeConfig {
 }
 export interface WalletCredentials {
 }
+
 
 export interface WalletType {
   readonly name:string
@@ -363,19 +392,14 @@ export interface Agent {
 
 
 
-
 export interface ServiceProviderInterface {
-
-  //readonly pool_ledger_genesis_configuration:any
-  //readonly basepath : string
-  //readonly pooldir : string
-  //readonly logger : winston.Logger
 
 
   // genesis configuration management.
   deleteLedgerGenesisConfiguration(configuration_name:string) : Promise<void>
-  registerLedgerGenesisConfiguration (config:LedgerGenesisConfiguration) : Promise<void>
-
+  registerLedgerGenesisConfiguration (config?:LedgerGenesisConfiguration) : Promise<void>
+  getLedgerGenesisConfiguration(configuration_name:string) : Promise<void>
+  registeredLedgerGenesisConfigurations() : Promise<LedgerGenesisConfiguration>
 
   /// Opens pool ledger and performs connecting to pool nodes.
   ///
@@ -401,9 +425,28 @@ export interface ServiceProviderInterface {
   /// Ledger*
   createLedger (config:LedgerLocalRuntimeConfiguration) : Promise<Ledger>
 
+  /// creates a new pool configuration, and a ledger with the same name
   newLedger (
+    ledger_name:string,
     genesis_config:LedgerGenesisConfiguration,
     runtime_config:LedgerLocalRuntimeConfiguration,
   ) : Promise<Ledger>
 
+
+  // --------------------------------------------------------------------
+
+  // or is this a better API for the above?
+  createPool(config:LedgerGenesisConfiguration) : Promise<Pool>
+  pool(configuration_name:string) : Promise<Pool | undefined>
+  pools() : Promise<Pool>
+
+  // or is this a better API for the above?
+  registerWalletType(walletDriver:WalletType) : Promise<void>
+  walletType(wallet_type_name:string): Promise<WalletType | undefined>
+  walletTypes() : Promise<WalletType>
+
+  // create a wallet
+  // note - the name is global to
+  createWallet(nodeGlobalName:string,pool:Pool | Ledger,walletType?:WalletType,config?:WalletTypeConfig,credentials?:WalletCredentials) : Promise<Wallet>
+  wallets() : Promise<Wallet>
 }

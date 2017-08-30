@@ -21,7 +21,8 @@ import {
 // this simply adds async to the promise library, recording the distinction
 // between synchronous functions returning a promise and async functions
 // returning a result.  No functionality is added here, only the symbolic
-// marker explicit in this construct: 'await bridge.async.<rust-function>'
+// marker explicit in this construct: 'await libindy.async.<rust-function>'
+// even though 'await libindy.bridge.<rust-function>' will work as well
 export class AsyncBridgeEntryPoint implements libindy_bridge {
   private readonly promise_to:libindy_bridge
   constructor(promise_to:libindy_bridge) {

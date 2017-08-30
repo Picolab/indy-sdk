@@ -13,7 +13,6 @@ import {
   DID,
   A_DID_Utils,
   A_DID_and_Me,
-  LedgerGenesisConfigName,
   LedgerGenesisConfiguration,
   LedgerLocalRuntimeConfiguration,
   Target,

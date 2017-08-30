@@ -31,6 +31,14 @@ function setup_config_file(payload:any) :string{
   return path
 }
 
+async function create_reference_pool(libindy:any,config_name:string) {
+  const path = setup_config_file(single_genesis_txn)
+  await libindy.bridge.create_pool_ledger_config(config_name,{
+    genesis_txn:path
+  })
+}
+
+
 describe('The Bridge,', function() {
   let libindy
 
@@ -136,6 +144,31 @@ describe('The Bridge,', function() {
           const config_name = "bridge_test_06"
           const promise = libindy.bridge.delete_pool_ledger_config(config_name);
           return assert_indy_error(promise,ErrorCode.CommonIOError)
+        });
+
+        it('need to test deleting an opened ledger?', function() {
+        });
+
+      })
+
+
+      describe('#indy_open_pool_ledger', function() {
+        it('should fail with missing config', async function() {
+          const config_name = "bridge_test_07"
+          const result = await libindy.bridge.open_pool_ledger(config_name, null)
+          expect(result).to.equal(undefined)
+        });
+        it('should pass with null config for pool and null open options', async function() {
+          const config_name = "bridge_test_08"
+          await libindy.bridge.create_pool_ledger_config(config_name,null)
+          const result = await libindy.bridge.open_pool_ledger(config_name, null)
+          expect(result).to.equal(undefined)
+        });
+        it('should pass with reference config and null open options', async function() {
+          const config_name = "bridge_test_09"
+          await create_reference_pool(libindy,config_name)
+          const result = await libindy.bridge.open_pool_ledger(config_name, null)
+          expect(result).to.equal(undefined)
         });
 
       })
