@@ -11,7 +11,7 @@ import {
   rust_wallet_handle,
   rust_pool_handle,
   rust_did
-} from '../ffi'
+} from '../rustlib'
 
 // this has the exact structure of the rust library, broken down by file.
 // methods in this interface are named identically to the Rust library api.rs
@@ -86,7 +86,6 @@ export interface libindy_bridge {
 
 }
 
-
 export type JSON_Datum = any
 export type FilesystemPath = string
 
@@ -102,7 +101,7 @@ export {
   rust_wallet_handle,
   rust_pool_handle,
   rust_did
-} from '../ffi'
+} from '../rustlib'
 
 
 // these are placeholders to try to deal with the object | json model

@@ -1,13 +1,30 @@
 import * as fs from 'fs-extra'
-export * from '../../src/ffi/harness'
-export * from '../../src/spi/harness'
 
 import { LibIndy,LibIndyRuntime } from '../../src'
-import {
-  DEBUG_LIBRARY,RELEASE_LIBRARY,RELATIVE_LIBRARY_BASE,
-  canFindRelativeDebugLibrary,
-  canFindRelativeReleaseLibrary
-} from '../../src/ffi/harness'
+
+export const RELATIVE_LIBRARY_BASE="test/fixtures/relative"
+export const RELEASE_LIBRARY      =RELATIVE_LIBRARY_BASE + "/rustlib/release/libindy.dylib"
+export const DEBUG_LIBRARY        =RELATIVE_LIBRARY_BASE + "/rustlib/debug/libindy.dylib"
+
+export async function canFindRelativeDebugLibrary() {
+  try {
+    return await fs.pathExistsSync(DEBUG_LIBRARY)
+  }
+  catch(error) {
+    //logger.error("Failed to locate debug library, path=",DEBUG_LIBRARY,error)
+    return false;
+  }
+}
+
+export async function canFindRelativeReleaseLibrary() {
+  try {
+    return await fs.pathExistsSync(RELEASE_LIBRARY)
+  }
+  catch(error) {
+    //logger.error("Failed to locate release library, path=",RELEASE_LIBRARY,error)
+    return false;
+  }
+}
 
 export function getLibIndy(config?:any) {
   config = config || {}
@@ -18,3 +35,59 @@ export function getLibIndy(config?:any) {
   }
   return new LibIndyRuntime(config)
 }
+
+
+
+import { C_LedgerGenesisTransaction } from '../../src/spi/util'
+
+export const defaultLocalNetworkConfigurationName = 'default'
+export const defaultLocalNetworkGenesisTransactions = [
+  new C_LedgerGenesisTransaction({ data:{
+    alias:"Node1",
+    client_ip:"127.0.0.1",
+    client_port:9701,
+    node_ip:"127.0.0.1",
+    node_port:9702,
+    services:["VALIDATOR"],
+    dest:"Gw6pDLhcBcoQesN72qfotTgFa7cbuqZpkX3Xo6pLhPhv",
+    identifier:"Th7MpTaRZVRYnPiabds81Y",
+    txnId:"fea82e10e894419fe2bea7d96296a6d46f50f93f9eeda954ec461b2ed2950b62",
+    type:"0"
+  } } ),
+  new C_LedgerGenesisTransaction({ data:{
+    alias:"Node2",
+    client_ip:"127.0.0.1",
+    client_port:9703,
+    node_ip:"127.0.0.1",
+    node_port:9704,
+    services:["VALIDATOR"],
+    dest:"8ECVSk179mjsjKRLWiQtssMLgp6EPhWXtaYyStWPSGAb",
+    identifier:"EbP4aYNeTHL6q385GuVpRV",
+    txnId:"1ac8aece2a18ced660fef8694b61aac3af08ba875ce3026a160acbc3a3af35fc",
+    type:"0"
+  } } ),
+  new C_LedgerGenesisTransaction({ data:{
+    alias:"Node3",
+    client_ip:"127.0.0.1",
+    client_port:9705,
+    node_ip:"127.0.0.1",
+    node_port:9706,
+    services:["VALIDATOR"],
+    dest:"DKVxG2fXXTU8yT5N7hGEbXB3dfdAnYv1JczDUHpmDxya",
+    identifier:"4cU41vWW82ArfxJxHkzXPG",
+    txnId:"7e9f355dffa78ed24668f0e0e369fd8c224076571c51e2ea8be5f26479edebe4",
+    type:"0"
+  } } ),
+  new C_LedgerGenesisTransaction({ data:{
+    alias:"Node4",
+    client_ip:"127.0.0.1",
+    client_port:9707,
+    node_ip:"127.0.0.1",
+    node_port:9708,
+    services:["VALIDATOR"],
+    dest:"4PS3EDQ3dW1tci1Bp6543CfuuebjFrg36kLAUcskGfaA",
+    identifier:"TWwCRQRZ2ZHMJFn9TzLp7W",
+    txnId:"aa5e817d7cc626170eca175822029339a444eb0ee8f0bd20d3b0b76e566fb008",
+    type:"0"
+  } } )
+]

@@ -28,7 +28,7 @@ import {
   build_object_handle_callback,
   build_receive_json_result_callback,
   build_default_callback,
-} from '../ffi'
+} from '../rustlib'
 
 import {
   libindy_middleware,
