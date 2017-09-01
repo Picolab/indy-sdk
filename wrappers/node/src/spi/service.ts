@@ -7,11 +7,10 @@ import {
   A_DID_Utils,
   A_DID_and_Me,
   LedgerGenesisConfiguration,
-  LedgerLocalRuntimeConfiguration,
   Target,
   Pool,
   Ledger,
-  LedgerBuilder,
+  SubmitterTools,
   Wallet,
   WalletType,
   WalletTypeConfig,
@@ -21,7 +20,7 @@ import {
 } from './api'
 import {
   C_Target,
-  C_LedgerBuilder,
+  C_SubmitterTools,
   C_A_DID_and_Me,
   C_A_DID_Utils
 } from './util'
@@ -49,10 +48,6 @@ export class ServiceImplementation implements ServiceProviderInterface {
 
   }
 
-  async createLedger (runtime_config:LedgerLocalRuntimeConfiguration) : Promise<Ledger> {
-    //return Promise.resolve(new C_Ledger(this,runtime_config))
-    throw 'nyi'
-  }
 
 
   // registeredGenesisConfigurations
@@ -96,30 +91,6 @@ export class ServiceImplementation implements ServiceProviderInterface {
 
   }
 
-
-  async newLedger (
-    ledger_name:string,
-    genesis_config:LedgerGenesisConfiguration,
-    runtime_config:LedgerLocalRuntimeConfiguration
-  ) : Promise<Ledger> {
-    throw 'nyi'
-    /*
-    const gc_name = genesis_config.name || ledger_name
-    const rc_name = runtime_config.configurationName || ledger_name
-
-
-    if(( rc_name != gc_name ) |= (rc_name != ledger_name) || (gc_name != ledger_name)) {
-      throw new Error("ledger_name,genesis_config.name,and runtime_config.configurationName must all be the same")
-    }
-
-    await this.registerLedgerGenesisConfiguration({
-      name:ledger_name,
-      genesis_txn:genesis_config.genesis_txn
-    })
-
-    return await this.createLedger (runtime_config)
-    */
-  }
 
 
 

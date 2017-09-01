@@ -3,22 +3,29 @@ import { ErrorCode, IndyError } from '../error'
 import {
   JSON_Datum,
   FilesystemPath,
-  IP_Port,
-  IP_Addr,
-  TXN_DEST,
-  TXN_IDENTIFIER,
-  TXN_ID,
-  TXN_Type,
   BridgeEntryPoint,
-  open_pool_ledger_options,
-  rust_pool_handle
-} from '../bridge/api';
+  rust_pool_handle,
+  rust_wallet_handle,
 
+  open_pool_ledger_options
+} from '../bridge';
+
+// DIDs actually have more properties than just strings - see DID spec
 export type DID = string
 
 export interface ServiceProviderInterfaceConfig {
   loadGensisConfigTypes?:boolean,
 }
+
+// ideally we can factor these out, or provide appropriate guard support
+// for verifying, for example, that IP_Port is an unsigned 16 bit value
+// and IP_Addr is correctly either an IPv4 or IPv6 addr, etc.
+export type IP_Port = number
+export type IP_Addr = string
+export type TXN_DEST = string
+export type TXN_IDENTIFIER = string
+export type TXN_ID = string
+export type TXN_Type = string
 
 export interface LedgerGenesisTransaction {
 
@@ -38,12 +45,10 @@ export interface LedgerGenesisTransaction {
 
 export interface LedgerGenesisConfiguration {
   name:string,
-  ///     "genesis_txn": string (optional), A path to genesis transaction file. If NULL, then a default one will be used.
-  ///                    If file doesn't exists default one will be created.  refreshOnOpen?:boolean
   genesis_txn?:LedgerGenesisTransaction[] | FilesystemPath
 }
 
-
+export type LedgerRuntimeConfiguration = open_pool_ledger_options
 /*
 ///     "refreshOnOpen": bool (optional), Forces pool ledger to be refreshed immediately after opening.
 ///                      Defaults to true.
@@ -55,7 +60,6 @@ refreshOnOpen?:boolean
 autoRefreshTime?:number
 networkTimeout?:number
 */
-export type LedgerLocalRuntimeConfiguration = open_pool_ledger_options
 
 
 // with an eye towards redux
@@ -66,8 +70,7 @@ export const POOL_ERROR_EVENT = 'POOL_ERROR_EVENT'
 
 export interface Pool {
   readonly name:string
-  readonly genesis_config:LedgerGenesisConfiguration
-  readonly open_config:LedgerLocalRuntimeConfiguration
+  readonly genesis:LedgerGenesisTransaction[]
   readonly path:FilesystemPath
   readonly ledger:Ledger
 
@@ -91,17 +94,16 @@ export interface Pool {
   refresh() : Promise<void>
 
   // obtain access to this pool via the Ledger object
-  open(config?:LedgerLocalRuntimeConfiguration) : Promise<Ledger>
+  open(config?:LedgerRuntimeConfiguration) : Promise<Ledger>
 
   // close this
   close() : Promise<void>
 
 }
 
-
-
 export interface Ledger {
   readonly pool : Pool
+  readonly runtime:LedgerRuntimeConfiguration
 
   /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
   close() : Promise<void>
@@ -110,34 +112,13 @@ export interface Ledger {
   refresh() : Promise<void>
 
   // close and re-open Ledger with new run-time open options to open_pool-Ledger
-  updateConfig(new_config?:open_pool_ledger_options) : Promise<void>
+  updateConfig(new_config?:LedgerRuntimeConfiguration) : Promise<void>
 
-  sign_and_submit_request(wallet:Wallet,submitter:DID,request:JSON_Datum) : Promise<void>
-
+  // submit a request
   submit_request(request:JSON_Datum) : Promise<void>
 
-  sign_request(wallet:Wallet,submitter:DID,request:JSON_Datum) : Promise<void>
+  submitter(submitter:DID) : SubmitterTools
 
-  builder_for(submitter:DID) : LedgerBuilder
-
-  /// Creates a new secure wallet with the given unique name.
-  ///
-  /// #Params
-  /// pool_name: Name of the pool that corresponds to this wallet.
-  /// name: Name of the wallet.
-  /// xtype(optional): Type of the wallet. Defaults to 'default'.
-  ///                  Custom types can be registered with indy_register_wallet_type call.
-  /// config(optional): Wallet configuration json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
   create_wallet(config? : {
     wallet_name:string
     wallet_type_name?:string
@@ -145,12 +126,44 @@ export interface Ledger {
     wallet_type_credentials?:any
   }) : Promise<Wallet>
 
+}
 
+
+
+export interface Wallet extends Issuer, Verifier, Prover, Signus {
+
+  readonly ledger:Ledger;
+
+/*
+  constructor(
+    ledger:Ledger,
+    config? : {
+    wallet_name:string
+    wallet_type_name?:string
+    wallet_type_config?:any,
+    wallet_type_credentials?:any
+  })
+*/
+
+  open(config? : {
+    wallet_name:string
+    runtime_config?:WalletRuntimeConfig
+  }) : Promise<void>
+
+  close() : Promise<void>
+
+  sign_and_submit_request(submitter:DID,request:JSON_Datum) : Promise<void>
+  sign_request(submitter:DID,request:JSON_Datum) : Promise<void>
 
 }
 
+
+
+
+
+
 export interface Target {
-  readonly builder:LedgerBuilder
+  readonly builder:SubmitterTools
   readonly target:DID
 
   node_request( data:string ) : Promise<void>
@@ -164,7 +177,7 @@ export interface Target {
 
 }
 
-export interface LedgerBuilder {
+export interface SubmitterTools {
 
   readonly submitter:DID
   readonly ledger:Ledger
@@ -279,75 +292,6 @@ export interface A_DID_and_Me {
 }
 
 
-export interface Wallet extends Issuer, Verifier, Prover, Signus {
-  /// Creates a new secure wallet with the given unique name.
-  ///
-  /// #Params
-  /// pool_name: Name of the pool that corresponds to this wallet.
-  /// name: Name of the wallet.
-  /// xtype(optional): Type of the wallet. Defaults to 'default'.
-  ///                  Custom types can be registered with indy_register_wallet_type call.
-  /// config(optional): Wallet configuration json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default config will be used.
-  ///
-  /// #Returns
-  /// Error code
-  ///
-  /// #Errors
-  /// Common*
-  /// Wallet*
-  constructor(
-    pool_ledger:Ledger,
-    config? : {
-    wallet_name:string
-    wallet_type_name?:string
-    wallet_type_config?:any,
-    wallet_type_credentials?:any
-  })
-
-
-  /// Opens the wallet with specific name.
-  ///
-  /// Wallet with corresponded name must be previously created with indy_create_wallet method.
-  /// It is impossible to open wallet with the same name more than once.
-  ///
-  /// #Params
-  /// name: Name of the wallet.
-  /// runtime_config (optional): Runtime wallet configuration json. if NULL, then default runtime_config will be used. Example:
-  /// {
-  ///     "freshnessTime": string (optional), Amount of minutes to consider wallet value as fresh. Defaults to 24*60.
-  ///     ... List of additional supported keys are defined by wallet type.
-  /// }
-  /// credentials(optional): Wallet credentials json. List of supported keys are defined by wallet type.
-  ///                    if NULL, then default credentials will be used.
-  ///
-  /// #Returns
-  /// Handle to opened wallet to use in methods that require wallet access.
-  ///
-  /// #Errors - IndyError exception thrown with ErrorCode set in case of error
-  /// Common*
-  /// Wallet*
-  open(config? : {
-    wallet_name:string
-    runtime_config?:WalletRuntimeConfig
-  }) : Promise<void>
-
-  /// Closes opened wallet and frees allocated resources.
-  ///
-  /// #Params
-  /// handle: wallet handle returned by indy_open_wallet.
-  ///
-  /// #Returns
-  /// void
-  ///
-  /// #Errors - IndyError exception thrown with ErrorCode set in case of error
-  /// Common*
-  /// Wallet*
-  close() : Promise<void>
-
-}
 
 export type AddIdentityCallback = (err:ErrorCode) => void
 export type RemoveIdentityCallback = (err:ErrorCode) => void
@@ -399,37 +343,6 @@ export interface ServiceProviderInterface {
   registerLedgerGenesisConfiguration (config?:LedgerGenesisConfiguration) : Promise<void>
   getLedgerGenesisConfiguration(configuration_name:string) : Promise<void>
   registeredLedgerGenesisConfigurations() : Promise<LedgerGenesisConfiguration>
-
-  /// Opens pool ledger and performs connecting to pool nodes.
-  ///
-  /// Pool ledger configuration with corresponded name must be previously created
-  /// with indy_create_pool_ledger_config method.
-  /// It is impossible to open pool with the same name more than once.
-  ///
-  /// config : Runtime pool configuration json.
-  ///                         if NULL, then default config will be used. Example:
-  /// {
-  ///     "configurationName": string
-  ///
-  ///     "refreshOnOpen": bool (optional), Forces pool ledger to be refreshed immediately after opening.
-  ///                      Defaults to true.
-  ///     "autoRefreshTime": int (optional), After this time in minutes pool ledger will be automatically refreshed.
-  ///                        Use 0 to disable automatic refresh. Defaults to 24*60.
-  ///     "networkTimeout": int (optional), Network timeout for communication with nodes in milliseconds.
-  ///                       Defaults to 20000.
-  /// }
-  ///
-  /// #Errors
-  /// Common*
-  /// Ledger*
-  createLedger (config:LedgerLocalRuntimeConfiguration) : Promise<Ledger>
-
-  /// creates a new pool configuration, and a ledger with the same name
-  newLedger (
-    ledger_name:string,
-    genesis_config:LedgerGenesisConfiguration,
-    runtime_config:LedgerLocalRuntimeConfiguration,
-  ) : Promise<Ledger>
 
 
   // --------------------------------------------------------------------

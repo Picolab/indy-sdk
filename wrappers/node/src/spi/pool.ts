@@ -7,7 +7,7 @@ import {
   Pool,
   Ledger,
   LedgerGenesisConfiguration,
-  LedgerLocalRuntimeConfiguration,
+  LedgerRuntimeConfiguration,
   ServiceProviderInterface,
   LedgerGenesisTransaction
 } from './api'
@@ -18,11 +18,11 @@ import {
 export class C_Pool implements Pool {
   private pool_handle:rust_pool_handle
   readonly name:string
-  readonly genesis_config:LedgerGenesisConfiguration
+  readonly genesis:LedgerGenesisTransaction[]
   readonly path:FilesystemPath
 
-  private _open_config:LedgerLocalRuntimeConfiguration
-  get open_config():LedgerLocalRuntimeConfiguration {
+  private _open_config:LedgerRuntimeConfiguration
+  get open_config():LedgerRuntimeConfiguration {
     return this._open_config
   }
 
@@ -45,7 +45,7 @@ export class C_Pool implements Pool {
     return this.pool_handle !== undefined
   }
   get isDefault() : boolean {
-    return this.genesis_config === undefined
+    return this.genesis === undefined
   }
   get isOpen() : boolean {
     return this.open_config !== undefined
@@ -63,7 +63,7 @@ export class C_Pool implements Pool {
   }
 
   // obtain access to this pool via the Ledger object
-  open(config?:LedgerLocalRuntimeConfiguration) : Promise<Ledger> {
+  open(config?:LedgerRuntimeConfiguration) : Promise<Ledger> {
     throw 'nyi'
   }
 

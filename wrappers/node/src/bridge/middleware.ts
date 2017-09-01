@@ -2,12 +2,6 @@ import { ErrorCode } from '../error'
 import {
   JSON_Datum,
   FilesystemPath,
-  IP_Port,
-  IP_Addr,
-  TXN_DEST,
-  TXN_IDENTIFIER,
-  TXN_ID,
-  TXN_Type,
   json_object_or_serialized,
   agent_connection_callback_type,
   agent_message_callback_type,

@@ -2,24 +2,22 @@ import { ErrorCode, IndyError } from '../error'
 import {
   JSON_Datum,
   FilesystemPath,
+} from '../bridge'
+import {
+  DID,
+  A_DID_Utils,
+  A_DID_and_Me,
+  Target,
+  Ledger,
+  SubmitterTools,
+  Wallet,
+  LedgerGenesisTransaction,
   IP_Port,
   IP_Addr,
   TXN_DEST,
   TXN_IDENTIFIER,
   TXN_ID,
   TXN_Type
-} from '../bridge'
-import {
-  DID,
-  A_DID_Utils,
-  A_DID_and_Me,
-  LedgerGenesisConfiguration,
-  LedgerLocalRuntimeConfiguration,
-  Target,
-  Ledger,
-  LedgerBuilder,
-  Wallet,
-  LedgerGenesisTransaction
 } from '../spi'
 
 export class C_LedgerGenesisTransaction implements LedgerGenesisTransaction {
@@ -59,10 +57,10 @@ export class C_LedgerGenesisTransaction implements LedgerGenesisTransaction {
 
 
 export class C_Target implements Target {
-  readonly builder:LedgerBuilder
+  readonly builder:SubmitterTools
   readonly target:DID
 
-  constructor(builder:LedgerBuilder,target:DID) {
+  constructor(builder:SubmitterTools,target:DID) {
     this.builder = builder
     this.target = target
   }
@@ -85,7 +83,7 @@ export class C_Target implements Target {
 
 }
 
-export class C_LedgerBuilder implements LedgerBuilder {
+export class C_SubmitterTools implements SubmitterTools {
 
   readonly submitter:DID
   readonly ledger:Ledger

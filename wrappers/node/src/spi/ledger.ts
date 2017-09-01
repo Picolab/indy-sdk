@@ -8,14 +8,15 @@ import {
   A_DID_Utils,
   A_DID_and_Me,
   LedgerGenesisConfiguration,
-  LedgerLocalRuntimeConfiguration,
+  LedgerGenesisTransaction,
+  LedgerRuntimeConfiguration,
   Ledger,
   Pool,
-  LedgerBuilder,
+  SubmitterTools,
   Wallet
 } from './api'
 import {
-  C_LedgerBuilder
+  C_SubmitterTools
 } from './util'
 
 /*
@@ -48,6 +49,7 @@ export function close_pool_ledger(pool_handle:number) : Promise<void> {
 export class C_Ledger implements Ledger {
 
   readonly pool : Pool
+  readonly runtime : LedgerRuntimeConfiguration
 
   /// Opens pool ledger and performs connecting to pool nodes.
   ///
@@ -71,10 +73,10 @@ export class C_Ledger implements Ledger {
   /// #Errors
   /// Common*
   /// Ledger*
-  constructor(pool:Pool,runtime_config:LedgerLocalRuntimeConfiguration) {
+  constructor(pool:Pool,runtime_config:LedgerRuntimeConfiguration) {
     this.pool = pool
   }
-  async updateConfig(runtime_config:LedgerLocalRuntimeConfiguration) : Promise<void> {
+  async updateConfig(runtime_config:LedgerRuntimeConfiguration) : Promise<void> {
     await this.close()
     //await libindy.async.open_pool_ledger()
   }
@@ -97,8 +99,8 @@ export class C_Ledger implements Ledger {
   async sign_request(wallet:Wallet,submitter:DID,request:JSON_Datum) : Promise<void> {
   }
 
-  builder_for(submitter:DID) : LedgerBuilder {
-    return new C_LedgerBuilder(this,submitter)
+  submitter(submitter:DID) : SubmitterTools {
+    return new C_SubmitterTools(this,submitter)
   }
 
   create_wallet(config? : {

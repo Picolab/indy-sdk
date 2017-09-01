@@ -87,17 +87,8 @@ export interface libindy_bridge {
 }
 
 
-// ideally we can factor these out, or provide appropriate guard support
-// for verifying, for example, that IP_Port is an unsigned 16 bit value
-// and IP_Addr is correctly either an IPv4 or IPv6 addr, etc.
 export type JSON_Datum = any
 export type FilesystemPath = string
-export type IP_Port = number
-export type IP_Addr = string
-export type TXN_DEST = string
-export type TXN_IDENTIFIER = string
-export type TXN_ID = string
-export type TXN_Type = string
 
 // if you are using the TypeScript bridge, you will need these types
 // from the FFI - if we hide the FFI package, these are the low level
