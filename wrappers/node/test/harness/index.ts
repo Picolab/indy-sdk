@@ -6,7 +6,6 @@ import {
 } from '../../src'
 export { describe,it,before,after,beforeEach,afterEach } from 'mocha'
 export * from './chai'
-export * from './logging'
 export * from './environment'
 
 export function assert_indy_error(promise:any,error_code:ErrorCode) : Promise<any> {

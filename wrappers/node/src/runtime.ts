@@ -23,13 +23,11 @@ import { LibIndy } from '.'
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
 import * as ffi from 'ffi'
-import * as winston from 'winston'
 
 
 export interface LibIndyRuntimeConfig {
   basepath?:string
   reset?:boolean
-  winston?:any
   ffi?:FFIInterfaceConfig
   bridge?:BridgeInterfaceConfig
   spi?:ServiceProviderInterfaceConfig
@@ -43,7 +41,6 @@ export class LibIndyRuntime implements LibIndy {
   readonly ffi : FFIEntryPoint
   readonly bridge : BridgeEntryPoint
   readonly spi : ServiceProviderInterface
-  readonly logger : winston.Logger
 
   use(middleware:libindy_middleware): void {
     this.bridge.use(middleware)
@@ -64,9 +61,6 @@ export class LibIndyRuntime implements LibIndy {
 
       return basepath
     }
-
-    const winston_config = config.winston || {}
-    this.logger = new winston.Logger(config)
 
     this.basepath = _initialize_basepath()
     if(config.reset)

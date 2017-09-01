@@ -1,7 +1,6 @@
 import {
   describe,it,before,after,beforeEach,afterEach, // mocha
   expect,assert,//should, from chai + chai-as-promised
-  logger, // winston logger
   getLibIndy
 } from '../harness'
 
@@ -9,7 +8,6 @@ import {
   ErrorCode,IndyError,
   LibIndyRuntime,
 } from '../../src'
-import * as winston from 'winston'
 
 import { DebugTrace } from '../../src/bridge/middleware/traceactivity'
 import { CollectMetrics } from '../../src/bridge/middleware/metrics'
@@ -42,13 +40,7 @@ describe('Middleware', function() {
 
     it('should initialize ok',function() {
       // this will log the entrances and exits from all
-      const winston_config = {
-        level:'debug',
-        transports: [
-          new (winston.transports.Console)(),
-        ]
-      }
-      libindy.use(new DebugTrace(winston_config))
+      libindy.use(new DebugTrace())
     });
 
 /*

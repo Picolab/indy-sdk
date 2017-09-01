@@ -30,17 +30,14 @@ import {
 } from './ledger'
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
-import * as winston from 'winston'
 
 export class ServiceImplementation implements ServiceProviderInterface {
   private pool_ledger_genesis_configuration:any = {}
   readonly libindy:LibIndy
-  readonly logger : winston.Logger
 
   constructor(libindy:LibIndy,config:ServiceProviderInterfaceConfig) {
 
     this.libindy = libindy
-    this.logger = libindy.logger
 
     function _initialize_pool_ledger_genesis_configurations() {
       // TODO - iterate over basepath/pool/<name> and load configurations

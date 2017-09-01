@@ -1,7 +1,6 @@
 import {
   describe,it,before,after,beforeEach,afterEach, // mocha
   expect,assert,//should, from chai + chai-as-promised
-  logger, // winston logger
   DEBUG_LIBRARY,RELEASE_LIBRARY,RELATIVE_LIBRARY_BASE,
   canFindRelativeDebugLibrary,
   canFindRelativeReleaseLibrary

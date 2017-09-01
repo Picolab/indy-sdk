@@ -1,8 +1,3 @@
-// QUESTION - this dependency seems out of place in this file, but is
-// required if we want to share a module wide logging config via libindy.
-// still - it seems like this can be factored out.
-import * as winston from 'winston'
-
 // give the entire module a common namespace - this just flattens the structure
 // of the inside library.  Note that we are not exporting the information from
 // the subcomponents - but only from the APIs.
@@ -25,7 +20,6 @@ import { ServiceProviderInterface } from './spi/api'
 // QUESTION - is it valuable to make these bridge?, async?, spi? triggered
 // by the configuration handed to the LibIndy runtime factory?
 export interface LibIndy {
-  readonly logger: winston.Logger
   readonly ffi : FFIEntryPoint
   readonly bridge : BridgeEntryPoint
   readonly spi : ServiceProviderInterface

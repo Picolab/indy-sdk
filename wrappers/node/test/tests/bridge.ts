@@ -1,14 +1,12 @@
 import {
   describe,it,before,after,beforeEach,afterEach, // mocha
   expect,assert,//should, from chai + chai-as-promised
-  logger, // winston logger
   getLibIndy,
   assert_indy_error,
   ErrorCode
 } from '../harness'
 import * as tmp from 'tmp'
 import * as fs from 'fs-extra'
-import * as winston from 'winston'
 
 const single_genesis_txn = { data:{
   alias:"Node1",

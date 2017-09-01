@@ -15,7 +15,6 @@ import {
   agent_message_callback_type,
   agent_connection_callback_type
  } from '../api'
-import * as winston from 'winston'
 
 import { NotYetImplemented } from './util'
 
@@ -24,11 +23,10 @@ import { NotYetImplemented } from './util'
 // returning a result.  No functionality is added here, only the symbolic
 // marker explicit in this construct: 'await bridge.async.<rust-function>'
 export class DebugTrace extends NotYetImplemented implements libindy_middleware {
-  readonly logger:winston.logger
+  readonly logger:any
   constructor(config?:any) {
     super()
-    const winston_config = config || {}
-    this.logger = new winston.Logger(winston_config)
+    this.logger = config.logger
   }
 
   private trace(...args) : void {

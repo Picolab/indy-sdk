@@ -199,8 +199,8 @@ export class libindy_middleware_context {
   private position : number
   readonly first : libindy_middleware
   readonly wrappers : libindy_middleware[]
-  resolve:(...args) => void
-  reject:(...args) => void
+  resolve:(...args:any[]) => void
+  reject:(...args:any[]) => void
 
   constructor(wrappers:libindy_middleware[]) {
     this.position = wrappers.length - 1

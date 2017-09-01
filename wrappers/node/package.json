@@ -16,7 +16,7 @@
   },
   "publishBuildDir": true,
   "main": "dist/src/index.js",
-  "typings": "index",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "./node_modules/.bin/mocha dist/test/**/*.js",
     "setup": "npm install && tsc && npm test",
@@ -29,8 +29,7 @@
     "ffi": "^2.2.0",
     "fs-extra": "^4.0.1",
     "nan": "^2.0.0",
-    "tmp": "0.0.33",
-    "winston": "^2.3.1"
+    "tmp": "0.0.33"
   },
   "devDependencies": {
     "@types/node": "^7.0.8",
