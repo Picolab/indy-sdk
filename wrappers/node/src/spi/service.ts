@@ -65,7 +65,7 @@ export class ServiceImplementation implements ServiceProviderInterface {
     if(config_check === undefined) {
       throw "Pool Ledger "+configuration_name+" Is Not Defined"
     }
-    await this.libindy.async.delete_pool_ledger_config(configuration_name)
+    await this.libindy.bridge.delete_pool_ledger_config(configuration_name)
     this.pool_ledger_genesis_configuration[configuration_name] = undefined
   }
 

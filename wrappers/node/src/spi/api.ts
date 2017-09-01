@@ -10,7 +10,6 @@ import {
   TXN_ID,
   TXN_Type,
   BridgeEntryPoint,
-  AsyncBridgeEntryPoint,
   open_pool_ledger_options,
   rust_pool_handle
 } from '../bridge/api';

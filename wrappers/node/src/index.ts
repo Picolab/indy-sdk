@@ -15,7 +15,7 @@ export * from './spi/api'
 
 // import access APIs
 import { FFIEntryPoint } from './ffi/api'
-import { BridgeEntryPoint,AsyncBridgeEntryPoint } from './bridge/api'
+import { BridgeEntryPoint } from './bridge/api'
 import { ServiceProviderInterface } from './spi/api'
 
 // this is libindy bridge itself.  Any attempt to instantiate an instance of
@@ -28,10 +28,16 @@ export interface LibIndy {
   readonly logger: winston.Logger
   readonly ffi : FFIEntryPoint
   readonly bridge : BridgeEntryPoint
-  readonly async : AsyncBridgeEntryPoint
   readonly spi : ServiceProviderInterface
 }
 
 // export LibIndyRuntime so folks can get started with just the top level
 // import - import { LibIndy,LibIndyRuntime } from 'indy-sdk'
 export * from './runtime'
+
+// support no-config, default only, automatic use via require for
+// old style javascript
+import { LibIndyRuntime } from './runtime'
+export default function() : BridgeEntryPoint {
+  return new LibIndyRuntime().bridge
+}

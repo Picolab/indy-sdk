@@ -129,8 +129,6 @@ export interface wallet_type_definition {
   free(wallet_handle:rust_wallet_handle,value:string) : ErrorCode
 }
 
-
-
 export interface libindy_bridge {
   // pool.rs
   create_pool_ledger_config(configuration_name:string,config_data?:create_pool_ledger_config_options) : Promise<void>
@@ -312,4 +310,3 @@ export interface libindy_middleware {
 }
 
 export { BridgeEntryPoint } from './wrapper'
-export { AsyncBridgeEntryPoint } from './async'

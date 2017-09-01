@@ -4,7 +4,6 @@ import {
   FilesystemPath,
   BridgeEntryPoint,
   BridgeInterfaceConfig,
-  AsyncBridgeEntryPoint,
   libindy_middleware
 } from './bridge'
 import {
@@ -43,7 +42,6 @@ export class LibIndyRuntime implements LibIndy {
   readonly pooldir : string
   readonly ffi : FFIEntryPoint
   readonly bridge : BridgeEntryPoint
-  readonly async : AsyncBridgeEntryPoint
   readonly spi : ServiceProviderInterface
   readonly logger : winston.Logger
 
@@ -51,7 +49,10 @@ export class LibIndyRuntime implements LibIndy {
     this.bridge.use(middleware)
   }
 
-  constructor(config:LibIndyRuntimeConfig) {
+  constructor(config?:LibIndyRuntimeConfig) {
+
+    // allow optional, empty config
+    config = config || {}
 
     function _initialize_basepath() : string {
       // this needs additional logic
@@ -82,7 +83,6 @@ export class LibIndyRuntime implements LibIndy {
       validate_serialized_json_string_parameters:false
     }
     this.bridge = new BridgeEntryPoint(this.ffi,bridge_config)
-    this.async = new AsyncBridgeEntryPoint(this.bridge)
 
 
     this.spi = new ServiceImplementation(this,config.spi || {})

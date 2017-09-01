@@ -15,7 +15,7 @@
     "build": "dist"
   },
   "publishBuildDir": true,
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "typings": "index",
   "scripts": {
     "test": "./node_modules/.bin/mocha dist/test/**/*.js",

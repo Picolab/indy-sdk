@@ -80,7 +80,7 @@ export class C_Pool implements Pool {
   /// Common*
   /// Ledger*
   async refresh() : Promise<void> {
-    return this.libindy.async.refresh_pool_ledger(this.pool_handle)
+    return this.libindy.bridge.refresh_pool_ledger(this.pool_handle)
   }
 
   /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
@@ -95,7 +95,7 @@ export class C_Pool implements Pool {
   /// Common*
   /// Ledger*
   async close() : Promise<void> {
-    return this.libindy.async.close_pool_ledger(this.pool_handle)
+    return this.libindy.bridge.close_pool_ledger(this.pool_handle)
   }
 
 }
