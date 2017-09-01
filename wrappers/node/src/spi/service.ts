@@ -33,7 +33,7 @@ import * as fs from 'fs-extra'
 
 export class ServiceImplementation implements ServiceProviderInterface {
   private pool_ledger_genesis_configuration:any = {}
-  readonly libindy:LibIndy
+  private readonly libindy:LibIndy
 
   constructor(libindy:LibIndy,config:ServiceProviderInterfaceConfig) {
 

@@ -1,6 +1,5 @@
 
 import {
-  libindy_bridge,
   libindy_middleware,
   libindy_middleware_context,
   create_pool_ledger_config_options,
@@ -14,7 +13,7 @@ import {
   rust_did,
   agent_message_callback_type,
   agent_connection_callback_type
-} from '../api'
+} from '../bridge'
 
 // this simply adds to the promise library, recording the distinction
 // between synchronous functions returning a promise and functions

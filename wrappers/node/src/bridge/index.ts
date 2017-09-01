@@ -1,7 +1,10 @@
 
-//
+// this is the bridge API
 export * from './api'
 
-// the BridgeEntryPoint is defined in the wrapper - this
-export * from './wrapper'
+// this supports the standard middleware package popular in typescript/node
+// environments.
+export * from './middleware'
+
+// a promise implementation - structured identically to the rust library
 export * from './promise'

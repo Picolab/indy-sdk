@@ -9,9 +9,9 @@ import {
   LibIndyRuntime,
 } from '../../src'
 
-import { DebugTrace } from '../../src/bridge/middleware/traceactivity'
-import { CollectMetrics } from '../../src/bridge/middleware/metrics'
-import { ValidateParameters,ValidationError } from '../../src/bridge/middleware/validate'
+import { DebugTrace } from '../../src/middleware/traceactivity'
+import { CollectMetrics } from '../../src/middleware/metrics'
+import { ValidateParameters,ValidationError } from '../../src/middleware/validate'
 
 describe('Middleware', function() {
 

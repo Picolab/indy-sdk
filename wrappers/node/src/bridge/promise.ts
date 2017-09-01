@@ -2,8 +2,6 @@
 import { ErrorCode } from '../error'
 import {
   libindy_bridge,
-  libindy_middleware,
-  libindy_middleware_context,
   create_pool_ledger_config_options,
   open_pool_ledger_options,
   wallet_type_definition,
@@ -31,6 +29,12 @@ import {
   build_receive_json_result_callback,
   build_default_callback,
 } from '../ffi'
+
+import {
+  libindy_middleware,
+  libindy_middleware_context,
+} from './middleware'
+
 const debug = require('debug')('indy-sdk:promise')
 
 export class PromiseImplementation implements libindy_middleware {

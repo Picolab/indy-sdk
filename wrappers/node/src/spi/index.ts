@@ -1,5 +1,4 @@
 export * from './api'
-export * from './middleware'
 export * from './service'
 export * from './util'
 export * from './pool'
