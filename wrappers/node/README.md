@@ -64,7 +64,7 @@ only interface exported is the promise interface.
 	cd indy-sdk/libindy
 	cargo build
 	cargo build --release
-	cd ../wrappers/ts
+	cd ../wrappers/node
 	npm run setup
 	```
 
