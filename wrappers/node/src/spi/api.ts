@@ -44,8 +44,9 @@ export interface LedgerGenesisTransaction {
 }
 
 export interface LedgerGenesisConfiguration {
-  name:string,
-  genesis_txn?:LedgerGenesisTransaction[] | FilesystemPath
+  readonly name:string,
+  readonly transactions?:LedgerGenesisTransaction[]
+  readonly txn_file_path?:FilesystemPath
 }
 
 export type LedgerRuntimeConfiguration = open_pool_ledger_options
@@ -61,33 +62,41 @@ autoRefreshTime?:number
 networkTimeout?:number
 */
 
+// with an eye towards redux and UI integrations
+export class PoolEvents {
+  static POOL_CREATION_EVENT = 'POOL_CREATION_EVENT'
+  static POOL_DELETION_EVENT = 'POOL_DELETION_EVENT'
+  static POOL_ERROR_EVENT = 'POOL_ERROR_EVENT'
+}
 
-// with an eye towards redux
-export const POOL_CREATION_EVENT = 'POOL_CREATION_EVENT'
-export const POOL_DELETION_EVENT = 'POOL_DELETION_EVENT'
-export const POOL_ERROR_EVENT = 'POOL_ERROR_EVENT'
-
-
-export interface Pool {
-  readonly name:string
-  readonly genesis:LedgerGenesisTransaction[]
-  readonly path:FilesystemPath
-  readonly ledger:Ledger
+// records the state of a pool - it is essentially a configuration
+// object with additional lifecycle properties.  this is expected
+// to line up with light-state systems like react and redux for use
+// in UI modeling
+export interface PoolState {
+  readonly config:LedgerGenesisConfiguration
+  readonly ledger?:Ledger
 
   readonly isReady:boolean
   readonly isDefault:boolean
   readonly isOpen:boolean
   readonly hadTemporaryGenesisFile:boolean
 
+  // get all the genesis transactions, as objects, for this pool
+  // TODO - put the async iterator / iterator support back
+  // genesisTransactions() : Promise<LedgerGenesisTransaction>
+}
+
+// This is the interface to a specific pool, which may or may not be opened
+export interface Pool  {
+  readonly state : PoolState
+  readonly name : string
+
   // this will delete the Pool configuration, and
   // QUESTION - does this actually blow away any storage?
   // QUESTION - should we close open ledgers and wallets?
   // QUESTION - notifications?  Event Listener
   delete() : Promise<void>
-
-  // get all the genesis transactions, as objects, for this pool
-  // TODO - put the async iterator / iterator support back
-  // genesisTransactions() : Promise<LedgerGenesisTransaction>
 
   // what does it mean to "Refresh" a pool?
   /// Refreshes a local copy of a pool ledger and updates pool nodes connections.
@@ -96,19 +105,22 @@ export interface Pool {
   // obtain access to this pool via the Ledger object
   open(config?:LedgerRuntimeConfiguration) : Promise<Ledger>
 
-  // close this
+  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
   close() : Promise<void>
 
 }
 
-export interface Ledger {
+export interface LedgerState {
   readonly pool : Pool
   readonly runtime:LedgerRuntimeConfiguration
+}
+
+export interface Ledger extends LedgerState {
 
   /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
   close() : Promise<void>
 
-  /// Closes opened pool ledger, opened nodes connections and frees allocated resources.
+  /// Refresh state for the Pool/Ledger
   refresh() : Promise<void>
 
   // close and re-open Ledger with new run-time open options to open_pool-Ledger
@@ -338,19 +350,12 @@ export interface Agent {
 export interface ServiceProviderInterface {
 
 
-  // genesis configuration management.
-  deleteLedgerGenesisConfiguration(configuration_name:string) : Promise<void>
-  registerLedgerGenesisConfiguration (config?:LedgerGenesisConfiguration) : Promise<void>
-  getLedgerGenesisConfiguration(configuration_name:string) : Promise<void>
-  registeredLedgerGenesisConfigurations() : Promise<LedgerGenesisConfiguration>
-
-
   // --------------------------------------------------------------------
 
   // or is this a better API for the above?
   createPool(config:LedgerGenesisConfiguration) : Promise<Pool>
   pool(configuration_name:string) : Promise<Pool | undefined>
-  pools() : Promise<Pool>
+  pools()
 
   // or is this a better API for the above?
   registerWalletType(walletDriver:WalletType) : Promise<void>
@@ -362,3 +367,5 @@ export interface ServiceProviderInterface {
   createWallet(nodeGlobalName:string,pool:Pool | Ledger,walletType?:WalletType,config?:WalletTypeConfig,credentials?:WalletCredentials) : Promise<Wallet>
   wallets() : Promise<Wallet>
 }
+
+export {SimplePoolState,SimpleLedgerGenesisTransaction,SimpleLedgerGenesisConfiguration} from './pool'

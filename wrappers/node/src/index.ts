@@ -82,7 +82,6 @@ export class LibIndyRuntime implements LibIndy {
     }
     this.bridge = new BridgeEntryPoint(this.ffi,bridge_config)
 
-
     this.spi = new ServiceImplementation(this,config.spi || {})
   }
 
