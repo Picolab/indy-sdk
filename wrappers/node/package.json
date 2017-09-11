@@ -24,12 +24,7 @@
     "dev": "tsc -w"
   },
   "dependencies": {
-    "bindings": "~1.2.1",
-    "debug": "^3.0.1",
-    "ffi": "^2.2.0",
-    "fs-extra": "^4.0.1",
-    "nan": "^2.0.0",
-    "tmp": "0.0.33"
+    "ffi": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^7.0.8",
@@ -37,7 +32,6 @@
     "chai-as-promised": "^7.1.1",
     "cross-env": "^5.0.1",
     "mocha": "^3.5.0",
-    "typedoc": "https://github.com/DatenMetzgerX/typedoc/tarball/typescript-2-build",
     "typescript": "^2.3.3"
   }
 }
