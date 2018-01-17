@@ -1,0 +1,43 @@
+{
+  "name": "@korsimoro/indy-sdk",
+  "version": "0.0.1",
+  "author": "Korsimoro",
+  "private": true,
+  "gypfile": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:korsimoro/indy-sdk.git"
+  },
+  "license": "UNLICENSED",
+  "directories": {
+    "test": "test",
+    "lib": "src",
+    "build": "dist"
+  },
+  "publishBuildDir": true,
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha dist/test/**/*.js",
+    "setup": "npm install && tsc && npm test",
+    "update": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 npm-check -u",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "debug": "^3.0.1",
+    "ffi": "^2.2.0",
+    "fs-extra": "^4.0.1",
+    "nan": "^2.0.0",
+    "tmp": "0.0.33"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.8",
+    "chai": "^4.1.1",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^5.0.1",
+    "mocha": "^3.5.0",
+    "typedoc": "https://github.com/DatenMetzgerX/typedoc/tarball/typescript-2-build",
+    "typescript": "^2.3.3"
+  }
+}

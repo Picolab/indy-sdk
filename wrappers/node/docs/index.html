@@ -1,0 +1,831 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@korsimoro/indy-sdk</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@korsimoro/indy-sdk</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> @korsimoro/indy-sdk</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="indy-sdk-for-node-js">Indy SDK for Node.js</h1>
+				<p>This is a Node.js wrapper of the  <a href="https://www.hyperledger.org/projects/indy">Indy</a> Rust library.</p>
+				<ul>
+					<li><a href="#Getting Started">Getting Started</a>.</li>
+					<li><a href="#Runtime Configuration Options">Runtime configuration options</a>.</li>
+					<li><a href="#Architecture and Design">Architecture and Design</a><ul>
+							<li>Design Considerations</li>
+							<li>Layered Architecture</li>
+						</ul>
+					</li>
+					<li><a href="#Implementation Details">Technical Details</a><ul>
+							<li>Language Issues</li>
+							<li>Foreign Function Interface</li>
+							<li>Bridge (Promise &amp; Async)<ul>
+									<li><a href="#Configuration Wrappers and JSON Strings">Configuration Wrappers and JSON Strings</a></li>
+									<li><a href="#Middleware">Middleware</a></li>
+								</ul>
+							</li>
+							<li>Service Provider Interface</li>
+						</ul>
+					</li>
+					<li><a href="#Test Environment">Test Environment</a></li>
+					<li><a href="#Notes and Issues">Notes and Issues</a></li>
+				</ul>
+				<p>The library was designed in appreciation of <a href="https://docs.google.com/document/d/15P6JOEKxbNC892DWReBStJIXrObVoaBDxbKJFOpAdjI">The Guidelines</a>.</p>
+				<p>Example Typescript/Newer JavaScript Use:</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> { LibIndy,LibIndyRuntime } <span class="hljs-keyword">from</span> <span class="hljs-string">'indy-sdk'</span>
+
+<span class="hljs-keyword">const</span> libindy : LibIndy = <span class="hljs-keyword">new</span> LibIndyRuntime({...})
+
+<span class="hljs-comment">// libindy.ffi.&lt;any-rustlib-function&gt;(...)</span>
+
+<span class="hljs-comment">// libindy.bridge.&lt;any-rustlib-fucntion&gt;(...)</span>
+<span class="hljs-comment">// .then(...)</span>
+<span class="hljs-comment">// .catch(...) // process an IndyError, wrapping the integer rust error code</span>
+
+
+<span class="hljs-comment">// try {</span>
+<span class="hljs-comment">//   await libindy.bridge.&lt;any-rustlib-fucntion&gt;(...)</span>
+<span class="hljs-comment">// catch(error) {</span>
+<span class="hljs-comment">//   // process an IndyError, wrapping the integer rust error code</span>
+<span class="hljs-comment">// }</span>
+
+<span class="hljs-comment">// Object Model for other node.js Services - Service Provider Interface</span>
+<span class="hljs-comment">// const ledger : Ledger = libindy.newLedger({...})</span>
+</code></pre>
+				<p>Classic Javascript Use:</p>
+				<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> libindy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'indy-sdk'</span>)
+
+libindy.&lt;any-rustlib-fucntion&gt;(...)
+.then(...)
+.catch(...) <span class="hljs-comment">// process and IndyError that wraps the error_code</span>
+</code></pre>
+				<p>In the classic javascript, all configuation abilities are removed, and the
+				only interface exported is the promise interface.</p>
+				<h1 id="getting-started">Getting Started</h1>
+				<ol>
+					<li><p>The Gold Standard - it should be this easy</p>
+						<pre><code> git clone https:<span class="hljs-string">//github.com/korsimoro/indy-sdk</span>
+ <span class="hljs-keyword">cd</span> indy-sdk/libindy
+ cargo build
+ cargo build <span class="hljs-params">--release</span>
+ <span class="hljs-keyword">cd</span> <span class="hljs-string">../wrappers/ts</span>
+ npm run setup
+</code></pre></li>
+					<li><p>When it is not that easy</p>
+						<ul>
+							<li>Check the Rust <a href="../../README.md">installation instructions</a></li>
+							<li>Make sure you have the right npm, node, and yarn - see <a href="#Technical Details">Technical Details</a></li>
+						</ul>
+					</li>
+				</ol>
+				<ol>
+					<li>and if it wasn&#39;t easily fixed, help us by<ul>
+							<li>fixing the problem and generating a pull request</li>
+							<li><a href="WHAT-LINK-GOES-HERE?">raising a support request</a></li>
+						</ul>
+					</li>
+				</ol>
+				<h1 id="runtime-configuration-options">Runtime Configuration Options</h1>
+				<p>Configuration is entirely optional.</p>
+				<ul>
+					<li>LibIndyRuntimeConfig<pre><code class="lang-ts">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> LibIndyRuntimeConfig {
+    basepath?:<span class="hljs-built_in">string</span>
+    reset?:<span class="hljs-built_in">boolean</span>
+    winston?:<span class="hljs-built_in">any</span>
+    ffi?:FFIInterfaceConfig
+    bridge?:BridgeInterfaceConfig
+    spi?:ServiceProviderInterfaceConfig
+  }
+</code></pre>
+					</li>
+					<li><p>FFIInterfaceConfig
+							You can optionally override the path to the DLL.  If libraryPath is not
+							provided, it will use the value of LIBINDY_PATH from the env, unless
+							that is absent.  It will fallback to ffi.dlopen(&#39;libindy&#39;), which will
+						use standard LD_LIBRARY_PATH</p>
+						<pre><code class="lang-ts">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> FFIInterfaceConfig {
+    libraryPath?:<span class="hljs-built_in">string</span>
+  }
+</code></pre>
+					</li>
+					<li><p>BridgeInterfaceConfig</p>
+						<pre><code class="lang-ts">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> BridgeInterfaceConfig {
+    increment_command_handle?:<span class="hljs-built_in">boolean</span>
+    validate_serialized_json_string_parameters?:<span class="hljs-built_in">boolean</span>,
+  }
+</code></pre>
+					</li>
+					<li><p>Service Provider Interface</p>
+						<pre><code class="lang-ts">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ServiceProviderInterfaceConfig {
+    loadGensisConfigTypes?:<span class="hljs-built_in">boolean</span>,
+  }
+</code></pre>
+					</li>
+				</ul>
+				<h1 id="architecture-and-design">Architecture and Design</h1>
+				<h2 id="design-considerations">Design Considerations</h2>
+				<p>The following is a list of considerations which drove the design of this
+				package.</p>
+				<ul>
+					<li><p><strong>Focus on Use</strong>
+							The library exposes a set of Node.JS/Rust interfaces.  Each interface is
+						suitable for a different pattern of use common to the node.js ecosystem.</p>
+						<p>  For example, express application authors will find the API.use(middleware)
+							pattern familiar and powerful, while those working on low level
+						server components might prefer to simply use the Rust methods directly.</p>
+						<p>  We hope that the wrapper can be used naturally, and without cumbersome
+							adaptation, regardless of what sort of node.js application or package
+						is being developed.</p>
+					</li>
+					<li><p><strong>Single Source Base</strong>
+							The library starts with a typescript code base, and uses compilers and
+							other language processors to make the APIs systematically in other
+							execution environments.  The entire    API is always available in each
+						typing environment.</p>
+						<ul>
+							<li><strong>GOAL: Add Automatic Code Generation</strong><ul>
+									<li>must consume the ffi interface as the authority of symbols</li>
+									<li>may consume additional information</li>
+									<li>must be integrated into the npm/yarn build chain</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul>
+					<li><p><strong>Perfect Parity</strong>
+							Perfect parity must be mainted with the Rust implementation. The module
+							supports an <a href="">FFI (Foreign Function Interface)</a> api which is a direct
+							1:1 mapping of symbols and signatures exported by the rust library.  All
+						other abilities are built upon this FFI.</p>
+					</li>
+					<li><p><strong>Node.js restriction</strong>
+						Execution on node.js is supported, but browser execution is not.</p>
+					</li>
+					<li><p><strong>Middleware Enhancement Pattern</strong><br>  The bridge layer, which is wrapped around the FFI, is augmented with
+							middleware capabilities, allowing API consumers to augment and extend
+						the functionality of the core API as they see fit.</p>
+					</li>
+				</ul>
+				<h2 id="layered-architecture">Layered Architecture</h2>
+				<p>The library is implemented in 3 layers - each one wrapping the lower level.</p>
+				<ol>
+					<li><a href="#ffi/api.ts">src/ffi/api.ts</a> - Call Oriented Native Foreign Function Interface</li>
+					<li><a href="#bridge.ts">src/bridge/api.ts</a> - Promise Oriented Typescript Interface</li>
+					<li><a href="#spi/api.ts">src/spi/api.ts</a> - Object Oriented Service Provider Interface</li>
+				</ol>
+				<p>The package user is free to choose which style they prefer.</p>
+				<p>Details:</p>
+				<ol>
+					<li><p><a href="#ffi.ts">FFI</a>
+							is a foreign function interface (FFI) to a native library written
+							in Rust.  Node FFI is provided by <a href="https://www.npmjs.com/package/ffi">this npm package</a>.
+						The FFI module supports direct, 1:1 access to libindy as follows:</p>
+						<pre><code class="lang-ts"> libindy.ffi.&lt;rust_method&gt;(&lt;rust-args&gt;)
+</code></pre>
+						<p> Key Points:</p>
+						<ul>
+							<li>All argument type management and callback execution are handled by the caller</li>
+							<li>The rest of the API is built upon this foundation.</li>
+							<li>Callbacks must be generated by the ffi.Callback() method, and will handle
+							native types exactly as specified in the rust library</li>
+							<li>command_handle argument is visible for programmer use</li>
+							<li>there is no type conversion</li>
+							<li>JSON objects must be passed as strings</li>
+							<li>the caller must handle the case where the function returns a non-zero
+							error_code but does not call the callback - typical of invalid parameters</li>
+							<li>Open Issues<ul>
+									<li>how to handle mutable types for return-parameters in wallet type definitions<ul>
+											<li>how to handle memory management of returned allocated strings</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ol>
+				<ol>
+					<li><p><a href="#bridge.ts">Bridge</a>
+							is a bridge layer which adapts the FFI to environment constructs
+							like promises, async/await, implicit event loop, guaranteed thread safety,
+							JSON conversions, static type analysis, and the many, many other benefits of the
+						typescript/node.js environment.</p>
+						<p>is a complete reflection of the FFI entry points in item #1 above, but
+						returning only Promises</p>
+						<pre><code class="lang-ts"> libindy.bridge.&lt;rust_method&gt;(&lt;rust-args&gt;)
+ .then(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{ <span class="hljs-comment">/*...*/</span>})
+ .catch(<span class="hljs-function">(<span class="hljs-params">err</span>)=&gt;</span>{ <span class="hljs-comment">/*...*/</span>})
+</code></pre>
+						<p> Key Points:</p>
+						<ul>
+							<li>All methods return a Promise, which resolves on success and provides
+							a return value if one is available</li>
+							<li>All non-zero error codes generate a promise Rejection and are returned
+							as IndyErrors, which wrap the rust integer error code</li>
+							<li>Callbacks for wallet types and agent connections use native node.js
+							types.</li>
+							<li>Optional middleware can be added to wrap all method calls</li>
+							<li>No command_handles are visible</li>
+							<li>JSON configuration objects may be given as either strings or objects
+							which are serialized for you</li>
+							<li>All methods and arguments have static type definitions</li>
+						</ul>
+					</li>
+					<li><p><a href="#spi/api.ts">spi</a> an object oriented API</p>
+						<ul>
+							<li>extracted from the bridge by argument-signature reduction</li>
+							<li>no handles are visible</li>
+							<li>currently working on react and redux bindings to the SPI</li>
+						</ul>
+					</li>
+				</ol>
+				<h1 id="technical-details">Technical Details</h1>
+				<p>Current configuration working with</p>
+				<ul>
+					<li>node 8.8.1</li>
+					<li>typescript 2.3</li>
+				</ul>
+				<h2 id="language-issues">Language Issues</h2>
+				<ul>
+					<li><p>Typescript</p>
+						<p>  TODO -</p>
+						<ul>
+							<li>Current typescript level</li>
+							<li>tslint config</li>
+							<li>document tsconfig.json</li>
+						</ul>
+					</li>
+					<li><p>JavaScript / (ES5/ES6)</p>
+						<p>  TODO - create applicable ES5 &amp; ES6</p>
+					</li>
+					<li><p>JavaScript / Modules</p>
+						<p>  TODO - obligatory notes about module support</p>
+					</li>
+					<li><p>Package Management</p>
+						<p>  Currently I support NPM
+						Yarn support under consideration (interest?)</p>
+					</li>
+				</ul>
+				<h2 id="detailed-technical-docs">Detailed Technical Docs</h2>
+				<h3 id="-foreign-function-interface-tree-master-src-ffi-api-ts-"><a href="../tree/master/src/ffi/api.ts">Foreign Function Interface</a></h3>
+				<p>This is the ffi (Foreign Function Interface) boundary with the libindy rust
+					implementation.  The <a href="https://www.npmjs.com/package/ffi">ffi</a>
+				npm package is used to access the compiled library.</p>
+				<p>You can use the ffi library directly, bypassing the rest
+				of the wrapper, as follows</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> {FFIConfiguration} <span class="hljs-keyword">from</span> <span class="hljs-string">'indy-sdk'</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> ffi <span class="hljs-keyword">from</span> <span class="hljs-string">'ffi'</span>
+<span class="hljs-keyword">const</span> libindy = ffi.Library(<span class="hljs-string">'/path/to/library'</span>,FFIConfiguration)
+libindy.indy_&lt;rust-method&gt;(rust-args)
+</code></pre>
+				<p>or, via the wrapper, as</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> { LibIndyRuntime } <span class="hljs-keyword">from</span> <span class="hljs-string">'indy-sdk'</span>
+<span class="hljs-keyword">const</span> libindy = <span class="hljs-keyword">new</span> LibIndyRuntime({})
+libindy.ffi.indy_&lt;rust-method&gt;(rust-args)
+</code></pre>
+				<p>This interface addresses items #2,#3 and #4 of
+					<a href="https://docs.google.com/document/d/15P6JOEKxbNC892DWReBStJIXrObVoaBDxbKJFOpAdjI/edit">https://docs.google.com/document/d/15P6JOEKxbNC892DWReBStJIXrObVoaBDxbKJFOpAdjI/edit</a>
+				as follows:</p>
+				<ul>
+					<li><p>#2 - there is a 1:1 relationship between the rust methods and this api.</p>
+						<ul>
+							<li><p>ffi_* types are defined to map the api specification to ffi type strings
+									without losing information about the actual parameter types represented
+									by the primitive type. For example, arguments which represent did&#39;s are
+									indicated by ffi_did, making it type-wise distinct from parameters which
+									represent serialized json objects, represented as ffi_json_data_string,
+									both of which map to the same ffi type identifier : &#39;string&#39; which
+								is less precise than ffi_did or ffi_json_data_string.</p>
+							</li>
+							<li><p>FFIConfiguration - this is the declaration of the UI provided by the
+									Rust library, using the ffi_* type mapping constants.  this maps
+									the Rust library at the symbol level, and preserves 100% parity
+								with the core library.</p>
+							</li>
+						</ul>
+					</li>
+					<li><p>#3 - this interface maintains 1:1 mapping between the ffi object and the symbols
+							exported by the libindy object file, including the indy_ prefix.  There are
+						no additions or subtractions from the api.</p>
+					</li>
+					<li><p>#4 - this api is bound to the version of libindy in the associated commit.
+						// TODO - how should we track the library to meet:</p>
+						<p>  The wrapper should document the earliest and latest version of libindy that it knows
+							to be compatible. Likewise, it should document what platforms it targets, what use
+						cases it&#39;s built for, etc.</p>
+						<p>This file is silent on  this requirement:
+							A wrapper should be able to find libindy using default
+							OS methods (e.g., in the system PATH), but should also provide a way for a specific
+							path to libindy to be specified, such that the wrapper can work either from an OS-wide
+						install of libindy or a version in a particular directory.</p>
+						<p>These considerations are dealt with in runtime.ts, which actually
+						initializes the ffi object.</p>
+					</li>
+				</ul>
+				<h4 id="pseudo-types">Pseudo-Types</h4>
+				<p>FFI signatures look like this - which is the standard completion callback:</p>
+				<pre><code class="lang-ts">methodName:[<span class="hljs-string">'void'</span>,[<span class="hljs-string">'int'</span>,<span class="hljs-string">'int'</span>,<span class="hljs-string">'int'</span>]]
+</code></pre>
+				<p>and lack significant information about the actual information represented
+				by the FFI type.</p>
+				<p>For this reason, pseudo-types were introduced for the purposes of generating
+				the FFIConfiguration object.</p>
+				<p>For Example:</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> ffi_did = <span class="hljs-string">'string'</span>
+<span class="hljs-keyword">const</span> ffi_wallet_type_name = <span class="hljs-string">'string'</span>
+<span class="hljs-keyword">const</span> ffi_command_handle = <span class="hljs-string">'int'</span>
+<span class="hljs-keyword">const</span> ffi_error_code = <span class="hljs-string">'int'</span>
+<span class="hljs-keyword">const</span> ffi_wallet_name = <span class="hljs-string">'string'</span>
+</code></pre>
+				<p>Which is matched, where required, by actual types, indicated by the <code>rust_</code> prefix</p>
+				<p>For example:</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> rust_did = <span class="hljs-built_in">string</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> rust_error_code = <span class="hljs-built_in">number</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> rust_command_handle = <span class="hljs-built_in">number</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> rust_object_handle = <span class="hljs-built_in">number</span>;
+</code></pre>
+				<h4 id="callbacks">Callbacks</h4>
+				<p>The Rust library callback mechanism does not mesh simply with the
+					asynchronous operations of node, as well as the async/await and promise
+				support native to the node.js languages</p>
+				<p>For example, to use FFI interfaces directly, you must use a lot of heavy
+				boilerplate code.</p>
+				<p>You need also need to support the command_handle argument
+				which can be ignored in the context of node.js.</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> ffi <span class="hljs-keyword">from</span> <span class="hljs-string">'./ffi'</span>
+<span class="hljs-keyword">const</span> command_handle : <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span>
+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;<span class="hljs-function">(<span class="hljs-params">(<span class="hljs-params">resolve,reject</span>) =&gt; {
+      <span class="hljs-keyword">const</span> result = libindy.ffi.indy_delete_pool_ledger_config(<span class="hljs-params">command_handle,
+        configuration_name,<span class="hljs-built_in">JSON</span>.stringify(<span class="hljs-params">configuration_options</span>),
+            ffi.Callback(<span class="hljs-params">'<span class="hljs-built_in">void</span>', ['int', 'int'],
+                (<span class="hljs-params">command_handle:<span class="hljs-built_in">number</span>, error_code:<span class="hljs-built_in">number</span></span>) =&gt; {
+                    <span class="hljs-keyword">if</span>(<span class="hljs-params">error_code === 0</span>) {
+                        resolve(<span class="hljs-params"></span>)
+                    }
+                    <span class="hljs-keyword">else</span> {
+                        reject(<span class="hljs-params"><span class="hljs-keyword">new</span> IndyError(<span class="hljs-params">error_code</span>)</span>)
+                    }
+                }</span>);
+            </span>)
+        }</span>)
+        // <span class="hljs-params">for</span> <span class="hljs-params">some</span> <span class="hljs-params">functions</span>, <span class="hljs-params">the</span> <span class="hljs-params">result</span> <span class="hljs-params">will</span> <span class="hljs-params">be</span> <span class="hljs-params">returned</span> <span class="hljs-params">without</span> <span class="hljs-params">invoking</span>
+        // <span class="hljs-params">the</span> <span class="hljs-params">callback</span>.
+        <span class="hljs-params">if</span>(<span class="hljs-params">result !== 0</span>) {
+            <span class="hljs-params">reject</span>(<span class="hljs-params"><span class="hljs-keyword">new</span> IndyError(<span class="hljs-params">result</span>)</span>)
+        }
+    }
+)
+.<span class="hljs-params">then</span>(<span class="hljs-params">(<span class="hljs-params">command_handle</span>) =&gt; {
+    <span class="hljs-comment">// do something on success</span>
+}</span>)
+.<span class="hljs-params">catch</span>(<span class="hljs-params">(<span class="hljs-params">error</span>) =&gt; {
+    <span class="hljs-comment">// handle the IndyError exception</span>
+}</span>)</span>
+</code></pre>
+				<p>The ffi/callback.ts file contains some standard callback definitions
+					based on the ffi<em>* and rust</em>* types, which reduces some of the overhead.
+				For example, with this</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">default_callback</span>(<span class="hljs-params">resolve:<span class="hljs-built_in">any</span>,reject:<span class="hljs-built_in">any</span></span>) </span>{
+  <span class="hljs-keyword">return</span> ffi.Callback(ffi_void, [ffi_command_handle, ffi_errorcode],
+    <span class="hljs-function">(<span class="hljs-params">command_handle:rust_command_handle, error_code:rust_error_code</span>) =&gt;</span> {
+      <span class="hljs-keyword">if</span>(error_code == <span class="hljs-number">0</span>) {
+        resolve()
+      }
+      <span class="hljs-keyword">else</span> {
+        reject(<span class="hljs-keyword">new</span> IndyError(error_code))
+      }
+    });
+}
+</code></pre>
+				<p>and ignoring command_handle, the standard promise call simplifies to this:</p>
+				<pre><code class="lang-ts">(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;<span class="hljs-function">(<span class="hljs-params">(<span class="hljs-params">resolve,reject</span>) =&gt; {
+      <span class="hljs-keyword">const</span> result = libindy.ffi.indy_delete_pool_ledger_config(<span class="hljs-params">0,
+        configuration_name,<span class="hljs-built_in">JSON</span>.stringify(<span class="hljs-params">configuration_options</span>),
+            default_callback(<span class="hljs-params">resolve,reject</span>)</span>)
+        }</span>)
+        <span class="hljs-params">if</span>(<span class="hljs-params">result !== 0</span>) {
+            <span class="hljs-params">reject</span>(<span class="hljs-params"><span class="hljs-keyword">new</span> IndyError(<span class="hljs-params">result</span>)</span>)
+        }
+    }
+)
+.<span class="hljs-params">then</span>(<span class="hljs-params">(<span class="hljs-params">command_handle</span>) =&gt; {
+    <span class="hljs-comment">// do something on success</span>
+}</span>)
+.<span class="hljs-params">catch</span>(<span class="hljs-params">(<span class="hljs-params">error</span>) =&gt; {
+    <span class="hljs-comment">// handle the IndyError exception</span>
+}</span>)</span>
+</code></pre>
+				<p>In the next section we will see how we can use the bridge to simplify even
+				further.</p>
+				<h3 id="-bridge-promise-async-tree-master-src-bridge-api-ts-"><a href="../tree/master/src/bridge/api.ts">Bridge (Promise &amp; Async)</a></h3>
+				<p>The bridge layer provides 4 features</p>
+				<ol>
+					<li>supports static type optimizations</li>
+					<li>supports argument conversion where useful (auto stringification)</li>
+					<li>reduces boilerplate code</li>
+					<li>supports optional async/await as well as promise mode</li>
+				</ol>
+				<p>For example, using the signature of create_pool_ledger_config changes from</p>
+				<pre><code class="lang-ts"><span class="hljs-string">'indy_create_pool_ledger_config'</span>: [ffi_errorcode, [ffi_command_handle,ffi_name,ffi_json_data_string,ffi_callback]]
+</code></pre>
+				<p>to</p>
+				<pre><code class="lang-ts">create_pool_ledger_config(configuration_name:<span class="hljs-built_in">string</span>,
+    config_data?:json_object_or_serialized&lt;create_pool_ledger_config_options&gt;) : <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;
+</code></pre>
+				<p>and can be called as follows:</p>
+				<pre><code class="lang-ts">libindy.bridge.create_pool_ledger_config(configuration_name,config_data)
+.then(<span class="hljs-function">(<span class="hljs-params">command_handle</span>) =&gt;</span> {
+    <span class="hljs-comment">// do something on success</span>
+})
+.catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+    <span class="hljs-comment">// handle the IndyError exception</span>
+})
+</code></pre>
+				<p>or</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">await</span> libindy.async.create_pool_ledger_config(configuration_name,config_data)
+    <span class="hljs-comment">// do something on success</span>
+} <span class="hljs-keyword">catch</span>(error) {
+    <span class="hljs-comment">// handle the IndyError exception</span>
+}
+</code></pre>
+				<h4 id="configuration-wrappers-and-json-strings">Configuration Wrappers and JSON Strings</h4>
+				<p>The rust library works with JSON configuration data as strings.  The node.js
+					bridge library defines an appropriate interface for each of the associated
+				JSON configurations.</p>
+				<p>For example, the optional config_data above is actually this type</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> create_pool_ledger_config_options {
+  <span class="hljs-comment">///     "refreshOnOpen": bool (optional), Forces pool ledger to be refreshed immediately after opening.</span>
+  <span class="hljs-comment">///                      Defaults to true.</span>
+  <span class="hljs-comment">///     "autoRefreshTime": int (optional), After this time in minutes pool ledger will be automatically refreshed.</span>
+  <span class="hljs-comment">///                        Use 0 to disable automatic refresh. Defaults to 24*60.</span>
+  <span class="hljs-comment">///     "networkTimeout": int (optional), Network timeout for communication with nodes in milliseconds.</span>
+  <span class="hljs-comment">///                       Defaults to 20000.  refreshOnOpen?:boolean</span>
+  refreshOnOpen?:<span class="hljs-built_in">boolean</span>
+  autoRefreshTime?:<span class="hljs-built_in">number</span>
+  networkTimeout?:<span class="hljs-built_in">number</span>
+}
+</code></pre>
+				<p>but it in this signature</p>
+				<pre><code class="lang-ts">create_pool_ledger_config(configuration_name:<span class="hljs-built_in">string</span>,
+    config_data?:json_object_or_serialized&lt;create_pool_ledger_config_options&gt;) : <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;
+</code></pre>
+				<p>it also wrapped by <code>json_object_or_serialized</code> and config_data has the
+				optional marker (the ?).</p>
+				<p>This tells the API that you can use either a serialized json object, or
+					an instance of create_pool_ledger_config_options, which will then be
+				serialized using <code>JSON.stringify</code> before handing to the rust library.</p>
+				<p>In addition, if you wish to validate your json strings to make sure they
+					contain valid json, you can pass the <code>validate_serialized_json_string_parameters</code>
+				flag to the bridge when creating libindy, like this:</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> libindy = <span class="hljs-keyword">new</span> LibIndyRuntime({
+    bridge:{
+        validate_serialized_json_string_parameters:<span class="hljs-literal">true</span>
+        }
+    })
+</code></pre>
+				<p>which will cause any <code>json_object_or_serialized</code> strings to be verified
+					before invoking the libindy call.  This is expected to be useful in debugging
+				but not so much during production.</p>
+				<h3 id="-constants-ts-tree-master-src-constants-ts-"><a href="../tree/master/src/constants.ts">constants.ts</a></h3>
+				<pre><code class="lang-ts"><span class="hljs-keyword">import</span> {
+  LibIndyRuntime,
+  defaultLocalNetworkConfigurationName,
+  defaultLocalNetworkGenesisTransactions
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'./runtime'</span>
+
+<span class="hljs-keyword">const</span> libindy = <span class="hljs-keyword">new</span> LibIndyRuntime({
+  reset:<span class="hljs-literal">false</span>
+})
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">execute_example</span>(<span class="hljs-params"></span>) : <span class="hljs-title">Promise</span>&lt;<span class="hljs-title">void</span>&gt; </span>{
+  <span class="hljs-comment">// create pool ledger with given configuration</span>
+  <span class="hljs-keyword">await</span> libindy.registerLedgerGenesisConfiguration({
+    name:defaultLocalNetworkConfigurationName,
+    genesis_txn:defaultLocalNetworkGenesisTransactions
+    });
+
+}
+
+<span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">await</span> execute_example()
+}
+<span class="hljs-keyword">catch</span>(error) {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Got error"</span>,error)
+}
+</code></pre>
+				<h3 id="middleware">Middleware</h3>
+				<p>The bridge API supports middleware as follows:</p>
+				<pre><code class="lang-ts"><span class="hljs-keyword">const</span> libindy = <span class="hljs-keyword">new</span> LibIndyRuntime({
+  reset:<span class="hljs-literal">false</span>
+})
+libindy.use(middleware)
+</code></pre>
+				<h1 id="test-environment">Test Environment</h1>
+				<p>Tests have been stubbed out</p>
+				<ul>
+					<li>specific testing packages<ul>
+							<li>mocha</li>
+							<li>chai</li>
+							<li>chai-as-promised</li>
+						</ul>
+					</li>
+					<li>normalized coniguration via &#39;harness.ts&#39;</li>
+					<li>symbolic links to libindy</li>
+				</ul>
+				<h2 id="rust-logging">Rust Logging</h2>
+				<p>See <a href="https://doc.rust-lang.org/log/env_logger/">https://doc.rust-lang.org/log/env_logger/</a> for information about configuring
+				the RUST_LOG output</p>
+				<pre><code><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">RUST_LOG</span>=trace
+</code></pre><p>will generate the most output.</p>
+				<pre><code><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">RUST_LOG</span>=error
+</code></pre><p>will suppress most of the output.</p>
+				<h2 id="indy-sdk-debugging-output">INDY-SDK Debugging Output</h2>
+				<p>The indy-sdk library uses <a href="https://github.com/visionmedia/debug">debug</a> for
+				log level debug traces.  This debug output can be activated as follows:</p>
+				<pre><code><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">DEBUG</span>=<span class="hljs-string">"indy-sdx:*"</span>
+npm test
+</code></pre><h2 id="ffi-debugging">FFI Debugging</h2>
+				<p>The ffi library uses <a href="https://github.com/visionmedia/debug">debug</a> to handle
+				debugging.  This debug output can be activated as follows:</p>
+				<pre><code><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">DEBUG</span>=<span class="hljs-string">"ffi:*"</span>
+npm test
+</code></pre><p>with categories defined as follows</p>
+				<pre><code>grep <span class="hljs-built_in">debug</span> node_modules/ffi/lib/* | grep <span class="hljs-built_in">require</span>
+node_modules/ffi/lib/_foreign_function.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:_ForeignFunction'</span>)
+node_modules/ffi/lib/callback.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:Callback'</span>)
+node_modules/ffi/lib/cif.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:cif'</span>)
+node_modules/ffi/lib/cif_var.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:cif_var'</span>)
+node_modules/ffi/lib/dynamic_library.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:DynamicLibrary'</span>)
+node_modules/ffi/lib/ffi.js:var <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:ffi'</span>)
+node_modules/ffi/lib/foreign_function.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:ForeignFunction'</span>)
+node_modules/ffi/lib/foreign_function_var.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:VariadicForeignFunction'</span>)
+node_modules/ffi/lib/<span class="hljs-function"><span class="hljs-keyword">function</span>.<span class="hljs-title">js</span>:  , <span class="hljs-title">debug</span> = <span class="hljs-title">require</span><span class="hljs-params">('debug')</span></span>(<span class="hljs-string">'ffi:FunctionType'</span>)
+node_modules/ffi/lib/library.js:  , <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:Library'</span>)
+node_modules/ffi/lib/<span class="hljs-built_in">type</span>.js:var <span class="hljs-built_in">debug</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'ffi:types'</span>)
+</code></pre><h2 id="mocha-examples-using-chai-as-promised">Mocha Examples using Chai-as-promised</h2>
+				<p>Promise results can be tested using the following pattern and a sync function()</p>
+				<pre><code class="lang-ts">it(<span class="hljs-string">'should be ok for single well formed genesis txn'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">const</span> path = setup_config_file(single_genesis_txn)
+    <span class="hljs-built_in">console</span>.log(path)
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">JSON</span>.stringify(single_genesis_txn))
+    <span class="hljs-keyword">const</span> promise = libindy.bridge.create_pool_ledger_config(<span class="hljs-string">"bridge_test_04"</span>,{
+        genesis_txn:path
+    })
+    <span class="hljs-keyword">return</span> promise.should.be.fulfilled
+});
+</code></pre>
+				<p>Sequences with multiple promises can be used with an async function, by changing from
+				promise.should to expect.to</p>
+				<pre><code class="lang-ts">describe(<span class="hljs-string">'#delete_pool_ledger_config'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+it(<span class="hljs-string">'should be ok for deleting a configuration created from a single well formed genesis txn'</span>, <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">const</span> path = setup_config_file(single_genesis_txn)
+    <span class="hljs-keyword">const</span> config_name = <span class="hljs-string">"bridge_test_05"</span>
+    <span class="hljs-keyword">await</span> libindy.bridge.create_pool_ledger_config(config_name,{
+        genesis_txn:path
+    })
+    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> libindy.bridge.delete_pool_ledger_config(config_name);
+    expect(result).to.equal(<span class="hljs-literal">undefined</span>);
+    });
+})
+</code></pre>
+				<h2 id="fixtures">Fixtures</h2>
+				<p>This is mapped by the environment.ts file in the harness.</p>
+				<h2 id="harness">Harness</h2>
+				<h3 id="ffi-harness-ts">ffi/harness.ts</h3>
+				<h3 id="bridge-harness-ts">bridge/harness.ts</h3>
+				<h3 id="index-ts">index.ts</h3>
+				<p>Exposes mocha primitives and exports symbols from all other harness files.</p>
+				<h3 id="logging-ts">logging.ts</h3>
+				<p>Establishes a super simple logger, used as follows:</p>
+				<pre><code><span class="hljs-keyword">import</span> { logger } <span class="hljs-keyword">from</span> <span class="hljs-string">'../harness'</span>
+logger.<span class="hljs-built_in">debug</span>(<span class="hljs-string">"Write standard winston log messages here"</span>);
+</code></pre><h3 id="network-ts">network.ts</h3>
+				<p>For interacting with a local docker sovrin environment.</p>
+				<h3 id="chai-ts">chai.ts</h3>
+				<p>// configure to support sync/async functions - this requires import of
+					// assert,expect from this file.
+					TODO - tell the story of how expect.to.throw becomes expect.to.be.rejectedWith
+				and the various caveats around that.</p>
+				<h3 id="environment-ts">environment.ts</h3>
+				<p>Provide support for tests needing to directly query or use the local test
+				environment.  These are links relative to the local repository.</p>
+				<p>Filesystem Requirements:</p>
+				<ul>
+					<li>test/fixtures/relative/rustlib -&gt; ../../libindy/target</li>
+					<li>test/fixtures/relative/env-var-test.dylib -&gt; ../../libindy/target/release/libindy.dylib</li>
+				</ul>
+				<p>Initial Use Case:</p>
+				<ul>
+					<li>figure out if the local libindy has been built</li>
+				</ul>
+				<h3 id="bridge-ts">bridge.ts</h3>
+				<h1 id="notes-and-issues">Notes and Issues</h1>
+				<p>Agent api was excluded mostly, just because of the heavy call signatures - it will be
+				placed back shortly.</p>
+				<pre><code><span class="hljs-bullet">1. </span>yarn support
+<span class="hljs-bullet">2. </span>adding winston logging
+</code></pre><p>Concerned about building:
+				The wrapper should document the earliest and latest version of libindy that it knows to be compatible. Likewise, it should document what platforms it targets, what use cases it&#39;s built for, etc. A wrapper should be able to find libindy using default OS methods (e.g., in the system PATH), but should also provide a way for a specific path to libindy to be specified, such that the wrapper can work either from an OS-wide install of libindy or a version in a particular directory.</p>
+				<p>we need a solid way to build and tag.... help? ;)</p>
+				<h2 id="casing-and-capitalization">Casing and Capitalization</h2>
+				<p>The official spec is here - <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines</a>
+					but I think we should use <code>_</code> for at least the ffi methods.  Personally I find camelcase
+				very difficult to read - so I tend to use <code>_</code> until forced to do otherwise.</p>
+				<p>We can just open up a task/todo to track getting this (and other coding guidelines)
+					right - there is a tslint config I&#39;ve left out....  that will provide another source
+				of conformance.</p>
+				<h2 id="addons">Addons</h2>
+				<p>I am test consuming the library in two addon modules that are currently excluded from
+				the library - one is for express, the other is for redux integration.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_bridge_api_.html">"bridge/api"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_bridge_index_.html">"bridge/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_bridge_middleware_.html">"bridge/middleware"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_bridge_promise_.html">"bridge/promise"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_error_.html">"error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_middleware_metrics_.html">"middleware/metrics"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_middleware_traceactivity_.html">"middleware/traceactivity"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_middleware_util_.html">"middleware/util"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_middleware_validate_.html">"middleware/validate"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_rustlib_.html">"rustlib"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_api_.html">"spi/api"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_index_.html">"spi/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_ledger_.html">"spi/ledger"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_pool_.html">"spi/pool"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_service_.html">"spi/service"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_spi_util_.html">"spi/util"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
