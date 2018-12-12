@@ -789,7 +789,7 @@ def ubuntuPublishing() {
                 libindyDebPublishing(testEnv, libindyVersion)
 
                 pythonWrapperPublishing(testEnv, false, 'wrappers/python')
-                nodejsWrapperPublishing(testEnv, false)
+                nodejsWrapperPublishing(testEnv, false, 'wrappers/nodejs')
                 javaWrapperPublishing(testEnv, false)
                 rustWrapperPublishing(testEnv, false)
                 libindyCliDebPublishing(testEnv, libindyVersion)
@@ -797,6 +797,7 @@ def ubuntuPublishing() {
                 libvcxDebPublishing(testEnv)
                 vcxJavaWrapperPublishing(testEnv, false)
                 pythonWrapperPublishing(testEnv, false, 'vcx/wrappers/python3')
+                nodejsWrapperPublishing(testEnv, false, 'vcx/wrappers/node')
             }
             finally {
                 echo 'Publish Ubuntu files: Cleanup'
@@ -1024,8 +1025,8 @@ def pythonWrapperPublishing(testEnv, isRelease, directory) {
     }
 }
 
-def nodejsWrapperPublishing(testEnv, isRelease) {
-    dir('wrappers/nodejs') {
+def nodejsWrapperPublishing(testEnv, isRelease, directory) {
+    dir(directory) {
         def version = getSrcVersion("libindy")
         def suffix = getSuffix(isRelease, "nodejs")
 
@@ -1107,7 +1108,7 @@ def publishingRCtoStable() {
                 pythonWrapperPublishing(testEnv, true, 'wrappers/python')
 
                 echo 'Moving Ubuntu RC artifacts to Stable: nodejs wrapper'
-                nodejsWrapperPublishing(testEnv, true)
+                nodejsWrapperPublishing(testEnv, true, 'wrappers/nodejs')
 
                 echo 'Moving Ubuntu RC artifacts to Stable: java wrapper'
                 javaWrapperPublishing(testEnv, true)
@@ -1135,6 +1136,9 @@ def publishingRCtoStable() {
 
                 echo 'Moving Ubuntu RC artifacts to Stable: vcx python wrapper'
                 pythonWrapperPublishing(testEnv, true, 'vcx/wrappers/python3')
+
+                echo 'Moving Ubuntu RC artifacts to Stable: vcx nodejs wrapper'
+                nodejsWrapperPublishing(testEnv, true, 'vcx/wrappers/node')
 
                 echo 'Moving Android RC artifacts to Stable: libindy'
                 publishLibindAndroidFilesRCtoStable(libindyVersion)
